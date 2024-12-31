@@ -1,0 +1,100 @@
+[gd_scene load_steps=6 format=3 uid="uid://cdt02xbst0w5t"]
+
+[ext_resource type="Texture2D" uid="uid://bpfp7krru7g25" path="res://resources/components/ui/project_preview/project_placeholder.png" id="1_gvtuy"]
+[ext_resource type="Script" path="res://resources/components/ui/project_preview/project_preview.gd" id="1_orcc2"]
+[ext_resource type="FontFile" uid="uid://bqne1as5slnii" path="res://fonts/secondary_font.ttf" id="2_kym03"]
+[ext_resource type="FontFile" uid="uid://dlwoko4fpcn0w" path="res://fonts/primary_font.ttf" id="3_7e0oc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0iqm"]
+bg_color = Color(0.152941, 0.160784, 0.180392, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.265805, 0.277533, 0.306835, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Preview" type="Control"]
+layout_mode = 3
+anchor_right = 0.391281
+anchor_bottom = 0.097
+offset_left = 1.0
+offset_right = 0.159973
+offset_bottom = 0.159981
+script = ExtResource("1_orcc2")
+metadata/_edit_use_anchors_ = true
+
+[node name="Panel" type="Panel" parent="."]
+clip_children = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.35
+theme_override_styles/panel = SubResource("StyleBoxFlat_e0iqm")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_constants/separation = 0
+
+[node name="Left" type="Control" parent="Panel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextContent" type="VBoxContainer" parent="Panel/HBoxContainer/Left"]
+layout_mode = 2
+anchor_right = 1.988
+offset_left = 17.0
+offset_right = -156.0
+offset_bottom = 70.0
+size_flags_stretch_ratio = 1.5
+alignment = 1
+
+[node name="ProjName" type="Label" parent="Panel/HBoxContainer/Left/TextContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_kym03")
+theme_override_font_sizes/font_size = 20
+text = "My Project"
+text_overrun_behavior = 3
+
+[node name="ProjDir" type="Label" parent="Panel/HBoxContainer/Left/TextContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_7e0oc")
+theme_override_font_sizes/font_size = 13
+text = "~/.neb/projects/my-project"
+text_overrun_behavior = 3
+visible_characters_behavior = 3
+text_direction = 1
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/HBoxContainer/Left"]
+layout_mode = 2
+offset_left = 304.0
+offset_right = 501.0
+offset_bottom = 70.0
+size_flags_horizontal = 3
+
+[node name="Right" type="HBoxContainer" parent="Panel/HBoxContainer"]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="PreviewImage" type="TextureRect" parent="Panel/HBoxContainer/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_direction = 2
+layout_mode = 2
+texture = ExtResource("1_gvtuy")
+expand_mode = 1

@@ -1,0 +1,942 @@
+[gd_scene load_steps=27 format=3 uid="uid://l8wi3hh3pr56"]
+
+[ext_resource type="Theme" uid="uid://buaavls7kdrw" path="res://resources/themes/main_menu.theme" id="1_fo1h2"]
+[ext_resource type="Script" path="res://menus/main_menu/home/home.gd" id="1_mu876"]
+[ext_resource type="Shader" path="res://resources/shaders/blur.gdshader" id="3_y5s2c"]
+[ext_resource type="PackedScene" uid="uid://cdt02xbst0w5t" path="res://resources/components/ui/project_preview/project_preview.tscn" id="4_nlrwd"]
+[ext_resource type="FontFile" uid="uid://bqne1as5slnii" path="res://fonts/secondary_font.ttf" id="5_8fvvc"]
+[ext_resource type="Texture2D" uid="uid://bhcsptnbutkwt" path="res://meta/icons/folder.svg" id="6_hae74"]
+[ext_resource type="FontFile" uid="uid://4yxyfyr3k77j" path="res://fonts/splash_font.ttf" id="7_tlkiu"]
+[ext_resource type="FontFile" uid="uid://dlwoko4fpcn0w" path="res://fonts/primary_font.ttf" id="8_qsf8f"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4yg4m"]
+shader = ExtResource("3_y5s2c")
+shader_parameter/amount = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u31ph"]
+bg_color = Color(0.133317, 0.140444, 0.158263, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.219608, 0.227451, 0.25098, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yfony"]
+content_margin_left = 8.0
+content_margin_right = 8.0
+bg_color = Color(0.114174, 0.118019, 0.133397, 1)
+border_width_bottom = 2
+border_color = Color(0, 0.345098, 0.670588, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xbn4u"]
+bg_color = Color(0.117647, 0.121569, 0.137255, 1)
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uhxn0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5ix22"]
+content_margin_left = 8.0
+content_margin_right = 8.0
+bg_color = Color(0.114174, 0.118019, 0.133397, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rcr8d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p616t"]
+content_margin_left = 8.0
+content_margin_right = 8.0
+bg_color = Color(0.167098, 0.172102, 0.192112, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a162l"]
+content_margin_left = 8.0
+content_margin_right = 8.0
+bg_color = Color(0.106973, 0.110657, 0.125395, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3u5u8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5fiqn"]
+bg_color = Color(0.117647, 0.121569, 0.137255, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ly2gm"]
+bg_color = Color(0, 0.345098, 0.670588, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="Animation" id="Animation_2ef8e"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SetupProject:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(453, 149)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("NoProjects/InteractionPanel:material")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("ShaderMaterial_4yg4m")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("SetupProject:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject:anchors_preset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SetupProject/CreateProjectContainer:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("SetupProject:size:y")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [392.0]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("SetupProject:position:y")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [164.0]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("SetupProject/CreateProjectContainer:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("SetupProject/LoadingContainer:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("SetupProject/LoadingContainer:modulate")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("SetupProject/LoadingContainer:scale")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [-117.0]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("AnimationPlayer:current_animation")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [""]
+}
+
+[sub_resource type="Animation" id="Animation_xvwps"]
+resource_name = "loading_loop"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(0.35, 0.35),
+"update": 0,
+"values": [360.0, -60.0]
+}
+
+[sub_resource type="Animation" id="Animation_ct10o"]
+resource_name = "setup_project_fade_in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NoProjects/InteractionPanel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.05),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SetupProject:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("SetupProject:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.05),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [0.0, 2.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.25, 1.25)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SetupProject:anchors_preset")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0333333),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_nrk4l"]
+resource_name = "setup_project_fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.466667, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SetupProject:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(-3.72529e-09, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SetupProject:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.466667, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(-3.72529e-09, 0.5),
+"transitions": PackedFloat32Array(0.5, 0.2),
+"update": 0,
+"values": [2.0, 0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("SetupProject:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(-3.72529e-09, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Vector2(1.25, 1.25), Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject:anchors_preset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_a0rw0"]
+resource_name = "start_to_load"
+length = 1.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SetupProject/CreateProjectContainer:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/path = NodePath("SetupProject:size:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [392.0, 300.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = false
+tracks/2/path = NodePath("SetupProject:position:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [164.0, 210.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("SetupProject/CreateProjectContainer:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("SetupProject/LoadingContainer:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0666667, 0.133333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject/LoadingContainer:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3, 0.466667),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SetupProject/LoadingContainer:scale")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.259065, 0.46685),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.8, 0.8), Vector2(1, 1)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.5, 1.1),
+"transitions": PackedFloat32Array(0.4, 0.35),
+"update": 0,
+"values": [-117.0, 360.0]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("AnimationPlayer:current_animation")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(1.11),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"loading_loop"]
+}
+tracks/9/type = "method"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath(".")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(1.1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_start_loading"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ocdg8"]
+_data = {
+"RESET": SubResource("Animation_2ef8e"),
+"loading_loop": SubResource("Animation_xvwps"),
+"setup_project_fade_in": SubResource("Animation_ct10o"),
+"setup_project_fade_out": SubResource("Animation_nrk4l"),
+"start_to_load": SubResource("Animation_a0rw0")
+}
+
+[node name="Home" type="Control"]
+layout_direction = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mu876")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.152941, 0.160784, 0.180392, 1)
+
+[node name="NoProjects" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NoProjects"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.5
+offset_top = -92.0
+offset_right = 300.5
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50
+
+[node name="NoProjectsLabel" type="Label" parent="NoProjects/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"PrimaryLabel"
+theme_override_colors/font_color = Color(0.315921, 0.329171, 0.362265, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 28
+text = "It seems like you haven't set up a project yet.
+Either CREATE or IMPORT a project."
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NoProjects/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="CreateProjectButton" type="Button" parent="NoProjects/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"PrimaryButton"
+text = "Create Project"
+
+[node name="ImportProjectButton" type="Button" parent="NoProjects/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryButton"
+text = "Import Project"
+
+[node name="InteractionPanel" type="ColorRect" parent="NoProjects"]
+visible = false
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_4yg4m")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Projects" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="NebulaTxt" type="Label" parent="."]
+layout_mode = 1
+offset_left = 19.0
+offset_top = 15.0
+offset_right = 180.0
+offset_bottom = 72.0
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"PrimaryLabel"
+text = "Nebula"
+
+[node name="VersionTxt" type="Label" parent="NebulaTxt"]
+layout_mode = 1
+offset_top = 48.0
+offset_right = 161.0
+offset_bottom = 105.0
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+text = "v0.0.0"
+
+[node name="SetupProject" type="Panel" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -187.0
+offset_top = -211.0
+offset_right = 281.0
+offset_bottom = 181.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(234, 196)
+theme_override_styles/panel = SubResource("StyleBoxFlat_u31ph")
+
+[node name="CreateProjectContainer" type="VBoxContainer" parent="SetupProject"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.047047
+anchor_top = 0.053
+anchor_right = 0.95509
+anchor_bottom = 0.947
+offset_left = -0.0180016
+offset_top = -0.0300007
+offset_right = 0.0179749
+offset_bottom = 0.0299988
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+metadata/_edit_use_anchors_ = true
+
+[node name="GameDetected" type="Label" parent="SetupProject/CreateProjectContainer"]
+layout_mode = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+theme_override_font_sizes/font_size = 15
+text = "Game Detected: New Super Mario Bros. Wii (USA)"
+horizontal_alignment = 1
+
+[node name="Preview" parent="SetupProject/CreateProjectContainer" instance=ExtResource("4_nlrwd")]
+custom_minimum_size = Vector2(425, 70)
+layout_mode = 2
+
+[node name="ProjNameInput" type="LineEdit" parent="SetupProject/CreateProjectContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_8fvvc")
+theme_override_styles/focus = SubResource("StyleBoxFlat_yfony")
+theme_override_styles/normal = SubResource("StyleBoxFlat_xbn4u")
+placeholder_text = "My Project"
+alignment = 1
+max_length = 26
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SetupProject/CreateProjectContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ProjDir" type="LineEdit" parent="SetupProject/CreateProjectContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_placeholder_color = Color(0.396, 0.396, 0.4, 1)
+theme_override_fonts/font = ExtResource("5_8fvvc")
+theme_override_font_sizes/font_size = 13
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uhxn0")
+theme_override_styles/read_only = SubResource("StyleBoxFlat_5ix22")
+placeholder_text = "~/.config/nebula/projects/my-project"
+editable = false
+context_menu_enabled = false
+virtual_keyboard_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="SelectDirButton" type="Button" parent="SetupProject/CreateProjectContainer/HBoxContainer"]
+custom_minimum_size = Vector2(45, 40)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryButton"
+text = "      "
+icon = ExtResource("6_hae74")
+icon_alignment = 1
+expand_icon = true
+
+[node name="VariantsDropdown" type="OptionButton" parent="SetupProject/CreateProjectContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rcr8d")
+theme_override_styles/hover = SubResource("StyleBoxFlat_p616t")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_a162l")
+theme_override_styles/normal = SubResource("StyleBoxFlat_5ix22")
+
+[node name="spacer" type="HSeparator" parent="SetupProject/CreateProjectContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_3u5u8")
+
+[node name="CreateButton" type="Button" parent="SetupProject/CreateProjectContainer"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"PrimaryButton"
+text = "Create Project"
+
+[node name="LoadingContainer" type="Control" parent="SetupProject"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -0.00109863
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(234, 150)
+
+[node name="LoadingLabel" type="Label" parent="SetupProject/LoadingContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -113.0
+offset_top = -46.0
+offset_right = 113.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_tlkiu")
+theme_override_font_sizes/font_size = 42
+text = "Loading"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LoadingLabel2" type="Label" parent="SetupProject/LoadingContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -132.0
+offset_top = 115.0
+offset_right = 125.0
+offset_bottom = 137.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.317647, 0.329412, 0.360784, 1)
+theme_override_fonts/font = ExtResource("8_qsf8f")
+theme_override_font_sizes/font_size = 18
+text = "This will only take a moment."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LoadingBarBG" type="Panel" parent="SetupProject/LoadingContainer"]
+clip_children = 2
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -206.0
+offset_top = 11.0
+offset_right = 204.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5fiqn")
+
+[node name="LoadingBar" type="Panel" parent="SetupProject/LoadingContainer/LoadingBarBG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -322.0
+offset_top = -6.49945
+offset_right = -212.0
+offset_bottom = 6.50055
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ly2gm")
+
+[node name="LoadROMDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(756, 475)
+exclusive = false
+force_native = true
+min_size = Vector2i(675, 475)
+theme = ExtResource("1_fo1h2")
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.iso", "*.wbfs")
+use_native_dialog = true
+
+[node name="SelectDirDialog" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Open a Directory"
+initial_position = 1
+size = Vector2i(756, 475)
+exclusive = false
+force_native = true
+min_size = Vector2i(675, 475)
+theme = ExtResource("1_fo1h2")
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+use_native_dialog = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ocdg8")
+}
+
+[connection signal="pressed" from="NoProjects/VBoxContainer/HBoxContainer/CreateProjectButton" to="." method="_on_create_project_button_pressed"]
+[connection signal="text_changed" from="SetupProject/CreateProjectContainer/ProjNameInput" to="." method="_on_project_name_changed"]
+[connection signal="pressed" from="SetupProject/CreateProjectContainer/HBoxContainer/SelectDirButton" to="." method="_on_select_dir_button_pressed"]
+[connection signal="pressed" from="SetupProject/CreateProjectContainer/CreateButton" to="." method="_on_real_create_button_pressed"]
+[connection signal="file_selected" from="LoadROMDialog" to="." method="_on_file_selected"]
+[connection signal="dir_selected" from="SelectDirDialog" to="." method="_on_dir_selected"]

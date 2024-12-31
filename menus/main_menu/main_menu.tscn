@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cb4h78vg8whhj"]
+
+[ext_resource type="PackedScene" uid="uid://l8wi3hh3pr56" path="res://menus/main_menu/home/home.tscn" id="1_23brv"]
+[ext_resource type="PackedScene" uid="uid://cner707ckkl4e" path="res://menus/main_menu/overlay/overlay.tscn" id="2_5hnoj"]
+
+[node name="MainMenu" type="HBoxContainer"]
+layout_direction = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Home" parent="." instance=ExtResource("1_23brv")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Overlay" parent="." instance=ExtResource("2_5hnoj")]
+layout_mode = 2

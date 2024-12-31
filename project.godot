@@ -1,0 +1,47 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Nebula"
+config/description=" A personal WIP engine designed for general-purpose Wii game modding. "
+config/version="0.0.1"
+run/main_scene="res://menus/init/main_window.tscn"
+run/print_header=false
+config/features=PackedStringArray("4.3", "Mobile")
+run/low_processor_mode=true
+boot_splash/bg_color=Color(0.09, 0.09, 0.09, 0)
+boot_splash/show_image=false
+boot_splash/image="res://meta/splash.png"
+config/icon="res://meta/icon.png"
+
+[autoload]
+
+Singleton="*res://classes/global/singleton.gd"
+ProjectManager="*res://classes/global/project_manager.gd"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+gdscript/warnings/inferred_declaration=2
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+display_server/driver.linuxbsd="wayland"
+
+[gui]
+
+theme/custom="res://resources/themes/main_menu.theme"
+
+[rendering]
+
+renderer/rendering_method="mobile"

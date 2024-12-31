@@ -1,0 +1,26 @@
+{
+	"games": {
+		"SMNE01": {
+			"name": "New Super Mario Bros. Wii",
+			"region": "USA",
+			"engine_id": "nsmbw"
+		},
+		"SMNP01": {
+			"name": "New Super Mario Bros. Wii",
+			"region": "PAL",
+			"engine_id": "nsmbw"
+		},
+		"SMNJ01": {
+			"name": "New Super Mario Bros. Wii",
+			"region": "JAP",
+			"engine_id": "nsmbw"
+		}
+	},
+	"engine": {
+		"nsmbw": {
+			"variants": ["Vanilla"],
+			"banner_path": "res://engines/nsmbw/meta/banner.png",
+			"engine_path": "res://menus/editor/editor.tscn"
+		}
+	}
+}

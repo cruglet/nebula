@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://cner707ckkl4e"]
+
+[ext_resource type="Texture2D" uid="uid://cslnuhsp28f07" path="res://menus/main_menu/home/home_icon.svg" id="1_qphlx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k3aqn"]
+bg_color = Color(0.117647, 0.121569, 0.137255, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_08n26"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+
+[node name="Overlay" type="Control"]
+custom_minimum_size = Vector2(90, 0)
+layout_direction = 2
+layout_mode = 3
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 90.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k3aqn")
+
+[node name="HomeIcon" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 24.5
+offset_top = 30.0
+offset_right = 59.5
+offset_bottom = 65.0
+mouse_default_cursor_shape = 2
+texture = ExtResource("1_qphlx")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="SelectedIcon" type="Panel" parent="."]
+layout_mode = 0
+offset_top = 26.0
+offset_right = 5.0
+offset_bottom = 66.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_08n26")
