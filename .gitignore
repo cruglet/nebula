@@ -3,3 +3,6 @@
 /android/
 
 *.import
+
+# These are local and don't need to be updated
+projectlist.json
