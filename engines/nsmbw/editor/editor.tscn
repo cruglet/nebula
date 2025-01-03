@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dw2s0rywh85jh"]
+
+[ext_resource type="PackedScene" uid="uid://bwmowgyrohjvx" path="res://engines/nsmbw/editor/ui/editor_ui.res" id="1_d8m42"]
+[ext_resource type="PackedScene" uid="uid://dhssd8hpiaqaf" path="res://engines/nsmbw/editor/viewport/editor_viewport.res" id="2_1p6v6"]
+
+[node name="Editor" type="Node"]
+
+[node name="GUI" parent="." instance=ExtResource("1_d8m42")]
+
+[node name="EditorViewport" parent="." instance=ExtResource("2_1p6v6")]
+position = Vector2(640, 360)

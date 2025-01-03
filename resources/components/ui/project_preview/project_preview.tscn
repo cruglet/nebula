@@ -1,9 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdt02xbst0w5t"]
+[gd_scene load_steps=13 format=3 uid="uid://cdt02xbst0w5t"]
 
 [ext_resource type="Texture2D" uid="uid://bpfp7krru7g25" path="res://resources/components/ui/project_preview/project_placeholder.png" id="1_gvtuy"]
 [ext_resource type="Script" path="res://resources/components/ui/project_preview/project_preview.gd" id="1_orcc2"]
 [ext_resource type="FontFile" uid="uid://bqne1as5slnii" path="res://fonts/secondary_font.ttf" id="2_kym03"]
 [ext_resource type="FontFile" uid="uid://dlwoko4fpcn0w" path="res://fonts/primary_font.ttf" id="3_7e0oc"]
+[ext_resource type="Theme" uid="uid://buaavls7kdrw" path="res://resources/themes/main_menu.theme" id="4_kwfan"]
+[ext_resource type="Texture2D" uid="uid://c3oecs1jynqb2" path="res://meta/icons/delete.svg" id="5_kwrcw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_il84k"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0iqm"]
 bg_color = Color(0.152941, 0.160784, 0.180392, 1)
@@ -16,7 +20,50 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dm6mp"]
+bg_color = Color(0.203922, 0.211765, 0.235294, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.265805, 0.277533, 0.306835, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lavjp"]
+bg_color = Color(0.108677, 0.114893, 0.130437, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.265805, 0.277533, 0.306835, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5ksfg"]
+bg_color = Color(0.38, 0.2242, 0.2242, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.25, 0.1625, 0.1625, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hlu04"]
+bg_color = Color(0.2, 0.102, 0.102, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.2, 0.128, 0.128, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
+
 [node name="Preview" type="Control"]
+custom_minimum_size = Vector2(0, 65)
 layout_mode = 3
 anchor_right = 0.391281
 anchor_bottom = 0.097
@@ -26,17 +73,23 @@ offset_bottom = 0.159981
 script = ExtResource("1_orcc2")
 metadata/_edit_use_anchors_ = true
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Button" parent="."]
 clip_children = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -0.999664
+offset_bottom = 1.52588e-05
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.35
-theme_override_styles/panel = SubResource("StyleBoxFlat_e0iqm")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_il84k")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_e0iqm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dm6mp")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lavjp")
+theme_override_styles/normal = SubResource("StyleBoxFlat_e0iqm")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -49,6 +102,7 @@ theme_override_constants/separation = 0
 [node name="Left" type="Control" parent="Panel/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="TextContent" type="VBoxContainer" parent="Panel/HBoxContainer/Left"]
 layout_mode = 2
@@ -57,6 +111,7 @@ offset_left = 17.0
 offset_right = -156.0
 offset_bottom = 70.0
 size_flags_stretch_ratio = 1.5
+mouse_filter = 2
 alignment = 1
 
 [node name="ProjName" type="Label" parent="Panel/HBoxContainer/Left/TextContent"]
@@ -78,23 +133,49 @@ text_overrun_behavior = 3
 visible_characters_behavior = 3
 text_direction = 1
 
-[node name="Buttons" type="HBoxContainer" parent="Panel/HBoxContainer/Left"]
-layout_mode = 2
-offset_left = 304.0
-offset_right = 501.0
-offset_bottom = 70.0
-size_flags_horizontal = 3
-
 [node name="Right" type="HBoxContainer" parent="Panel/HBoxContainer"]
 layout_direction = 2
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 15
 alignment = 2
 
+[node name="Buttons" type="HBoxContainer" parent="Panel/HBoxContainer/Right"]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 0
+theme_override_constants/separation = 15
+alignment = 2
+
+[node name="EditProject" type="Button" parent="Panel/HBoxContainer/Right/Buttons"]
+visible = false
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_kwfan")
+theme_type_variation = &"SecondaryButton"
+
+[node name="DeleteProject" type="Button" parent="Panel/HBoxContainer/Right/Buttons"]
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_kwfan")
+theme_type_variation = &"SecondaryButton"
+theme_override_styles/hover = SubResource("StyleBoxFlat_5ksfg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hlu04")
+icon = ExtResource("5_kwrcw")
+expand_icon = true
+
 [node name="PreviewImage" type="TextureRect" parent="Panel/HBoxContainer/Right"]
-unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_direction = 2
 layout_mode = 2
 texture = ExtResource("1_gvtuy")
 expand_mode = 1
+
+[connection signal="pressed" from="Panel" to="." method="_on_panel_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/Right/Buttons/DeleteProject" to="." method="_on_delete_project_pressed"]

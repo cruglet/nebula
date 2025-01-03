@@ -1,13 +1,23 @@
-[gd_scene load_steps=27 format=3 uid="uid://l8wi3hh3pr56"]
+[gd_scene load_steps=33 format=3 uid="uid://l8wi3hh3pr56"]
 
 [ext_resource type="Theme" uid="uid://buaavls7kdrw" path="res://resources/themes/main_menu.theme" id="1_fo1h2"]
 [ext_resource type="Script" path="res://menus/main_menu/home/home.gd" id="1_mu876"]
 [ext_resource type="Shader" path="res://resources/shaders/blur.gdshader" id="3_y5s2c"]
+[ext_resource type="Script" path="res://menus/main_menu/home/projects_scroll_container.gd" id="4_c1ibw"]
 [ext_resource type="PackedScene" uid="uid://cdt02xbst0w5t" path="res://resources/components/ui/project_preview/project_preview.tscn" id="4_nlrwd"]
 [ext_resource type="FontFile" uid="uid://bqne1as5slnii" path="res://fonts/secondary_font.ttf" id="5_8fvvc"]
+[ext_resource type="Script" path="res://menus/main_menu/home/create_project.gd" id="5_ef0we"]
 [ext_resource type="Texture2D" uid="uid://bhcsptnbutkwt" path="res://meta/icons/folder.svg" id="6_hae74"]
 [ext_resource type="FontFile" uid="uid://4yxyfyr3k77j" path="res://fonts/splash_font.ttf" id="7_tlkiu"]
 [ext_resource type="FontFile" uid="uid://dlwoko4fpcn0w" path="res://fonts/primary_font.ttf" id="8_qsf8f"]
+[ext_resource type="Script" path="res://menus/main_menu/home/import_project.gd" id="9_dgrqh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_63nqc"]
+bg_color = Color(0.1204, 0.12432, 0.14, 0.670588)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4yg4m"]
 shader = ExtResource("3_y5s2c")
@@ -75,7 +85,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3u5u8"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g7njn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5fiqn"]
 bg_color = Color(0.117647, 0.121569, 0.137255, 1)
@@ -96,7 +106,7 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/0/path = NodePath("BGBlur:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -120,7 +130,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("NoProjects/InteractionPanel:material")
+tracks/2/path = NodePath("BGBlur:material")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -132,7 +142,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/3/path = NodePath("BGBlur:material:shader_parameter/amount")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -264,40 +274,23 @@ tracks/13/keys = {
 tracks/14/type = "value"
 tracks/14/imported = false
 tracks/14/enabled = true
-tracks/14/path = NodePath("AnimationPlayer:current_animation")
+tracks/14/path = NodePath("SetupProject/DeleteProjectContainer:visible")
 tracks/14/interp = 1
 tracks/14/loop_wrap = true
 tracks/14/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [""]
-}
-
-[sub_resource type="Animation" id="Animation_xvwps"]
-resource_name = "loading_loop"
-length = 1.2
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.6),
-"transitions": PackedFloat32Array(0.35, 0.35),
-"update": 0,
-"values": [360.0, -60.0]
+"values": [false]
 }
 
 [sub_resource type="Animation" id="Animation_ct10o"]
-resource_name = "setup_project_fade_in"
+resource_name = "create_project_fade_in"
 length = 0.5
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("NoProjects/InteractionPanel:self_modulate")
+tracks/0/path = NodePath("BGBlur:self_modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -309,7 +302,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/1/path = NodePath("BGBlur:visible")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -345,7 +338,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/4/path = NodePath("BGBlur:material:shader_parameter/amount")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -378,14 +371,191 @@ tracks/6/keys = {
 "update": 1,
 "values": [8]
 }
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("SetupProject/CreateProjectContainer:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.0333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("SetupProject/DeleteProjectContainer:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("SetupProject/LoadingContainer:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
-[sub_resource type="Animation" id="Animation_nrk4l"]
-resource_name = "setup_project_fade_out"
+[sub_resource type="Animation" id="Animation_g8dhe"]
+resource_name = "delete_project_fade_in"
 length = 0.5
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("NoProjects/InteractionPanel:visible")
+tracks/0/path = NodePath("BGBlur:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BGBlur:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.05),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SetupProject:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("SetupProject:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.05),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("BGBlur:material:shader_parameter/amount")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [0.0, 2.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.25, 1.25)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SetupProject/DeleteProjectContainer:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.0333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("SetupProject/CreateProjectContainer:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("SetupProject/LoadingContainer:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("SetupProject/DeleteProjectContainer:modulate")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.05, 0.5),
+"transitions": PackedFloat32Array(0.2, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_xvwps"]
+resource_name = "loading_loop"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(0.35, 0.35),
+"update": 0,
+"values": [360.0, -60.0]
+}
+
+[sub_resource type="Animation" id="Animation_nrk4l"]
+resource_name = "fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BGBlur:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -421,7 +591,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("NoProjects/InteractionPanel:material:shader_parameter/amount")
+tracks/3/path = NodePath("BGBlur:material:shader_parameter/amount")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -456,7 +626,7 @@ tracks/5/keys = {
 }
 
 [sub_resource type="Animation" id="Animation_a0rw0"]
-resource_name = "start_to_load"
+resource_name = "start_to_load_from_create"
 length = 1.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -554,26 +724,14 @@ tracks/7/keys = {
 "update": 0,
 "values": [-117.0, 360.0]
 }
-tracks/8/type = "value"
+tracks/8/type = "method"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("AnimationPlayer:current_animation")
+tracks/8/path = NodePath("SetupProject/CreateProjectContainer")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
-"times": PackedFloat32Array(1.11),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [&"loading_loop"]
-}
-tracks/9/type = "method"
-tracks/9/imported = false
-tracks/9/enabled = true
-tracks/9/path = NodePath(".")
-tracks/9/interp = 1
-tracks/9/loop_wrap = true
-tracks/9/keys = {
-"times": PackedFloat32Array(1.1),
+"times": PackedFloat32Array(1.15),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
@@ -581,13 +739,105 @@ tracks/9/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_id81r"]
+resource_name = "start_to_load_from_delete"
+length = 1.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SetupProject/LoadingContainer:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0666667, 0.133333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SetupProject/LoadingContainer:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.3, 0.466667),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("SetupProject/LoadingContainer:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.259065, 0.46685),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.8, 0.8), Vector2(1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("SetupProject/LoadingContainer/LoadingBarBG/LoadingBar:position:x")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.5, 1.1),
+"transitions": PackedFloat32Array(0.4, 0.35),
+"update": 0,
+"values": [-117.0, 360.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("SetupProject/DeleteProjectContainer:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("SetupProject/DeleteProjectContainer:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.1, 0.333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/6/type = "method"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("SetupProject/DeleteProjectContainer")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(1.15),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"start_deletion"
+}]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ocdg8"]
 _data = {
 "RESET": SubResource("Animation_2ef8e"),
+"create_project_fade_in": SubResource("Animation_ct10o"),
+"delete_project_fade_in": SubResource("Animation_g8dhe"),
+"fade_out": SubResource("Animation_nrk4l"),
 "loading_loop": SubResource("Animation_xvwps"),
-"setup_project_fade_in": SubResource("Animation_ct10o"),
-"setup_project_fade_out": SubResource("Animation_nrk4l"),
-"start_to_load": SubResource("Animation_a0rw0")
+"start_to_load_from_create": SubResource("Animation_a0rw0"),
+"start_to_load_from_delete": SubResource("Animation_id81r")
 }
 
 [node name="Home" type="Control"]
@@ -610,6 +860,7 @@ grow_vertical = 2
 color = Color(0.152941, 0.160784, 0.180392, 1)
 
 [node name="NoProjects" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -666,17 +917,6 @@ theme = ExtResource("1_fo1h2")
 theme_type_variation = &"SecondaryButton"
 text = "Import Project"
 
-[node name="InteractionPanel" type="ColorRect" parent="NoProjects"]
-visible = false
-self_modulate = Color(1, 1, 1, 0)
-material = SubResource("ShaderMaterial_4yg4m")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="Projects" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -686,6 +926,134 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 metadata/_edit_use_anchors_ = true
+
+[node name="ProjectsScrollContainer" type="ScrollContainer" parent="Projects"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0203125
+anchor_top = 0.512
+anchor_right = 0.98
+anchor_bottom = 0.969444
+offset_top = 0.359985
+offset_right = -0.400024
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_scroll_mode = 0
+script = ExtResource("4_c1ibw")
+metadata/_edit_use_anchors_ = true
+
+[node name="ProjectsContainer" type="Control" parent="Projects/ProjectsScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BG" type="Panel" parent="Projects/ProjectsScrollContainer/ProjectsContainer"]
+layout_mode = 2
+anchor_right = 1.0
+anchor_bottom = 0.990741
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_63nqc")
+metadata/_edit_use_anchors_ = true
+
+[node name="ProjectsGridContainer" type="GridContainer" parent="Projects/ProjectsScrollContainer/ProjectsContainer"]
+layout_mode = 2
+anchor_right = 1.0
+offset_left = 19.0
+offset_top = 19.0
+offset_right = -19.0
+offset_bottom = 19.0
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="FetchingText" type="Label" parent="Projects"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+theme_override_font_sizes/font_size = 12
+text = "Fetching Projects..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProjectNum" type="Label" parent="Projects"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.022
+anchor_top = 0.516
+anchor_right = 0.022
+anchor_bottom = 0.516
+offset_left = 8.84
+offset_top = -41.52
+offset_right = 102.84
+offset_bottom = -18.52
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+theme_override_font_sizes/font_size = 16
+text = "Projects - 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CreateButton2" type="Button" parent="Projects"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.022
+anchor_top = 0.514
+anchor_right = 0.022
+anchor_bottom = 0.514
+offset_left = 136.84
+offset_top = -45.08
+offset_right = 276.84
+offset_bottom = -14.08
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"PrimaryButton"
+text = "Create"
+
+[node name="ImportButton2" type="Button" parent="Projects"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.022
+anchor_top = 0.514
+anchor_right = 0.022
+anchor_bottom = 0.514
+offset_left = 290.84
+offset_top = -45.08
+offset_right = 430.84
+offset_bottom = -14.08
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryButton"
+text = "Import"
+
+[node name="BGBlur" type="ColorRect" parent="."]
+visible = false
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_4yg4m")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="NebulaTxt" type="Label" parent="."]
 layout_mode = 1
@@ -738,6 +1106,7 @@ offset_bottom = 0.0299988
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
+script = ExtResource("5_ef0we")
 metadata/_edit_use_anchors_ = true
 
 [node name="GameDetected" type="Label" parent="SetupProject/CreateProjectContainer"]
@@ -807,10 +1176,14 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_p616t")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_a162l")
 theme_override_styles/normal = SubResource("StyleBoxFlat_5ix22")
 
-[node name="spacer" type="HSeparator" parent="SetupProject/CreateProjectContainer"]
+[node name="CreateProjectTip" type="Label" parent="SetupProject/CreateProjectContainer"]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/separator = SubResource("StyleBoxEmpty_3u5u8")
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+theme_override_colors/font_color = Color(0.448049, 0.0360072, 0.0968118, 1)
+theme_override_font_sizes/font_size = 14
+text = "Project already exists"
+horizontal_alignment = 1
 
 [node name="CreateButton" type="Button" parent="SetupProject/CreateProjectContainer"]
 custom_minimum_size = Vector2(0, 45)
@@ -818,7 +1191,63 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 theme = ExtResource("1_fo1h2")
 theme_type_variation = &"PrimaryButton"
+disabled = true
 text = "Create Project"
+
+[node name="DeleteProjectContainer" type="VBoxContainer" parent="SetupProject"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0641026
+anchor_top = 0.0484694
+anchor_right = 0.935897
+anchor_bottom = 0.951531
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_dgrqh")
+metadata/_edit_use_anchors_ = true
+
+[node name="Spacer" type="HSeparator" parent="SetupProject/DeleteProjectContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g7njn")
+
+[node name="Label" type="Label" parent="SetupProject/DeleteProjectContainer"]
+layout_mode = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryLabel"
+theme_override_font_sizes/font_size = 14
+text = "Are you sure you want to delete this project?"
+horizontal_alignment = 1
+
+[node name="Preview" type="Control" parent="SetupProject/DeleteProjectContainer"]
+layout_mode = 2
+
+[node name="Spacer2" type="HSeparator" parent="SetupProject/DeleteProjectContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g7njn")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SetupProject/DeleteProjectContainer"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="HideProjButton" type="Button" parent="SetupProject/DeleteProjectContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_fo1h2")
+theme_type_variation = &"SecondaryButton"
+text = "Hide Project"
+
+[node name="DeleteProjButton" type="Button" parent="SetupProject/DeleteProjectContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"DangerButton"
+text = "Delete Project"
 
 [node name="LoadingContainer" type="Control" parent="SetupProject"]
 visible = false
@@ -915,6 +1344,21 @@ access = 2
 filters = PackedStringArray("*.iso", "*.wbfs")
 use_native_dialog = true
 
+[node name="LoadProjectDialog" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 1
+size = Vector2i(756, 475)
+exclusive = false
+force_native = true
+min_size = Vector2i(675, 475)
+theme = ExtResource("1_fo1h2")
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.nebula")
+use_native_dialog = true
+
 [node name="SelectDirDialog" type="FileDialog" parent="."]
 auto_translate_mode = 1
 title = "Open a Directory"
@@ -935,8 +1379,14 @@ libraries = {
 }
 
 [connection signal="pressed" from="NoProjects/VBoxContainer/HBoxContainer/CreateProjectButton" to="." method="_on_create_project_button_pressed"]
-[connection signal="text_changed" from="SetupProject/CreateProjectContainer/ProjNameInput" to="." method="_on_project_name_changed"]
-[connection signal="pressed" from="SetupProject/CreateProjectContainer/HBoxContainer/SelectDirButton" to="." method="_on_select_dir_button_pressed"]
-[connection signal="pressed" from="SetupProject/CreateProjectContainer/CreateButton" to="." method="_on_real_create_button_pressed"]
-[connection signal="file_selected" from="LoadROMDialog" to="." method="_on_file_selected"]
-[connection signal="dir_selected" from="SelectDirDialog" to="." method="_on_dir_selected"]
+[connection signal="pressed" from="NoProjects/VBoxContainer/HBoxContainer/ImportProjectButton" to="." method="_on_import_project_button_pressed"]
+[connection signal="pressed" from="Projects/CreateButton2" to="." method="_on_create_project_button_pressed"]
+[connection signal="pressed" from="Projects/ImportButton2" to="." method="_on_import_project_button_pressed"]
+[connection signal="text_changed" from="SetupProject/CreateProjectContainer/ProjNameInput" to="SetupProject/CreateProjectContainer" method="_on_project_name_changed"]
+[connection signal="pressed" from="SetupProject/CreateProjectContainer/HBoxContainer/SelectDirButton" to="SetupProject/CreateProjectContainer" method="_on_select_dir_button_pressed"]
+[connection signal="pressed" from="SetupProject/CreateProjectContainer/CreateButton" to="SetupProject/CreateProjectContainer" method="_on_real_create_button_pressed"]
+[connection signal="pressed" from="SetupProject/DeleteProjectContainer/HBoxContainer/HideProjButton" to="SetupProject/DeleteProjectContainer" method="_on_hide_proj_button_pressed"]
+[connection signal="pressed" from="SetupProject/DeleteProjectContainer/HBoxContainer/DeleteProjButton" to="SetupProject/DeleteProjectContainer" method="_on_delete_proj_button_pressed"]
+[connection signal="file_selected" from="LoadROMDialog" to="SetupProject/CreateProjectContainer" method="_on_file_selected"]
+[connection signal="file_selected" from="LoadProjectDialog" to="." method="_on_import_project_file_selected"]
+[connection signal="dir_selected" from="SelectDirDialog" to="SetupProject/CreateProjectContainer" method="_on_dir_selected"]

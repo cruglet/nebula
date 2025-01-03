@@ -13,7 +13,6 @@ var _binded_fn: Callable
 var output: Array[String] = []
 
 signal pipe_in_progress
-signal close_pipe
 signal line_changed(line: String)
 signal binded_success(line: String)
 
@@ -43,7 +42,6 @@ func run_threaded(bin: String, args: PackedStringArray) -> void:
 	stderr=  info["stderr"]
 	pid = info["pid"]
 	thread = Thread.new()
-	close_pipe.connect(clean_thread)
 	
 func start() -> void:
 	thread.start(_thread_func)
