@@ -38,6 +38,7 @@ func _modify_path(path: String) -> String:
 
 func run_threaded(bin: String, args: PackedStringArray) -> void:
 	var info: Dictionary = OS.execute_with_pipe(bin, args)
+	print(bin, args)
 	pipe = info["stdio"]
 	stderr=  info["stderr"]
 	pid = info["pid"]
@@ -68,6 +69,7 @@ func _thread_func() -> void:
 			pipe_in_progress.emit.call_deferred(line)
 			line_changed.emit(line)
 			if _binded_fn.bind(line).call():
+				print("W")
 				binded_success.emit(line)
 		else:
 			line=stderr.get_line()
