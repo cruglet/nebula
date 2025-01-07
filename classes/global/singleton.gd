@@ -1,5 +1,6 @@
 extends Node
 
+var user_config_path: String = OS.get_config_dir() + "/nebula/"
 var main_window: Node
 var gamelist: Dictionary = {}
 var scale_factor: float = 1:
@@ -8,9 +9,12 @@ var scale_factor: float = 1:
 		scale_factor = new_scale_factor
 	
 
+
+
 func _ready() -> void:
 	var gamelist_file: String = FileAccess.open("res://gamelist.json", FileAccess.READ).get_as_text()
 	gamelist = JSON.parse_string(gamelist_file)
+	print(user_config_path)
 
 func change_scene(path: String) -> void:
 	main_window.remove_child(main_window.get_child(0))

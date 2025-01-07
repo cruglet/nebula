@@ -15,8 +15,6 @@ var is_loading: bool = false
 @onready var create_project_tip: Label = $CreateProjectTip
 @onready var create_button: Button = $CreateButton
 
-
-
 @onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
 
 func start_project_creation() -> void:
@@ -100,7 +98,10 @@ func _start_loading() -> void:
 	thread.start(_extract_filesystem)
 
 func _extract_filesystem() -> void:
-	sp.run("dependencies/wit", ["X", ProjectManager.project.rom_path, ProjectManager.project.project_path])
+	var extracted_game_path: String = Singleton.user_config_path + "games/tmp/"
+	if !DirAccess.dir_exists_absolute(Singleton.user_config_path + "games/" + ProjectManager.project.game_info.disc_id):
+		sp.run("dependencies/wit", ["X", ProjectManager.project.rom_path, extracted_game_path])
+	ProjectManager.project.extracted_game_path = extracted_game_path
 	call_deferred(&"prep_editor")
 
 func prep_editor() -> void:
@@ -110,7 +111,7 @@ func prep_editor() -> void:
 	_load_editor()
 
 func _clean_files() -> void:
-	var proj_path: String = ProjectManager.project.project_path
+	var proj_path: String = ProjectManager.project.extracted_game_path
 	var extracted_dir: PackedStringArray = Array(DirAccess.get_directories_at(proj_path))
 	
 	# Clean Remaining Dirs
@@ -120,16 +121,19 @@ func _clean_files() -> void:
 				DirAccess.remove_absolute("%s/%s/%s" % [proj_path, dir, file])
 			DirAccess.remove_absolute(proj_path + "/" + dir)
 		else:
-			DirAccess.rename_absolute(proj_path + "/" + dir, proj_path + "/" + "game")
+			DirAccess.rename_absolute(proj_path + "/" + dir, Singleton.user_config_path + "/games/" + ProjectManager.project.game_info.disc_id)
 	
 	# Remove extra root files
 	for file: String in Array(DirAccess.get_files_at(proj_path)):
 		DirAccess.remove_absolute(proj_path + "/" + file)
+		
+	DirAccess.remove_absolute(proj_path)
 
 func _setup_project_filesystem() -> void:
 	var proj_path: String = ProjectManager.project.project_path + "/"
-	DirAccess.make_dir_absolute(proj_path + "code")
-	DirAccess.make_dir_absolute(proj_path + "other")
+	DirAccess.make_dir_recursive_absolute(proj_path + "code")
+	DirAccess.make_dir_recursive_absolute(proj_path + "other")
+	DirAccess.make_dir_recursive_absolute(proj_path + "game")
 
 func _generate_project_json() -> void:
 	# Project JSON file for engine recognition and validation
