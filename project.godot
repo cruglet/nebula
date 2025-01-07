@@ -24,8 +24,8 @@ config/icon="res://meta/icon.png"
 
 [autoload]
 
-Singleton="*res://classes/global/singleton.gd"
-ProjectManager="*res://classes/global/project_manager.gd"
+Singleton="*res://classes/autoload/singleton.gd"
+ProjectManager="*res://classes/autoload/project_manager.gd"
 
 [debug]
 
