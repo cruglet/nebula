@@ -1,42 +1,34 @@
 extends Node
 class_name NSMBWLevel
 
-var sp: Subprocess = Subprocess.new()
+var _sp: Subprocess = Subprocess.new()
 
-var dump_success: bool = false
+var _dump_success: bool = false
+
 var level: Dictionary = {}
 
-
-
-
-
-
+#region Level extracting
+# haha funny word dump
 func dump_level(level_name: String, from: String, to: String) -> void:
-	sp.run_threaded("dependencies/neb-utils", ["nsmbw", "--dump", (from + level_name), to])
-	sp.bind_filter(_dump_check)
-	sp.binded_success.connect(_on_dump_success)
-	sp.start()
+	_sp.run_threaded("dependencies/neb-utils", ["nsmbw", "--dump", (from + level_name), to])
+	_sp.bind_filter(_dump_check)
+	_sp.binded_success.connect(_on_dump_success)
+	_sp.start()
 	
 func _dump_check(line: String) -> Variant:
-	print(line)
 	if line.to_lower().contains("success"):
-		dump_success = true
+		_dump_success = true
 		return true
 	return false
 	
 func _on_dump_success() -> void:
-	print("d")
 	call_deferred("_post_dump")
 
 func _post_dump() -> void:
-	print(dump_success)
+	print(_dump_success)
+#endregion
 
-
-
-
-
-
-
+#region Level reading
 func read_level(dump_path: String) -> void:
 	var course: Dictionary = {}
 	var course_area: String = "course1"
@@ -50,6 +42,7 @@ func read_level(dump_path: String) -> void:
 	level["options"] = _read_options(course_data[1])
 	level["entrances"] = _read_entrances(course_data[6])
 	level["sprites"] = _read_sprites(course_data[7])
+	level["zones"] = _read_zones(course_data[9], course_data[2], course_data[4], course_data[5])
 	
 	# Iterate through the layers
 	for layer: String in layers:
@@ -146,7 +139,6 @@ func _read_metadata(block: PackedByteArray) -> Dictionary:
 
 func _read_options(block: PackedByteArray) -> Dictionary:
 	# IIHhLBBBx
-	# Ensure the block is large enough for the expected structure (8 bytes + 8 bytes + 2 + 2 + 4 + 1 + 1 + 1 = 26 bytes)
 	if block.size() < 20:
 		push_error("Block is too small to contain options data!")
 		return {}
@@ -157,27 +149,16 @@ func _read_options(block: PackedByteArray) -> Dictionary:
 	var defEventsB: int = _int_from_bytes(block.slice(4, 8))
 	options["wrapFlag"] = _int_from_bytes(block.slice(8, 10)) as int
 	
-	# timeLimit is a 2-byte value. Check the endianess and unpack properly
-	options["timeLimit"] = _parse_timer(block.slice(10, 12))  # Little-endian
+	options["timeLimit"] = _parse_timer(block.slice(10, 12))
 	
 	options["unk1"] = _int_from_bytes(block.slice(12, 14)) as int
 	options["startEntrance"] = (block.slice(14, 18))
 	options["unk2"] = block[18]
 	options["unk3"] = block[19]
 
-	# Compute defEvents as defEventsA | defEventsB << 32 (bitwise operations)
 	options["defEvents"] = defEventsA | (defEventsB << 32)
 	
 	return options
-
-	#def LoadOptions(self):
-		#"""Loads block 2, the general options"""
-		#optdata = self.blocks[1]
-		#optstruct = struct.Struct('>IIHhLBBBx')
-		#offset = 0
-		#data = optstruct.unpack_from(optdata,offset)
-		#defEventsA, defEventsB, self.wrapFlag, self.timeLimit, self.unk1, self.startEntrance, self.unk2, self.unk3 = data
-		#self.defEvents = defEventsA | defEventsB << 32
 
 func _read_entrances(block: PackedByteArray) -> Array[Dictionary]:
 	# HHxxxxBBBBxBBBHBB
@@ -223,14 +204,32 @@ func _read_sprites(block: PackedByteArray) -> Array[Dictionary]:
 		sprite.x = (chunk[2] << 8) | chunk[3]
 		sprite.y = (chunk[4] << 8) | chunk[5]
 		sprite.data = chunk.slice(6,14)
-		print(sprite)
-
+		
 		if chunk[16] == 255:
 			break
-
+		
 		i += OFFSET
 	
 	return sprites
+
+func _read_zones(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray, zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Array[Dictionary]:
+	
+	const OFFSET: int = 24
+	var zones: Array[Dictionary]
+	
+	var i: int = 0
+	
+	# LOOP THROUGH ZONE CONFIGS
+	while (i < len(zone_config_block)):
+		var zone_config: PackedByteArray = zone_config_block.slice(i, i + OFFSET + 1)
+		var zone_bounds: PackedByteArray = zone_bounds_block.slice(i, i + OFFSET + 1)
+		var zone_bgf: PackedByteArray = zone_bg_front.slice(i, i + OFFSET + 1)
+		var zone_bgb: PackedByteArray = zone_bg_back.slice(i, i + OFFSET + 1)
+		
+		zones.append(_parse_zone(zone_config, zone_bounds, zone_bgf, zone_bgb))
+		i += OFFSET
+
+	return zones
 
 func _read_level_layerdata(file_path: String) -> PackedByteArray:
 	# Check if the file exists
@@ -239,17 +238,46 @@ func _read_level_layerdata(file_path: String) -> PackedByteArray:
 		return data
 	else:
 		return []
+#endregion
 
+#region Level reading helpers
+func _parse_timer(bytes: PackedByteArray) -> int:
+	if bytes[0] < 255:
+		return (256 * bytes[0]) + bytes[1] + 200
+	if bytes[0] == 255:
+		return 200 - (256 - bytes[1])
+	return 0
 
+func _parse_zone(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray, zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Dictionary:
+	
+	var zone: Dictionary = {}
+	zone.id = zone_config_block[13]
+	zone.pos_x = (zone_config_block[0] << 8) | zone_config_block[1]
+	zone.pos_y = (zone_config_block[2] << 8) | zone_config_block[3]
+	zone.size_x = (zone_config_block[4] << 8) | zone_config_block[5]
+	zone.size_y = (zone_config_block[6] << 8) | zone_config_block[7]
+	zone.theme = zone_config_block[9]
+	zone.lighting = zone_config_block[11]
+	zone.music = zone_config_block[22]
+	zone.echo = zone_config_block[23] / 16
+	
+	if bool(zone_config_block[23] % 16):
+		zone.boss_room = true
 
+	# Handle spotlight/darkness
+	var spotlight_setting: int = zone_config_block[17]
+	
+	if spotlight_setting >= 32:
+		zone.is_dark = true
+		spotlight_setting -= 32
 
-
-
-
-
-
-
-
+	if spotlight_setting >= 16:
+		zone.fg_spotlight = true
+		spotlight_setting -= 16
+	
+	zone.spotlight_setting = spotlight_setting
+	
+	return zone
 
 func _int_from_bytes(data: PackedByteArray, reverse_endian: bool = false) -> int:
 	var result: int = 0
@@ -260,13 +288,6 @@ func _int_from_bytes(data: PackedByteArray, reverse_endian: bool = false) -> int
 			result |= data[i] << (8 * (data.size() - i - 1))  # Big-endian byte order
 	return result
 
-func _parse_timer(bytes: PackedByteArray) -> int:
-	if bytes[0] < 255:
-		return (256 * bytes[0]) + bytes[1] + 200
-	if bytes[0] == 255:
-		return 200 - (256 - bytes[1])
-	return 0
-
 func _get_bits(byte_array: PackedByteArray) -> Array[bool]:
 	var bits: Array[bool] = []
 	for byte: int in byte_array:
@@ -274,3 +295,4 @@ func _get_bits(byte_array: PackedByteArray) -> Array[bool]:
 			var bit: bool = ((byte >> (7 - i)) & 1) == 1
 			bits.append(bit)
 	return bits
+#endregion
