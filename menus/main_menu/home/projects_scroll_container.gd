@@ -30,7 +30,7 @@ func load_projects(projects: Array) -> bool:
 	fetching_text.visible = false
 	if projects.size() > 0:
 		project_num.text = "Projects - " + str(projects.size())
-		print_debug("changing file")
+		print_debug("Changing Projectlist JSON file...")
 		project_list_file.store_string(str(projects))
 		return true
 	else:
