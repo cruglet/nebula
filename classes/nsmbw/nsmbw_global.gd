@@ -1,0 +1,37 @@
+extends Node
+class_name NSMBW
+
+## This handles how sprites are rendered and handled ingame.
+enum ZONE_THEME {
+	OVERWORLD,
+	UNDERGROUND,
+	UNDERWATER,
+	UNDERGROUND_LAVA,
+	DESERT,
+	BEACH,
+	FOREST,
+	SNOW,
+	SKY,
+	MOUNTAINS,
+	TOWER,
+	CASTLE,
+	GHOST_HOUSE,
+	RIVER_CAVE,
+	GHOST_HOUSE_OUTSIDE,
+	UNDERWATER_CAVE,
+	DESERT_CAVE,
+	ICE_CAVE,
+	LAVA,
+	FINAL_BATTLE,
+	FINAL_TOWER,
+	FINAL_AIRSHIP,
+	W7_TOWER_INDOORS
+}
+
+## These are all of the lighting settings for NSMBW.
+enum ZONE_LIGHTING {
+	NORMAL,
+	UNDERGROUND,
+	UNDERWATER,
+	LAVA
+}
