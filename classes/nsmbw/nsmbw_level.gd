@@ -57,32 +57,20 @@ func read_level(dump_path: String) -> void:
 			course[layer] = layer_data
 		else:
 			#print("%s not found." % layer)
-			course[layer] = null # Assign null for missing layers
-
-	#print("Layer data preparation completed.")
 			course[layer] = null
 
 func _read_level_blocks(file_path: String) -> Array[PackedByteArray]:
-	# Read the file data as a PackedByteArray
 	var file_data: PackedByteArray = FileAccess.get_file_as_bytes(file_path)
-	
-	# Array to store blocks
 	var blocks: Array[PackedByteArray] = []
-	
-	# Total number of blocks
 	const BLOCKS: int = 14
 	
-	# Ensure there are enough bytes for metadata (14 blocks × 8 bytes each = 112 bytes)
 	if file_data.size() < BLOCKS * 8:
 		push_error("File too small to contain metadata for all blocks!")
 		return blocks
 	
-	# Loop through the metadata section (112 bytes: 14 blocks × 8 bytes each)
 	for i: int in range(BLOCKS):
-		# Calculate the offset of the current block's metadata in file_data
 		var meta_offset: int = i * 8
 		
-		# Extract the block offset (4 bytes) and size (4 bytes)
 		var block_offset: int = (
 			file_data[meta_offset] << 24 |
 			file_data[meta_offset + 1] << 16 |
@@ -96,42 +84,28 @@ func _read_level_blocks(file_path: String) -> Array[PackedByteArray]:
 			file_data[meta_offset + 7]
 		)
 		
-		# Debug: Print metadata
 		#print("Block %d: Offset=%d, Size=%d" % [i, block_offset, block_size])
 		
-		# Validate the block bounds
 		if block_size == 0:
-			# If size is 0, append an empty block
 			blocks.append(PackedByteArray())
 		elif block_offset + block_size <= file_data.size():
-			# Otherwise, extract the block data if within bounds
 			var block_data: PackedByteArray = file_data.slice(block_offset, block_offset + block_size)
-			#print("Block Data: \n%s\n" % block_data)
 			
 			blocks.append(block_data)
 		else:
-			# Invalid block metadata, log an error
 			push_error("Invalid block metadata for block %d: Offset=%d, Size=%d" % [i, block_offset, block_size])
-			blocks.append(PackedByteArray())  # Append an empty block as a fallback
+			blocks.append(PackedByteArray()) 
 	
 	return blocks
 
 func _read_metadata(block: PackedByteArray) -> Dictionary:
-	# 32s32s32s32s
-	# Ensure the block is large enough (4 strings × 32 bytes each = 128 bytes)
 	if block.size() < 128:
-		push_error("Block is too small to contain tileset names!")
+		push_error("Block is too small to contain tileset names...")
 		return {}
-
-	# Initialize a dictionary to store the tileset names
 	var tilesets: Dictionary = {}
 	
-	# Extract 4 strings (32 bytes each)
 	for i: int in range(4):
-		var start: int = i * 32
-		var raw_data: PackedByteArray = block.slice(start, start + 32)
 		
-		# Convert the bytes to a string manually, stripping null bytes
 		var tileset_name: String = ""
 		for byte: Variant in raw_data:
 			if byte != 0:  # Ignore null bytes
