@@ -7,6 +7,8 @@ var _dump_success: bool = false
 
 var level: Dictionary = {}
 
+signal dump_finished
+
 #region Level extracting
 # haha funny word dump
 func dump_level(level_name: String, from: String, to: String) -> void:
@@ -18,6 +20,7 @@ func dump_level(level_name: String, from: String, to: String) -> void:
 func _dump_check(line: String) -> Variant:
 	if line.to_lower().contains("success"):
 		_dump_success = true
+		dump_finished.emit()
 		return true
 	return false
 	
@@ -57,6 +60,7 @@ func read_level(dump_path: String) -> void:
 			course[layer] = null # Assign null for missing layers
 
 	#print("Layer data preparation completed.")
+			course[layer] = null
 
 func _read_level_blocks(file_path: String) -> Array[PackedByteArray]:
 	# Read the file data as a PackedByteArray
