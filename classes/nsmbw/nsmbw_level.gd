@@ -249,6 +249,21 @@ func _parse_zone(zone_config_block: PackedByteArray, zone_bounds_block: PackedBy
 		
 	zone.spotlight_setting = spotlight_setting
 	#endregion
+	#region Zone Bounds
+	var zone_bounds: Array = ByteParser.translate("4L:xx:3H:x", zone_bounds_block)
+	zone.upper_bound = zone_bounds[0]
+	zone.lower_bound = zone_bounds[1]
+	zone.lakitu_upper_bound = zone_bounds[2]
+	zone.lakitu_lower_bound = zone_bounds[3]
+	zone.multiplayer_upper_bound = zone_bounds[5]
+	zone.multiplayer_lower_bound = zone_bounds[6]
+	zone.multiplayer_screen_adjust = -1
+	zone.only_fly_scrolling = false
+	
+	if zone_bounds[4] < 15:
+		zone.multiplayer_fly_screen_adjust = zone_bounds[4]
+	#endregion
+	
 	
 	return zone
 
