@@ -102,90 +102,80 @@ func _read_metadata(block: PackedByteArray) -> Dictionary:
 	if block.size() < 128:
 		push_error("Block is too small to contain tileset names...")
 		return {}
+	
+	var loaded_tilesets: Array = ByteParser.translate("32s32s32s32s", block)
 	var tilesets: Dictionary = {}
 	
 	for i: int in range(4):
+		tilesets["tileset%d" % i] = loaded_tilesets[i]
 		
-		var tileset_name: String = ""
-		for byte: Variant in raw_data:
-			if byte != 0:  # Ignore null bytes
-				tileset_name += char(byte)
-		
-		tilesets["tileset%d" % i] = tileset_name
-	
 	return tilesets
 
 func _read_options(block: PackedByteArray) -> Dictionary:
-	# IIHhLBBBx
 	if block.size() < 20:
-		push_error("Block is too small to contain options data!")
+		push_error("Block is too small to contain options data...")
 		return {}
 
+	var loaded_options: Array = ByteParser.translate("2L:H:h:6B", block)
 	var options: Dictionary = {}
+	var events_a: int = loaded_options[0]
+	var events_b: int = loaded_options[1]
 	
-	var defEventsA: int = _int_from_bytes(block.slice(0, 4))
-	var defEventsB: int = _int_from_bytes(block.slice(4, 8))
-	options["wrapFlag"] = _int_from_bytes(block.slice(8, 10)) as int
-	
-	options["timeLimit"] = _parse_timer(block.slice(10, 12))
-	
-	options["unk1"] = _int_from_bytes(block.slice(12, 14)) as int
-	options["startEntrance"] = (block.slice(14, 18))
-	options["unk2"] = block[18]
-	options["unk3"] = block[19]
-
-	options["defEvents"] = defEventsA | (defEventsB << 32)
+	options.can_wrap = bool(loaded_options[2])
+	options.is_credits = bool(loaded_options[4])
+	options.time_limit = _parse_timer(block.slice(10, 12))
+	options.start_entrance = loaded_options[7]
+	options.is_ambush = bool(loaded_options[8])
+	options.startup_event_states = events_a | (events_b << 32)
 	
 	return options
 
 func _read_entrances(block: PackedByteArray) -> Array[Dictionary]:
-	# HHxxxxBBBBxBBBHBB
 	const OFFSET: int = 20
 	var entrances: Array[Dictionary] = []
 	var i: int = 0
 	while i < len(block):
 		if block:
-			var chunk: PackedByteArray = block.slice(i, i + OFFSET + 1)
+			var chunk: Array = ByteParser.translate("2H:4x:4B:x:3B:H:B:B", block.slice(i, i + OFFSET + 1))
+			var chunk_2: PackedByteArray = block.slice(i, i + OFFSET + 1)
 			var entrance: Dictionary = {}
 			
-			# CONSTANT VALUES
-			entrance.x = (chunk[0] << 8) | chunk[1]
-			entrance.y = (chunk[2] << 8) | chunk[3]
-			entrance.id = chunk[8]
-			entrance.destination_area = chunk[9]
-			entrance.destination_entrance = chunk[10]
-			entrance.type = chunk[11]
-			entrance.zone = chunk[13]
-			entrance.layer = chunk[14]
-			entrance.path = chunk[15]
-			entrance.exit_to_map = chunk[18]
-			entrance.connected_pipe_direction = chunk[19]
+			# Primary settings
+			entrance.x = chunk[0]
+			entrance.y = chunk[1]
+			entrance.id = chunk[2]
+			entrance.destination_area = chunk[3]
+			entrance.destination_entrance = chunk[4]
+			entrance.type = chunk[5]
+			entrance.zone = chunk[6]
+			entrance.layer = chunk[7]
+			entrance.path = chunk[8]
+			entrance.exit_to_map = bool(chunk[10])
+			entrance.connected_pipe_direction = chunk[11]
 			
-			# OTHER SETTINGS
-			var settings: Array[bool] = _get_bits(chunk.slice(16,18))
-			if settings[8] == false:
-				entrance.enterable = true
+			# Data settings
+			var settings: Array[bool] = _get_bits(block.slice(i + 16, i + OFFSET + 19))
+			entrance.enterable = settings[8]
 			entrances.append(entrance)
 		i += OFFSET
 	return entrances
 
 func _read_sprites(block: PackedByteArray) -> Array[Dictionary]:
-	# HHH8sxx
 	const OFFSET: int = 16
 	var sprites: Array[Dictionary]
 	var i: int = 0
 	while (i < len(block)):
-		var chunk: PackedByteArray = block.slice(i, i + OFFSET + 1)
+		var chunk: Array = ByteParser.translate("3H8Bxx", block.slice(i, i + OFFSET + 1))
 		var sprite: Dictionary = {}
 		
-		sprite.type = (chunk[0] << 8) | chunk[1]
-		sprite.x = (chunk[2] << 8) | chunk[3]
-		sprite.y = (chunk[4] << 8) | chunk[5]
-		sprite.data = chunk.slice(6,14)
-		
-		if chunk[16] == 255:
+		# This indicates that we reached the end of the block
+		if chunk[0] == 65535:
 			break
 		
+		sprite.type = chunk[0]
+		sprite.x = chunk[1]
+		sprite.y = chunk[2]
+		sprite.data = chunk.slice(3,12)
 		i += OFFSET
 	
 	return sprites
@@ -229,31 +219,36 @@ func _parse_timer(bytes: PackedByteArray) -> int:
 func _parse_zone(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray, zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Dictionary:
 	
 	var zone: Dictionary = {}
-	zone.id = zone_config_block[13]
-	zone.pos_x = (zone_config_block[0] << 8) | zone_config_block[1]
-	zone.pos_y = (zone_config_block[2] << 8) | zone_config_block[3]
-	zone.size_x = (zone_config_block[4] << 8) | zone_config_block[5]
-	zone.size_y = (zone_config_block[6] << 8) | zone_config_block[7]
-	zone.theme = zone_config_block[9]
-	zone.lighting = zone_config_block[11]
-	zone.music = zone_config_block[22]
-	zone.echo = zone_config_block[23] / 16
+	var zone_config: Array = ByteParser.translate("6H:4B:x:4B:x:2B", zone_config_block)
 	
-	if bool(zone_config_block[23] % 16):
-		zone.boss_room = true
-
+	#region Zone Config
+	zone.id = zone_config[7]
+	zone.pos_x = zone_config[0]
+	zone.pos_y = zone_config[1]
+	zone.size_x = zone_config[2]
+	zone.size_y = zone_config[3]
+	zone.theme = zone_config[4]
+	zone.lighting = zone_config[5]
+	zone.music = zone_config[14]
+	zone.echo = zone_config[15] / 16
+	zone.boss_room = bool(zone_config[15] % 16)
+		
 	# Handle spotlight/darkness
-	var spotlight_setting: int = zone_config_block[17]
+	zone.is_dark = false
+	zone.fg_spotlight = false
+	
+	var spotlight_setting: int = zone_config[10]
 	
 	if spotlight_setting >= 32:
 		zone.is_dark = true
 		spotlight_setting -= 32
-
+		
 	if spotlight_setting >= 16:
 		zone.fg_spotlight = true
 		spotlight_setting -= 16
-	
+		
 	zone.spotlight_setting = spotlight_setting
+	#endregion
 	
 	return zone
 
