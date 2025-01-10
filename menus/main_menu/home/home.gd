@@ -17,7 +17,7 @@ func _debug() -> void:
 	projects_container.visible = false
 	
 	var lvl: NSMBWLevel = NSMBWLevel.new()
-	lvl.dump_level("01-01.arc", "test/", "test/")
+	lvl.dump_level("01-02.arc", "test/", "test/")
 	await lvl.dump_finished
 	lvl.read_level("test/course/")
 
