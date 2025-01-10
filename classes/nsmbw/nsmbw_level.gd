@@ -45,7 +45,8 @@ func read_level(dump_path: String) -> void:
 	level["options"] = _read_options(course_data[1])
 	level["entrances"] = _read_entrances(course_data[6])
 	level["sprites"] = _read_sprites(course_data[7])
-	level["zones"] = _read_zones(course_data[9], course_data[2], course_data[4], course_data[5])
+	level["zones"] = _read_zones(course_data[9], course_data[2])
+	level["backgrounds"] = _read_backgrounds(course_data[4], course_data[5])
 	
 	# Iterate through the layers
 	for layer: String in layers:
@@ -108,7 +109,6 @@ func _read_metadata(block: PackedByteArray) -> Dictionary:
 	
 	for i: int in range(4):
 		tilesets["tileset%d" % i] = loaded_tilesets[i]
-		
 	return tilesets
 
 func _read_options(block: PackedByteArray) -> Dictionary:
@@ -117,47 +117,43 @@ func _read_options(block: PackedByteArray) -> Dictionary:
 		return {}
 
 	var loaded_options: Array = ByteParser.translate("2L:H:h:6B", block)
-	var options: Dictionary = {}
 	var events_a: int = loaded_options[0]
 	var events_b: int = loaded_options[1]
-	
-	options.can_wrap = bool(loaded_options[2])
-	options.is_credits = bool(loaded_options[4])
-	options.time_limit = _parse_timer(block.slice(10, 12))
-	options.start_entrance = loaded_options[7]
-	options.is_ambush = bool(loaded_options[8])
-	options.startup_event_states = events_a | (events_b << 32)
-	
-	return options
+
+	return {
+		"can_wrap": bool(loaded_options[2]),
+		"is_credits": bool(loaded_options[4]),
+		"time_limit": _parse_timer(block.slice(10, 12)),
+		"start_entrance": loaded_options[7],
+		"is_ambush": bool(loaded_options[8]),
+		"startup_event_states": events_a | (events_b << 32)
+	}
 
 func _read_entrances(block: PackedByteArray) -> Array[Dictionary]:
 	const OFFSET: int = 20
 	var entrances: Array[Dictionary] = []
 	var i: int = 0
-	while i < len(block):
-		if block:
-			var chunk: Array = ByteParser.translate("2H:4x:4B:x:3B:H:B:B", block.slice(i, i + OFFSET + 1))
-			var chunk_2: PackedByteArray = block.slice(i, i + OFFSET + 1)
-			var entrance: Dictionary = {}
-			
-			# Primary settings
-			entrance.x = chunk[0]
-			entrance.y = chunk[1]
-			entrance.id = chunk[2]
-			entrance.destination_area = chunk[3]
-			entrance.destination_entrance = chunk[4]
-			entrance.type = chunk[5]
-			entrance.zone = chunk[6]
-			entrance.layer = chunk[7]
-			entrance.path = chunk[8]
-			entrance.exit_to_map = bool(chunk[10])
-			entrance.connected_pipe_direction = chunk[11]
-			
-			# Data settings
-			var settings: Array[bool] = _get_bits(block.slice(i + 16, i + OFFSET + 19))
-			entrance.enterable = settings[8]
-			entrances.append(entrance)
+	var block_size: int = block.size()
+	
+	while i < block_size:
+		var chunk: Array = ByteParser.translate("2H:4x:4B:x:3B:H:B:B", block.slice(i, i + OFFSET + 1))
+		var entrance: Dictionary = {
+			"pos_x": chunk[0],
+			"pos_y": chunk[1],
+			"id": chunk[2],
+			"destination_area": chunk[3],
+			"destination_entrance": chunk[4],
+			"type": chunk[5],
+			"zone": chunk[6],
+			"layer": chunk[7],
+			"path": chunk[8],
+			"exit_to_map": bool(chunk[10]),
+			"connected_pipe_direction": chunk[11],
+			"enterable": _get_bits(block.slice(i + 16, i + OFFSET + 19))[8]
+		}
+		entrances.append(entrance)
 		i += OFFSET
+	
 	return entrances
 
 func _read_sprites(block: PackedByteArray) -> Array[Dictionary]:
@@ -172,15 +168,18 @@ func _read_sprites(block: PackedByteArray) -> Array[Dictionary]:
 		if chunk[0] == 65535:
 			break
 		
-		sprite.type = chunk[0]
-		sprite.x = chunk[1]
-		sprite.y = chunk[2]
-		sprite.data = chunk.slice(3,12)
+		sprite = {
+			"type": chunk[0],
+			"pos_x": chunk[1],
+			"pos_y": chunk[2],
+			"data": chunk.slice(3,12),
+		}
+		sprites.append(sprite)
 		i += OFFSET
 	
 	return sprites
 
-func _read_zones(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray, zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Array[Dictionary]:
+func _read_zones(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray) -> Array[Dictionary]:
 	
 	const OFFSET: int = 24
 	var zones: Array[Dictionary]
@@ -191,13 +190,28 @@ func _read_zones(zone_config_block: PackedByteArray, zone_bounds_block: PackedBy
 	while (i < len(zone_config_block)):
 		var zone_config: PackedByteArray = zone_config_block.slice(i, i + OFFSET + 1)
 		var zone_bounds: PackedByteArray = zone_bounds_block.slice(i, i + OFFSET + 1)
-		var zone_bgf: PackedByteArray = zone_bg_front.slice(i, i + OFFSET + 1)
-		var zone_bgb: PackedByteArray = zone_bg_back.slice(i, i + OFFSET + 1)
 		
-		zones.append(_parse_zone(zone_config, zone_bounds, zone_bgf, zone_bgb))
+		zones.append(_parse_zone(zone_config, zone_bounds))
 		i += OFFSET
 
 	return zones
+
+func _read_backgrounds(front_bg_block: PackedByteArray, back_bg_block: PackedByteArray) -> Array[Dictionary]:
+	
+	const OFFSET: int = 24
+	var backgrounds: Array[Dictionary]
+	
+	var i: int = 0
+	
+	# Similar to zones, loop through bg configs
+	while (i < len(front_bg_block)):
+		var zone_bgf: PackedByteArray = front_bg_block.slice(i, i + OFFSET + 1)
+		var zone_bgb: PackedByteArray = back_bg_block.slice(i, i + OFFSET + 1)
+		
+		backgrounds.append(_parse_background(zone_bgf, zone_bgb))
+		i += OFFSET
+
+	return backgrounds
 
 func _read_level_layerdata(file_path: String) -> PackedByteArray:
 	# Check if the file exists
@@ -216,56 +230,69 @@ func _parse_timer(bytes: PackedByteArray) -> int:
 		return 200 - (256 - bytes[1])
 	return 0
 
-func _parse_zone(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray, zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Dictionary:
-	
-	var zone: Dictionary = {}
+func _parse_zone(zone_config_block: PackedByteArray, zone_bounds_block: PackedByteArray) -> Dictionary:
 	var zone_config: Array = ByteParser.translate("6H:4B:x:4B:x:2B", zone_config_block)
-	
-	#region Zone Config
-	zone.id = zone_config[7]
-	zone.pos_x = zone_config[0]
-	zone.pos_y = zone_config[1]
-	zone.size_x = zone_config[2]
-	zone.size_y = zone_config[3]
-	zone.theme = zone_config[4]
-	zone.lighting = zone_config[5]
-	zone.music = zone_config[14]
-	zone.echo = zone_config[15] / 16
-	zone.boss_room = bool(zone_config[15] % 16)
-		
-	# Handle spotlight/darkness
-	zone.is_dark = false
-	zone.fg_spotlight = false
+	var zone_bounds: Array = ByteParser.translate("4L:xx:3H:x", zone_bounds_block)
 	
 	var spotlight_setting: int = zone_config[10]
-	
-	if spotlight_setting >= 32:
-		zone.is_dark = true
+	var is_dark: bool = spotlight_setting >= 32
+	if is_dark:
 		spotlight_setting -= 32
-		
-	if spotlight_setting >= 16:
-		zone.fg_spotlight = true
+	var fg_spotlight: int = spotlight_setting >= 16
+	if fg_spotlight:
 		spotlight_setting -= 16
-		
-	zone.spotlight_setting = spotlight_setting
-	#endregion
-	#region Zone Bounds
-	var zone_bounds: Array = ByteParser.translate("4L:xx:3H:x", zone_bounds_block)
-	zone.upper_bound = zone_bounds[0]
-	zone.lower_bound = zone_bounds[1]
-	zone.lakitu_upper_bound = zone_bounds[2]
-	zone.lakitu_lower_bound = zone_bounds[3]
-	zone.multiplayer_upper_bound = zone_bounds[5]
-	zone.multiplayer_lower_bound = zone_bounds[6]
-	zone.multiplayer_screen_adjust = -1
-	zone.only_fly_scrolling = false
 	
-	if zone_bounds[4] < 15:
-		zone.multiplayer_fly_screen_adjust = zone_bounds[4]
-	#endregion
+	return {
+		"id": zone_config[7],
+		"pos_x": zone_config[0],
+		"pos_y": zone_config[1],
+		"size_x": zone_config[2],
+		"size_y": zone_config[3],
+		"theme": zone_config[4],
+		"lighting": zone_config[5],
+		"music": zone_config[14],
+		"echo": zone_config[15] / 16,
+		"boss_room": bool(zone_config[15] % 16),
+		"is_dark": is_dark,
+		"fg_spotlight": fg_spotlight,
+		"spotlight_setting": spotlight_setting,
+		"upper_bound": zone_bounds[0],
+		"lower_bound": zone_bounds[1],
+		"lakitu_upper_bound": zone_bounds[2],
+		"lakitu_lower_bound": zone_bounds[3],
+		"multiplayer_upper_bound": zone_bounds[5],
+		"multiplayer_lower_bound": zone_bounds[6],
+		"multiplayer_screen_adjust": -1,
+		"only_fly_scrolling": false,
+		"multiplayer_fly_screen_adjust": zone_bounds[4] < 15 if zone_bounds[4] else false
+	}
+
+func _parse_background(zone_bg_front: PackedByteArray, zone_bg_back: PackedByteArray) -> Dictionary:
+	var bgf_config: Array = ByteParser.translate("x:B:4h:3h:3x:B:4x", zone_bg_front)
+	var bgb_config: Array = ByteParser.translate("x:B:4h:3h:3x:B:4x", zone_bg_back)
 	
-	
-	return zone
+	return {
+		"id": bgf_config[0],
+		"front": {
+			"scroll_rate_x": bgf_config[1],
+			"scroll_rate_y": bgf_config[2],
+			"pos_x": bgf_config[4],
+			"pos_y": bgf_config[3],
+			"instance": bgf_config[5],
+			"align_to_screen": bgf_config[6] == bgf_config[5],
+			"zoom": bgf_config[8],
+		},
+		"back": {
+			"scroll_rate_x": bgb_config[1],
+			"scroll_rate_y": bgb_config[2],
+			"pos_x": bgb_config[4],
+			"pos_y": bgb_config[3],
+			"instance": bgb_config[5],
+			"align_to_screen": bgb_config[6] == bgb_config[5],
+			"zoom": bgb_config[8],
+		}
+	}
+
 
 func _int_from_bytes(data: PackedByteArray, reverse_endian: bool = false) -> int:
 	var result: int = 0
