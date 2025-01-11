@@ -26,10 +26,18 @@ fn main() -> Result<()> {
     };
 
     // Validate command
-    if module == "nsmbw" && command == "--dump" {
-        // Call the dump_level function
-        neb::nsmbw::dump_level(input_path.to_string(), output_path.to_string())?;
-        println!("Dumping completed successfully.");
+    if module == "nsmbw" {
+
+        if command == "--dump" {
+            neb::nsmbw::dump_level(input_path.to_string(), output_path.to_string())?;
+            println!("Dumping completed successfully.");
+        }
+
+        if command == "--read" {
+            neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
+        }
+// 
+
     } else {
         eprintln!("Unknown command or module. Usage: {} <module> --dump <path-to-file.arc> <output-directory>", args[0]);
         std::process::exit(1);
