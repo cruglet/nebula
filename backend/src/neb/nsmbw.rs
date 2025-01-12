@@ -1,14 +1,21 @@
 use std::collections::HashMap;
 use std::fs::{self, File};
-use std::hash::Hash;
 use std::io::{self, Read, Result};
 use std::path::Path;
 
 use crate::utils::byte_reader::{self, UnpackedValue};
 use crate::wii::arc::U8;
 
+use super::godot;
+
 // Sourced From Reggie-Updated
 // https://github.com/NSMBW-Community/Reggie-Updated/tree/fa12de16ea8df33068ae93ec4616f8e67dbc05ca
+
+// TODO:
+// - read tiles (bgdat files)
+// - read paths 
+// - read regions 
+// - read cameras 
 
 pub fn is_nsmbw_level(filename: &str) -> io::Result<bool> {
     // Check if file exists
@@ -41,53 +48,32 @@ pub fn is_nsmbw_level(filename: &str) -> io::Result<bool> {
     Ok(false)
 }
 
-pub fn dump_level(archive_path: String, to: String) -> Result<()> {
-    let mut archive = U8::new();
+pub fn dump_level(path: String, to: String) -> Result<()> { 
+    let mut level_archive = U8::new();
+    let level_archive_data = fs::read(path).expect("Could not read file...");
+    level_archive.load(&level_archive_data);
+    let areas = level_archive.get_dir("course").expect("Error getting arc dir");
 
-    // Read the archive file
-    let data = match fs::read(&archive_path) {
-        Ok(d) => d,
-        Err(e) => {
-            eprintln!("Failed to read archive '{}': {}", archive_path, e);
-            return Err(e);
-        }
-    };
+    let mut level: Vec<UnpackedValue> = vec![];
 
-    // Load the archive
-    if let Err(e) = archive.load(&data) {
-        eprintln!("Failed to load archive '{}': {}", archive_path, e);
-        return Err(e);
-    }
-
-    // Dump the directory
-    if let Err(e) = archive.dump_dir(&to) {
-        eprintln!("Failed to dump archive to '{}': {}", to, e);
-        return Err(e);
-    }
-
-    // List files in the archive
-    println!("Files in archive:");
-    for (path, data) in &archive.files {
-        match data {
-            Some(content) => println!("File: {} (size: {} bytes)", path, content.len()),
-            None => println!("Directory: {}", path),
+    let mut i = 0;
+    for area in areas {
+        if !area.contains("bgdat") && area.contains("course") {
+            i += 1;
+            println!("{}", format!("course/course{}.bin", i));
+            let area_data = level_archive.get(&format!("course/course{}.bin", i)).expect("Could not read area!");
+            level.push(read_level(area_data.to_vec()));
         }
     }
 
-    // Indicate success
-    println!(
-        "Successfully dumped the level from '{}' to '{}'",
-        archive_path, to
-    );
+    let success = godot::value_to_file(&UnpackedValue::Vec(level), &to);
 
-    Ok(())
+    success
 }
 
-pub fn read_level(dump_path: String, write_to: String) -> UnpackedValue {
-    let dump_path = Path::new(&dump_path).join("course");
-    let level_bin_path = Path::new(&dump_path).join("course2.bin");
+pub fn read_level(data: Vec<u8>) -> UnpackedValue {
     let mut level_info: HashMap<String, UnpackedValue> = HashMap::new();
-    let level_blocks = read_level_blocks(level_bin_path.to_str().expect("Could not read path"));
+    let level_blocks = read_level_blocks(data);
     
     match &level_blocks {
         Ok(blocks) => {
@@ -102,26 +88,17 @@ pub fn read_level(dump_path: String, write_to: String) -> UnpackedValue {
             println!("COULD NOT READ BLOCKS!")
         }
     }
-    
-    for x in &level_info {
-        println!("{:?}\n", x);
-    }
-
     UnpackedValue::Map(level_info)
 }
 
-fn read_level_blocks(file_path: &str) -> io::Result<Vec<Vec<u8>>> {
+fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
     const BLOCKS: usize = 14;
-    const BLOCK_METADATA_SIZE: usize = 8; // 8 bytes per block for offset and size
+    const BLOCK_METADATA_SIZE: usize = 8; 
     let mut blocks = Vec::new();
 
-    // Read the entire file into a byte vector
-    let mut file = File::open(file_path)?;
-    let mut file_data = Vec::new();
-    file.read_to_end(&mut file_data)?;
+    let data = course_data;
 
-    // Ensure the file has enough bytes for all block metadata
-    if file_data.len() < BLOCKS * BLOCK_METADATA_SIZE {
+    if data.len() < BLOCKS * BLOCK_METADATA_SIZE {
         eprintln!("File too small to contain metadata for all blocks!");
         return Ok(blocks);
     }
@@ -129,26 +106,25 @@ fn read_level_blocks(file_path: &str) -> io::Result<Vec<Vec<u8>>> {
     for i in 0..BLOCKS {
         let meta_offset = i * BLOCK_METADATA_SIZE;
 
-        // Extract block offset and size
         let block_offset = u32::from_be_bytes([
-            file_data[meta_offset],
-            file_data[meta_offset + 1],
-            file_data[meta_offset + 2],
-            file_data[meta_offset + 3],
+            data[meta_offset],
+            data[meta_offset + 1],
+            data[meta_offset + 2],
+            data[meta_offset + 3],
         ]) as usize;
 
         let block_size = u32::from_be_bytes([
-            file_data[meta_offset + 4],
-            file_data[meta_offset + 5],
-            file_data[meta_offset + 6],
-            file_data[meta_offset + 7],
+            data[meta_offset + 4],
+            data[meta_offset + 5],
+            data[meta_offset + 6],
+            data[meta_offset + 7],
         ]) as usize;
 
         // Check block size and bounds
         if block_size == 0 {
             blocks.push(Vec::new());
-        } else if block_offset + block_size <= file_data.len() {
-            blocks.push(file_data[block_offset..block_offset + block_size].to_vec());
+        } else if block_offset + block_size <= data.len() {
+            blocks.push(data[block_offset..block_offset + block_size].to_vec());
         } else {
             eprintln!(
                 "Invalid block metadata for block {}: Offset={}, Size={}",

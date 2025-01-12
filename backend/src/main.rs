@@ -1,6 +1,9 @@
 use std::env;
 use std::io::Result;
 
+use neb::nsmbw;
+use wii::arc::U8;
+
 pub mod wii;
 pub mod utils;
 pub mod neb;
@@ -11,7 +14,7 @@ fn main() -> Result<()> {
 
     // Ensure at least 4 arguments are passed
     if args.len() < 4 {
-        eprintln!("Usage: {} <module> --dump <path-to-file.arc> <output-directory>", args[0]);
+        eprintln!("Usage: {} <module> --dump <path-to-file.arc> <path-to-output-file>", args[0]);
         std::process::exit(1);
     }
 
@@ -29,14 +32,13 @@ fn main() -> Result<()> {
     if module == "nsmbw" {
 
         if command == "--dump" {
-            neb::nsmbw::dump_level(input_path.to_string(), output_path.to_string())?;
-            println!("Dumping completed successfully.");
+            let _ = nsmbw::dump_level(input_path.to_owned(), output_path.to_owned());
         }
 
-        if command == "--read" {
-          let level = neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
-          neb::godot::value_to_file(&level, "../test/test.bin");
-        }
+        // if command == "--read" {
+        //   let level = neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
+        //   neb::godot::value_to_file(&level, "../test/test.bin");
+        // }
 // 
 
     } else {

@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-use std::io::{Cursor, Write};
 use std::vec;
 use byteorder::{LittleEndian, WriteBytesExt};
-use crate::utils::byte_reader::{self, UnpackedValue};
+use crate::utils::byte_reader::UnpackedValue;
 
 
 // Godot variant types
-const TYPE_NULL: u32 = 0;
+// const TYPE_NULL: u32 = 0;
 const TYPE_BOOL: u32 = 1;
 const TYPE_INT: u32 = 2;
 const TYPE_STRING: u32 = 4;
@@ -62,7 +60,7 @@ fn write_variant(buffer: &mut Vec<u8>, value: &UnpackedValue) {
             buffer.write_u32::<LittleEndian>(TYPE_ARRAY).unwrap(); // Using dictionary type as per hexdump
             buffer.write_u32::<LittleEndian>(vec.len() as u32).unwrap();
             
-            for (i, item) in vec.iter().enumerate() {
+            for (_, item) in vec.iter().enumerate() {
                 write_variant(buffer, item);
             }
         }
@@ -70,7 +68,7 @@ fn write_variant(buffer: &mut Vec<u8>, value: &UnpackedValue) {
             buffer.write_u32::<LittleEndian>(TYPE_DICTIONARY).unwrap();
             buffer.write_u32::<LittleEndian>(map.len() as u32).unwrap();
             
-            for (i, (key, value)) in map.iter().enumerate() {
+            for (_, (key, value)) in map.iter().enumerate() {
                 // Write key as string
                 write_variant(buffer, &UnpackedValue::String(key.clone()));
                 // Write value
