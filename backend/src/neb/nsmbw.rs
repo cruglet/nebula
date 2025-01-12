@@ -83,14 +83,12 @@ pub fn dump_level(archive_path: String, to: String) -> Result<()> {
     Ok(())
 }
 
-pub fn read_level(dump_path: String, write_to: String) {
+pub fn read_level(dump_path: String, write_to: String) -> UnpackedValue {
     let dump_path = Path::new(&dump_path).join("course");
     let level_bin_path = Path::new(&dump_path).join("course2.bin");
     let mut level_info: HashMap<String, UnpackedValue> = HashMap::new();
     let level_blocks = read_level_blocks(level_bin_path.to_str().expect("Could not read path"));
     
-
-
     match &level_blocks {
         Ok(blocks) => {
             let _ = &level_info.insert(String::from("tilesets"), UnpackedValue::Vec(read_level_tilesets(&blocks[0])));
@@ -109,14 +107,7 @@ pub fn read_level(dump_path: String, write_to: String) {
         println!("{:?}\n", x);
     }
 
-    //  = read_level_metadata()
-    // let level_options: HashMap<String, Values> = HashMap::new();
-    // let level_entrances: HashMap<String, Values> = HashMap::new();
-    // let level_sprites: HashMap<String, Values> = HashMap::new();
-    // let level_zones: HashMap<String, Values> = HashMap::new();
-    // let level_backgrounds: HashMap<String, Values> = HashMap::new();
-
-    
+    UnpackedValue::Map(level_info)
 }
 
 fn read_level_blocks(file_path: &str) -> io::Result<Vec<Vec<u8>>> {
