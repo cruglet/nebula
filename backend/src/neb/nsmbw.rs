@@ -138,17 +138,17 @@ fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
 }
 
 fn read_level_tilesets(block: &[u8]) -> Vec<UnpackedValue> {
-    let mut level_metadata: Vec<UnpackedValue> = vec![];
+    let mut level_tilesets: Vec<UnpackedValue> = vec![];
 
     let tilesets = byte_reader::unpack("32s32s32s32s", block);
 
     for tileset in &tilesets {
         match tileset {
-            UnpackedValue::String(string) => {level_metadata.push(UnpackedValue::String(string.to_string()))}
+            UnpackedValue::String(string) => {level_tilesets.push(UnpackedValue::String(string.to_string()))}
             _ => todo!()
         }
     }
-    level_metadata
+    level_tilesets
 }
 
 fn read_level_options(block: &[u8]) -> HashMap<String, UnpackedValue> {
