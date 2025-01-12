@@ -34,7 +34,8 @@ fn main() -> Result<()> {
         }
 
         if command == "--read" {
-            neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
+          let level = neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
+          neb::godot::value_to_file(&level, "../test/test.bin");
         }
 // 
 
