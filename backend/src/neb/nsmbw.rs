@@ -72,8 +72,8 @@ pub fn read_level(data: Vec<u8>) -> UnpackedValue {
     
     match &level_blocks {
         Ok(blocks) => {
-            let _ = &level_info.insert(String::from("tilesets"), UnpackedValue::Vec(read_level_tilesets(&blocks[0])));
             let _ = &level_info.insert(String::from("options"), UnpackedValue::Map(read_level_options(&blocks[1])));
+            let _ = &level_info.insert(String::from("tilesets"), UnpackedValue::Vec(read_level_tilesets(&blocks[0])));
             let _ = &level_info.insert(String::from("entrances"), UnpackedValue::Vec(read_level_entrances(&blocks[6])));
             let _ = &level_info.insert(String::from("sprites"), UnpackedValue::Vec(read_level_sprites(&blocks[7])));
             let _ = &level_info.insert(String::from("zones"), UnpackedValue::Vec(read_level_zones(&blocks[9], &blocks[2])));
@@ -131,20 +131,6 @@ fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
     Ok(blocks)
 }
 
-fn read_level_tilesets(block: &[u8]) -> Vec<UnpackedValue> {
-    let mut level_tilesets: Vec<UnpackedValue> = vec![];
-
-    let chunk_tilesets = byte_reader::unpack("32s32s32s32s", block);
-
-    for tileset in &chunk_tilesets {
-        match tileset {
-            UnpackedValue::String(string) => {level_tilesets.push(UnpackedValue::String(string.to_string()))}
-            _ => todo!()
-        }
-    }
-    level_tilesets
-}
-
 fn read_level_options(block: &[u8]) -> HashMap<String, UnpackedValue> {
     let mut options: HashMap<String, UnpackedValue> = HashMap::new();
 
@@ -170,6 +156,20 @@ fn read_level_options(block: &[u8]) -> HashMap<String, UnpackedValue> {
     options.insert("time_limit".to_string(), UnpackedValue::UInt16(timer));
     
     options
+}
+
+fn read_level_tilesets(block: &[u8]) -> Vec<UnpackedValue> {
+    let mut level_tilesets: Vec<UnpackedValue> = vec![];
+
+    let chunk_tilesets = byte_reader::unpack("32s32s32s32s", block);
+
+    for tileset in &chunk_tilesets {
+        match tileset {
+            UnpackedValue::String(string) => {level_tilesets.push(UnpackedValue::String(string.to_string()))}
+            _ => todo!()
+        }
+    }
+    level_tilesets
 }
 
 fn read_level_entrances(block: &[u8]) -> Vec<UnpackedValue> {
