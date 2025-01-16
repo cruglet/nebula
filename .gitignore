@@ -7,6 +7,7 @@
 
 # These are local and don't need to be updated
 projectlist.json
+dependencies/neb-utils
 /test/
 backend/debug/
 backend/target/
