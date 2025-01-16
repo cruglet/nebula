@@ -1,14 +1,13 @@
-use std::collections::HashMap;
-use std::fs::{self, File};
 use std::io::{self, Read, Result};
-use std::path::Path;
+use std::collections::HashMap;
+use std::fs;
 
 use crate::utils::byte_reader::{self, UnpackedValue};
 use crate::wii::arc::U8;
 
 use super::godot;
 
-// Sourced From Reggie-Updated
+// Translated From Reggie-Updated
 // https://github.com/NSMBW-Community/Reggie-Updated/tree/fa12de16ea8df33068ae93ec4616f8e67dbc05ca
 
 // TODO:
@@ -18,24 +17,20 @@ use super::godot;
 // - read cameras 
 
 pub fn is_nsmbw_level(filename: &str) -> io::Result<bool> {
-    // Check if file exists
     if fs::metadata(filename).is_err() {
         return Ok(false);
     }
 
-    // Read the file
     let mut file = fs::File::open(filename)?;
     let mut data = Vec::new();
     file.read_to_end(&mut data)?;
 
-    // Check for LZ-compressed file signature
     if data.starts_with(&[0x11]) {
         return Ok(true);
     }
 
-    // Check for U8 data signature
     if data.starts_with(b"U\xAA8-") {
-        // Perform additional sanity checks using `windows` to check for slices
+        // Perform additional sanity checks using windows to check for slices
         if !data.windows(b"course\0".len()).any(|window| window == b"course\0") &&
            !data.windows(b"course2.bin\0".len()).any(|window| window == b"course2.bin\0") &&
            !data.windows(b"\0\0\0\x80".len()).any(|window| window == b"\0\0\0\x80") {
@@ -44,14 +39,14 @@ pub fn is_nsmbw_level(filename: &str) -> io::Result<bool> {
         return Ok(true);
     }
 
-    // Fallback for non-matching files
+    // fallback for non-matching files
     Ok(false)
 }
 
 pub fn dump_level(path: String, to: String) -> Result<()> { 
     let mut level_archive = U8::new();
     let level_archive_data = fs::read(path).expect("Could not read file...");
-    level_archive.load(&level_archive_data);
+    level_archive.load(&level_archive_data)?;
     let areas = level_archive.get_dir("course").expect("Error getting arc dir");
 
     let mut level: Vec<UnpackedValue> = vec![];
@@ -120,7 +115,6 @@ fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
             data[meta_offset + 7],
         ]) as usize;
 
-        // Check block size and bounds
         if block_size == 0 {
             blocks.push(Vec::new());
         } else if block_offset + block_size <= data.len() {
@@ -140,9 +134,9 @@ fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
 fn read_level_tilesets(block: &[u8]) -> Vec<UnpackedValue> {
     let mut level_tilesets: Vec<UnpackedValue> = vec![];
 
-    let tilesets = byte_reader::unpack("32s32s32s32s", block);
+    let chunk_tilesets = byte_reader::unpack("32s32s32s32s", block);
 
-    for tileset in &tilesets {
+    for tileset in &chunk_tilesets {
         match tileset {
             UnpackedValue::String(string) => {level_tilesets.push(UnpackedValue::String(string.to_string()))}
             _ => todo!()
@@ -154,15 +148,18 @@ fn read_level_tilesets(block: &[u8]) -> Vec<UnpackedValue> {
 fn read_level_options(block: &[u8]) -> HashMap<String, UnpackedValue> {
     let mut options: HashMap<String, UnpackedValue> = HashMap::new();
 
-    let chunks = byte_reader::unpack("2L:x:o:xx:o:3x:B:o", block);
-    let values: Vec<UnpackedValue> = chunks;
+    let chunk_options = byte_reader::unpack("2L:x:o:xx:o:3x:B:o", block);
 
-    if let Some(value) = values.first() {options.insert("events_a".to_string(), value.clone());}
-    if let Some(value) = values.get(1) {options.insert("events_b".to_string(), value.clone());}
-    if let Some(value) = values.get(2) {options.insert("can_wrap".to_string(), value.clone());}
-    if let Some(value) = values.get(3) {options.insert("is_credits".to_string(), value.clone());}
-    if let Some(value) = values.get(4) {options.insert("start_entrance".to_string(), value.clone());}
-    if let Some(value) = values.get(5) {options.insert("is_ambush".to_string(), value.clone());}
+    let option_keys = [
+        ("events_a", 0),
+        ("events_b", 1),
+        ("can_wrap", 2),
+        ("is_credits", 3),
+        ("start_entrance", 4),
+        ("is_ambush", 5),
+    ];
+
+    map_keys(&option_keys, &chunk_options, &mut options);
 
     // Handle timer
     let timer_chunk = &block[10..12];
@@ -181,24 +178,28 @@ fn read_level_entrances(block: &[u8]) -> Vec<UnpackedValue> {
     let mut i = 0;
     let block_size = block.len();
     while i < block_size {
-        let chunk = byte_reader::unpack("2H:4x:4B:x:3:B:H:o:B", &block[i..(i + OFFSET)]);
+        let chunk_entrances = byte_reader::unpack("2H:4x:4B:x:3:B:H:o:B", &block[i..(i + OFFSET)]);
         let mut entrance: HashMap<String, UnpackedValue> = HashMap::new();
-        if let Some(value) = chunk.first() {entrance.insert("pos_x".to_string(), value.clone());}
-        if let Some(value) = chunk.get(1) {entrance.insert("pos_y".to_string(), value.clone());}
-        if let Some(value) = chunk.get(2) {entrance.insert("id".to_string(), value.clone());}
-        if let Some(value) = chunk.get(3) {entrance.insert("destination_area".to_string(), value.clone());}
-        if let Some(value) = chunk.get(4) {entrance.insert("destination_entrance".to_string(), value.clone());}
-        if let Some(value) = chunk.get(5) {entrance.insert("type".to_string(), value.clone());}
-        if let Some(value) = chunk.get(6) {entrance.insert("zone".to_string(), value.clone());}
-        if let Some(value) = chunk.get(7) {entrance.insert("layer".to_string(), value.clone());}
-        if let Some(value) = chunk.get(8) {entrance.insert("path".to_string(), value.clone());}
-        if let Some(value) = chunk.get(10) {entrance.insert("exit_to_map".to_string(), value.clone());}
-        if let Some(value) = chunk.get(11) {entrance.insert("connected_pipe_direction".to_string(), value.clone());}
-        
+
+        let entrance_keys = [
+            ("pos_x", 0),
+            ("pos_y", 1),
+            ("id", 2),
+            ("destination_area", 3),
+            ("destination_entrance", 4),
+            ("type", 5),
+            ("zone", 6),
+            ("layer", 7),
+            ("path", 8),
+            ("exit_to_map", 10),
+            ("connected_pipe_direction", 11),
+        ];
+
+        map_keys(&entrance_keys, &chunk_entrances, &mut entrance);
 
         // Other settings
         let mut config: Vec<bool> = vec![];
-        if let Some(UnpackedValue::UInt16(byte)) = chunk.get(9) {
+        if let Some(UnpackedValue::UInt16(byte)) = chunk_entrances.get(9) {
             config = u16_to_bits(*byte);
         }
 
@@ -217,20 +218,20 @@ fn read_level_sprites(block: &[u8]) -> Vec<UnpackedValue> {
     let mut i = 0;
     let block_size = block.len();
     while i + OFFSET < block_size {
-        let chunk = byte_reader::unpack("3H:8B:xx", &block[i..(i + OFFSET)]);
+        let chunk_sprites = byte_reader::unpack("3H:8B:xx", &block[i..(i + OFFSET)]);
         let mut sprite: HashMap<String, UnpackedValue> = HashMap::new();
 
-        if let UnpackedValue::UInt16(val) = chunk[0] {
+        if let UnpackedValue::UInt16(val) = chunk_sprites[0] {
             if val == 65535 {
                 break;
             }
         }
 
-        if let Some(value) = chunk.first() {sprite.insert("type".to_string(), value.clone());}
-        if let Some(value) = chunk.get(1) {sprite.insert("pos_x".to_string(), value.clone());}
-        if let Some(value) = chunk.get(2) {sprite.insert("pos_y".to_string(), value.clone());}
-        sprite.insert("data".to_string(), UnpackedValue::Vec(chunk[3..11].to_vec()));
-
+        if let Some(value) = chunk_sprites.first() {sprite.insert("type".to_string(), value.clone());}
+        if let Some(value) = chunk_sprites.get(1) {sprite.insert("pos_x".to_string(), value.clone());}
+        if let Some(value) = chunk_sprites.get(2) {sprite.insert("pos_y".to_string(), value.clone());}
+        
+        sprite.insert("data".to_string(), UnpackedValue::Vec(chunk_sprites[3..11].to_vec()));
         sprites.push(byte_reader::UnpackedValue::Map(sprite));
 
         i += OFFSET;
@@ -245,15 +246,16 @@ fn read_level_zones(zone_config_block: &[u8], zone_bounds_block: &[u8]) -> Vec<U
     let mut i = 0;
     while i < block_size {
         let mut zone: HashMap<String, UnpackedValue> = HashMap::new();
-        let zone_config = byte_reader::unpack("6H:4B:x:4B:x:2B", zone_config_block);
-        let zone_bounds = byte_reader::unpack("4L:xx:3H:x", zone_bounds_block);
+        let chunk_zone_config = byte_reader::unpack("6H:4B:x:4B:x:2B", zone_config_block);
+        let chunk_zone_bounds = byte_reader::unpack("4L:xx:3H:x", zone_bounds_block);
 
         let mut is_dark: bool = false;
         let mut fg_spotlight: bool = false; 
 
         // SPOTLIGHT
-        if let Some(UnpackedValue::UInt16(val)) = zone_config.get(10) {
-            let mut spotlight_setting = val.clone();
+        let mut spotlight_setting: u16 = 0;
+        if let Some(UnpackedValue::UInt16(val)) = chunk_zone_config.get(10) {
+        spotlight_setting = val.clone();
             if spotlight_setting >= 32 {
                 is_dark = true;
                 spotlight_setting -= 32;
@@ -286,25 +288,17 @@ fn read_level_zones(zone_config_block: &[u8], zone_bounds_block: &[u8]) -> Vec<U
             ("multiplayer_fly_screen_adjust", 4),
         ];
 
+        map_keys(&config_keys, &chunk_zone_config, &mut zone);
+        map_keys(&bound_keys, &chunk_zone_bounds, &mut zone);
 
-        for (key, index) in config_keys.iter() {
-            if let Some(value) = zone_config.get(*index) {
-                zone.insert(key.to_string(), value.clone());
-            }
-        }
-
-        for (key, index) in bound_keys.iter() {
-            if let Some(value) = zone_bounds.get(*index) {
-                zone.insert(key.to_string(), value.clone());
-            }
-        }
-
-
-        if let Some(value) = zone_config.get(15) {
+        if let Some(value) = chunk_zone_config.get(15) {
             match value {
                 &UnpackedValue::UInt8(v) => {
                     zone.insert("echo".to_string(), UnpackedValue::UInt8(v / 16));
                     zone.insert("boss_room".to_string(), UnpackedValue::Boolean(v % 16 != 0));
+                    zone.insert("is_dark".to_string(), UnpackedValue::Boolean(is_dark));
+                    zone.insert("fg_spotlight".to_string(), UnpackedValue::Boolean(fg_spotlight));
+                    zone.insert("spotlight_config".to_string(), UnpackedValue::UInt16(spotlight_setting));
                 }
                 _ => {}
             }
@@ -324,14 +318,15 @@ fn read_level_backgrounds(front_bg_block: &[u8], back_bg_block: &[u8]) -> Vec<Un
     let mut i = 0;
     while i < block_size {
         let mut background: HashMap<String, UnpackedValue> = HashMap::new();
-        let bgf: Vec<UnpackedValue> = byte_reader::unpack("x:B:4h:3h:3x:B:4x", &front_bg_block[i..]);
-        let bgb = byte_reader::unpack("x:B:4h:3h:3x:B:4x", &back_bg_block[i..]);
+        let chunk_f: Vec<UnpackedValue> = byte_reader::unpack("x:B:4h:3h:3x:B:4x", &front_bg_block[i..]);
+        let chunk_b = byte_reader::unpack("x:B:4h:3h:3x:B:4x", &back_bg_block[i..]);
 
         // Sub-hashmaps
         let mut front: HashMap<String, UnpackedValue> = HashMap::new();
         let mut back: HashMap<String, UnpackedValue> = HashMap::new();
 
-        if let Some(value) = bgf.first() {background.insert("id".to_string(), value.clone());}
+        // Keep ID separate
+        if let Some(value) = chunk_f.first() {background.insert("id".to_string(), value.clone());}
 
         let bg_keys = [
             ("scroll_rate_x", 1),
@@ -342,23 +337,24 @@ fn read_level_backgrounds(front_bg_block: &[u8], back_bg_block: &[u8]) -> Vec<Un
             ("zoom", 8),
         ];
 
-        for (key, index) in bg_keys.iter() {
-            if let Some(value) = bgf.get(*index) {
-                front.insert(key.to_string(), value.clone());
-            }
-            if let Some(value) = bgb.get(*index) {
-                back.insert(key.to_string(), value.clone());
-            }
-        }
+        map_keys(&bg_keys, &chunk_f, &mut front);
+        map_keys(&bg_keys, &chunk_b, &mut back);
 
         background.insert("front".to_string(), UnpackedValue::Map(front));
         background.insert("back".to_string(), UnpackedValue::Map(back));
-
         backgrounds.push(byte_reader::UnpackedValue::Map(background));
 
         i += OFFSET;
     }
     backgrounds
+}
+
+fn map_keys(key_list: &[(&str, usize)], chunk: &Vec<UnpackedValue>, map: &mut HashMap<String, UnpackedValue>) {
+    for (key, index) in key_list.iter() {
+        if let Some(value) = chunk.get(*index) {
+            map.insert(key.to_string(), value.clone());
+        }
+    }
 }
 
 fn u16_to_bits(n: u16) -> Vec<bool> {
