@@ -1,5 +1,5 @@
 // DEPRECATED
-// Sourced from Dolphin Emu Source code
+// Translated from Dolphin Emu Source code
 
 use std::fs::{self, File};
 use std::io::{self, Read, Seek, SeekFrom, Write};
