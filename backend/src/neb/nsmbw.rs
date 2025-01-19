@@ -12,7 +12,6 @@ use super::godot;
 
 // TODO:
 // - read tiles (bgdat files)
-// - read paths 
 // - read regions 
 // - read cameras 
 
@@ -55,15 +54,13 @@ pub fn dump_level(path: String, to: String) -> Result<()> {
     for area in areas {
         if !area.contains("bgdat") && area.contains("course") {
             i += 1;
-            println!("{}", format!("course/course{}.bin", i));
+            println!("{}", format_args!("course/course{}.bin", i));
             let area_data = level_archive.get(&format!("course/course{}.bin", i)).expect("Could not read area!");
             level.push(read_level(area_data.to_vec()));
         }
     }
 
-    let success = godot::value_to_file(&UnpackedValue::Vec(level), &to);
-
-    success
+    godot::value_to_file(&UnpackedValue::Vec(level), &to)
 }
 
 pub fn read_level(data: Vec<u8>) -> UnpackedValue {
@@ -78,6 +75,8 @@ pub fn read_level(data: Vec<u8>) -> UnpackedValue {
             let _ = &level_info.insert(String::from("sprites"), UnpackedValue::Vec(read_level_sprites(&blocks[7])));
             let _ = &level_info.insert(String::from("zones"), UnpackedValue::Vec(read_level_zones(&blocks[9], &blocks[2])));
             let _ = &level_info.insert(String::from("backgrounds"), UnpackedValue::Vec(read_level_backgrounds(&blocks[4], &blocks[5])));
+            let _ = &level_info.insert(String::from("paths"), UnpackedValue::Vec(read_level_paths(&blocks[12], &blocks[13])));
+                    
         }
         _ => {
             println!("COULD NOT READ BLOCKS!")
@@ -316,6 +315,16 @@ fn read_level_backgrounds(front_bg_block: &[u8], back_bg_block: &[u8]) -> Vec<Un
     let mut backgrounds: Vec<UnpackedValue> = vec![];
     let block_size = front_bg_block.len();
     let mut i = 0;
+
+    let bg_keys = [
+        ("scroll_rate_x", 1),
+        ("scroll_rate_y", 2),
+        ("pos_x", 4),
+        ("pos_y", 3),
+        ("instance", 5),
+        ("zoom", 8),
+    ];
+
     while i < block_size {
         let mut background: HashMap<String, UnpackedValue> = HashMap::new();
         let chunk_f: Vec<UnpackedValue> = byte_reader::unpack("x:B:4h:3h:3x:B:4x", &front_bg_block[i..]);
@@ -328,14 +337,7 @@ fn read_level_backgrounds(front_bg_block: &[u8], back_bg_block: &[u8]) -> Vec<Un
         // Keep ID separate
         if let Some(value) = chunk_f.first() {background.insert("id".to_string(), value.clone());}
 
-        let bg_keys = [
-            ("scroll_rate_x", 1),
-            ("scroll_rate_y", 2),
-            ("pos_x", 4),
-            ("pos_y", 3),
-            ("instance", 5),
-            ("zoom", 8),
-        ];
+
 
         map_keys(&bg_keys, &chunk_f, &mut front);
         map_keys(&bg_keys, &chunk_b, &mut back);
@@ -347,6 +349,54 @@ fn read_level_backgrounds(front_bg_block: &[u8], back_bg_block: &[u8]) -> Vec<Un
         i += OFFSET;
     }
     backgrounds
+}
+
+fn read_level_paths(path_block: &[u8], path_node_block: &[u8]) -> Vec<UnpackedValue> {
+    // Vec<Map<Vec<Map>>>>
+    const OFFSET: usize = 8; // offset for path_block
+    const SUB_OFFSET: u16 = 16; // offset for path_node_block
+    let mut paths: Vec<UnpackedValue> = vec![];
+    let block_size = path_block.len();
+    
+
+    let path_keys = [
+        ("pos_x", 0),
+        ("pos_y", 1),
+        ("speed", 2),
+        ("acceleration", 3),
+        ("delay", 4),
+    ];
+
+    let mut i = 0;
+    while i < block_size {
+        let chunk = byte_reader::unpack("BxHHxo", &path_block[i..]);
+        let mut path_config: HashMap<String, UnpackedValue> = HashMap::new();
+
+        path_config.insert("id".to_string(), chunk[0].clone());
+        path_config.insert("loops".to_string(), chunk[3].clone());
+        
+        let count = &chunk[2];
+        
+        let mut current_path_vec: Vec<UnpackedValue> = vec![];
+        for i in 0..count.as_u16().expect("") {
+            let mut current_path_map: HashMap<String, UnpackedValue> = HashMap::new();
+            let current_offset = i * SUB_OFFSET;
+            let node_chunk = byte_reader::unpack
+                ("HHffhxx", &path_node_block[(current_offset as usize)..]);
+
+            map_keys(&path_keys, &node_chunk, &mut current_path_map);
+
+            current_path_vec.push(UnpackedValue::Map(current_path_map));
+        }
+
+        path_config.insert("points".to_owned(), UnpackedValue::Vec(current_path_vec));
+        
+        // paths.push(UnpackedValue::Map(path_config));
+        paths.push(UnpackedValue::Map(path_config));
+        i += OFFSET;
+
+    }
+    paths
 }
 
 fn map_keys(key_list: &[(&str, usize)], chunk: &Vec<UnpackedValue>, map: &mut HashMap<String, UnpackedValue>) {
