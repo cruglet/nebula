@@ -7,6 +7,7 @@ use crate::utils::byte_reader::UnpackedValue;
 // const TYPE_NULL: u32 = 0;
 const TYPE_BOOL: u32 = 1;
 const TYPE_INT: u32 = 2;
+const TYPE_FLOAT: u32 = 3;
 const TYPE_STRING: u32 = 4;
 const TYPE_DICTIONARY: u32 = 27;
 const TYPE_ARRAY: u32 = 28;
@@ -43,6 +44,10 @@ fn write_variant(buffer: &mut Vec<u8>, value: &UnpackedValue) {
             buffer.write_u32::<LittleEndian>(TYPE_INT).unwrap();
             buffer.write_i32::<LittleEndian>(*n).unwrap();
         }
+        UnpackedValue::Float(n) => {
+            buffer.write_u32::<LittleEndian>(TYPE_FLOAT).unwrap();
+            buffer.write_f32::<LittleEndian>(*n).unwrap();
+        }
         UnpackedValue::Boolean(b) => {
             buffer.write_u32::<LittleEndian>(TYPE_BOOL).unwrap();
             buffer.write_i32::<LittleEndian>(*b as i32).unwrap();
@@ -75,6 +80,7 @@ fn write_variant(buffer: &mut Vec<u8>, value: &UnpackedValue) {
                 write_variant(buffer, value);
             }
         }
+        _ => todo!(),
     }
 }
 
@@ -98,6 +104,7 @@ fn calculate_variant_size(value: &UnpackedValue) -> u32 {
         UnpackedValue::Int8(_) |
         UnpackedValue::Int16(_) |
         UnpackedValue::Int32(_) |
+        UnpackedValue::Float(_) |
         UnpackedValue::Boolean(_) => 8, // 4 bytes for type + 4 bytes for value
         
         UnpackedValue::String(s) => {
