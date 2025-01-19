@@ -10,11 +10,6 @@ use super::godot;
 // Translated From Reggie-Updated
 // https://github.com/NSMBW-Community/Reggie-Updated/tree/fa12de16ea8df33068ae93ec4616f8e67dbc05ca
 
-// TODO:
-// - read tiles (bgdat files)
-// - read regions 
-// - read cameras 
-
 pub fn is_nsmbw_level(filename: &str) -> io::Result<bool> {
     if fs::metadata(filename).is_err() {
         return Ok(false);
@@ -56,14 +51,24 @@ pub fn dump_level(path: String, to: String) -> Result<()> {
             i += 1;
             println!("{}", format_args!("course/course{}.bin", i));
             let area_data = level_archive.get(&format!("course/course{}.bin", i)).expect("Could not read area!");
-            level.push(read_level(area_data.to_vec()));
+
+            let fg_data = level_archive.get(&format!("course/course{}_bgdatL0.bin", i));
+            let g_data = level_archive.get(&format!("course/course{}_bgdatL1.bin", i));
+            let bg_data = level_archive.get(&format!("course/course{}_bgdatL2.bin", i));
+
+            level.push(read_level(area_data.to_vec(), fg_data, g_data, bg_data));
         }
     }
 
     godot::value_to_file(&UnpackedValue::Vec(level), &to)
 }
 
-pub fn read_level(data: Vec<u8>) -> UnpackedValue {
+pub fn read_level(
+    data: Vec<u8>,
+    fg_data: Option<&Vec<u8>>,
+    g_data: Option<&Vec<u8>>,
+    bg_data: Option<&Vec<u8>>,
+) -> UnpackedValue {
     let mut level_info: HashMap<String, UnpackedValue> = HashMap::new();
     let level_blocks = read_level_blocks(data);
     
@@ -78,6 +83,7 @@ pub fn read_level(data: Vec<u8>) -> UnpackedValue {
             let _ = &level_info.insert(String::from("paths"), UnpackedValue::Vec(read_level_paths(&blocks[12], &blocks[13])));
             let _ = &level_info.insert(String::from("regions"), UnpackedValue::Vec(read_level_regions(&blocks[10])));
             let _ = &level_info.insert(String::from("cameras"), UnpackedValue::Vec(read_level_cameras(&blocks[11])));
+            let _ = &level_info.insert(String::from("tiles"), read_level_tiles(fg_data, g_data, bg_data));
         }
         _ => {
             
@@ -452,6 +458,74 @@ fn read_level_cameras(block: &[u8]) -> Vec<UnpackedValue> {
     }
     cameras
 }
+
+fn read_level_tiles(fg_data: Option<&Vec<u8>>, g_data: Option<&Vec<u8>>, bg_data: Option<&Vec<u8>> ) -> UnpackedValue {
+    const OFFSET: usize = 10;
+    
+    let tile_keys = [
+        ("object_id", 1),
+        ("pos_x", 2),
+        ("pos_y", 3),
+        ("size_x", 4),
+        ("size_y", 5),
+    ];
+
+    let mut tiles: HashMap<String, UnpackedValue> = HashMap::new();
+
+    // helper function to process a layer of tile data
+    fn process_layer(
+        data: &[u8],
+        tile_keys: &[(&str, usize)]
+    ) -> Vec<UnpackedValue> {
+        let mut processed_tiles = Vec::new();
+        let mut i = 0;
+        
+        while i + OFFSET <= data.len() {
+            let mut tile_config = HashMap::new();
+            let chunk = byte_reader::unpack("BBHHHH", &data[i..]);
+            
+            let tileset = chunk[0]
+                .as_u8()
+                .map(|val| val / 16)
+                .unwrap_or(0);
+            
+            tile_config.insert("tileset".to_string(), UnpackedValue::UInt8(tileset));
+            map_keys(tile_keys, &chunk, &mut tile_config);
+            
+            processed_tiles.push(UnpackedValue::Map(tile_config));
+            i += OFFSET;
+        }
+        
+        processed_tiles
+    }
+
+    // FG
+    if let Some(fg) = fg_data {
+        let foreground_tiles = process_layer(fg, &tile_keys);
+        tiles.insert("foreground".to_string(), UnpackedValue::Vec(foreground_tiles));
+    } else {
+        tiles.insert("foreground".to_string(), UnpackedValue::Vec(vec![]));
+    }
+
+    // G
+    if let Some(g) = g_data {
+        let ground_tiles = process_layer(g, &tile_keys);
+        tiles.insert("ground".to_string(), UnpackedValue::Vec(ground_tiles));
+    } else {
+        tiles.insert("ground".to_string(), UnpackedValue::Vec(vec![]));
+    }
+
+    // BG
+    if let Some(bg) = bg_data {
+        let background_tiles = process_layer(bg, &tile_keys);
+        tiles.insert("background".to_string(), UnpackedValue::Vec(background_tiles));
+    } else {
+        tiles.insert("background".to_string(), UnpackedValue::Vec(vec![]));
+    }
+
+    UnpackedValue::Map(tiles)
+}
+
 
 fn map_keys(key_list: &[(&str, usize)], chunk: &Vec<UnpackedValue>, map: &mut HashMap<String, UnpackedValue>) {
     for (key, index) in key_list.iter() {
