@@ -77,6 +77,7 @@ pub fn read_level(data: Vec<u8>) -> UnpackedValue {
             let _ = &level_info.insert(String::from("backgrounds"), UnpackedValue::Vec(read_level_backgrounds(&blocks[4], &blocks[5])));
             let _ = &level_info.insert(String::from("paths"), UnpackedValue::Vec(read_level_paths(&blocks[12], &blocks[13])));
             let _ = &level_info.insert(String::from("regions"), UnpackedValue::Vec(read_level_regions(&blocks[10])));
+            let _ = &level_info.insert(String::from("cameras"), UnpackedValue::Vec(read_level_cameras(&blocks[11])));
         }
         _ => {
             
@@ -427,6 +428,30 @@ fn read_level_regions(block: &[u8]) -> Vec<UnpackedValue> {
     regions
 }
 
+fn read_level_cameras(block: &[u8]) -> Vec<UnpackedValue> {
+    const OFFSET: usize = 20;
+    let mut cameras: Vec<UnpackedValue> = vec![];
+    let block_size = block.len();
+    let mut i = 20;
+
+    let camera_keys = [
+        // still unsure what the first elemnent is but it doesn't seem to be very useful rn
+        ("zoom_config", 1),
+        ("scren_heights", 2),
+        ("event_trigger_id", 3),
+    ];
+
+    while i + OFFSET <= block_size {
+        let chunk = byte_reader::unpack("12x:BBB:xxx:B:x", &block[i..]);
+        let mut camera_config: HashMap<String, UnpackedValue> = HashMap::new();
+
+        map_keys(&camera_keys, &chunk, &mut camera_config);
+
+        cameras.push(UnpackedValue::Map(camera_config));
+        i += OFFSET;
+    }
+    cameras
+}
 
 fn map_keys(key_list: &[(&str, usize)], chunk: &Vec<UnpackedValue>, map: &mut HashMap<String, UnpackedValue>) {
     for (key, index) in key_list.iter() {
