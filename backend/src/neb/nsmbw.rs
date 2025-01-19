@@ -76,14 +76,17 @@ pub fn read_level(data: Vec<u8>) -> UnpackedValue {
             let _ = &level_info.insert(String::from("zones"), UnpackedValue::Vec(read_level_zones(&blocks[9], &blocks[2])));
             let _ = &level_info.insert(String::from("backgrounds"), UnpackedValue::Vec(read_level_backgrounds(&blocks[4], &blocks[5])));
             let _ = &level_info.insert(String::from("paths"), UnpackedValue::Vec(read_level_paths(&blocks[12], &blocks[13])));
-                    
+            let _ = &level_info.insert(String::from("regions"), UnpackedValue::Vec(read_level_regions(&blocks[10])));
         }
         _ => {
+            
             println!("COULD NOT READ BLOCKS!")
         }
     }
+    
     UnpackedValue::Map(level_info)
 }
+
 
 fn read_level_blocks(course_data: Vec<u8>) -> io::Result<Vec<Vec<u8>>> {
     const BLOCKS: usize = 14;
@@ -398,6 +401,32 @@ fn read_level_paths(path_block: &[u8], path_node_block: &[u8]) -> Vec<UnpackedVa
     }
     paths
 }
+
+fn read_level_regions(block: &[u8]) -> Vec<UnpackedValue> {
+    const OFFSET: usize = 12;
+    let mut regions: Vec<UnpackedValue> = vec![];
+    let block_size = block.len();
+    let mut i = 0;
+
+    let region_keys = [
+        ("pos_x", 0),
+        ("pos_y", 1),
+        ("size_x", 2),
+        ("size_y", 3),
+        ("id", 4),
+    ];
+
+    while i + OFFSET < block_size {
+        let chunk = byte_reader::unpack("HHHHBxxx", &block[i..]);
+        let mut region_config: HashMap<String, UnpackedValue> = HashMap::new();
+
+        map_keys(&region_keys, &chunk, &mut region_config);
+        regions.push(UnpackedValue::Map(region_config));
+        i += OFFSET;
+    }
+    regions
+}
+
 
 fn map_keys(key_list: &[(&str, usize)], chunk: &Vec<UnpackedValue>, map: &mut HashMap<String, UnpackedValue>) {
     for (key, index) in key_list.iter() {
