@@ -10,6 +10,7 @@ pub enum UnpackedValue {
     Int8(i8),
     Int16(i16),
     Int32(i32),
+    Float(f32),
     Boolean(bool),
     String(String),
     Map(HashMap<String, UnpackedValue>),
@@ -35,6 +36,14 @@ impl UnpackedValue {
 
     pub fn as_u32(&self) -> Option<u32> {
         if let UnpackedValue::UInt32(value) = self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_f32(&self) -> Option<f32> {
+        if let UnpackedValue::Float(value) = self {
             Some(*value)
         } else {
             None
@@ -97,6 +106,13 @@ pub fn unpack(format: &str, data: &[u8]) -> Vec<UnpackedValue> {
                 if offset + 4 <= data.len() {
                     let value = BigEndian::read_u32(&data[offset..]);
                     result.push(UnpackedValue::UInt32(value));
+                    offset += 4;
+                }
+            }
+            'f' => {
+                if offset + 4 <= data.len() {
+                    let value = BigEndian::read_f32(&data[offset..]);
+                    result.push(UnpackedValue::Float(value));
                     offset += 4;
                 }
             }
