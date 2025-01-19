@@ -16,6 +16,64 @@ pub enum UnpackedValue {
     Vec(Vec<UnpackedValue>),
 }
 
+impl UnpackedValue {
+    pub fn as_u8(&self) -> Option<u8> {
+        if let UnpackedValue::UInt8(value) = self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_u16(&self) -> Option<u16> {
+        if let UnpackedValue::UInt16(value) = self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_u32(&self) -> Option<u32> {
+        if let UnpackedValue::UInt32(value) = self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_bool(&self) -> Option<bool> {
+        if let UnpackedValue::Boolean(value) = self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_string(&self) -> Option<&String> {
+        if let UnpackedValue::String(value) = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_hashmap(&self) -> Option<&HashMap<String, UnpackedValue>> {
+        if let UnpackedValue::Map(value) = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_vec(&self) -> Option<&Vec<UnpackedValue>> {
+        if let UnpackedValue::Vec(value) = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+}
+
 pub fn unpack(format: &str, data: &[u8]) -> Vec<UnpackedValue> {
     let expanded_format = expand_format(format);
     let mut result = Vec::new();
