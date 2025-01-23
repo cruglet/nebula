@@ -5,7 +5,7 @@ pub mod wii;
 pub mod utils;
 pub mod neb;
 
-use neb::nsmbw;
+use neb::{godot, nsmbw};
 
 fn main() -> Result<()> {
     // Fetch command line arguments
@@ -30,13 +30,11 @@ fn main() -> Result<()> {
     if module == "nsmbw" {
 
         if command == "--dump" {
-            let _ = nsmbw::dump_level(input_path.to_owned(), output_path.to_owned());
+            let mut level = nsmbw::Level::new();
+            level.open_archive(input_path.to_string());
+            godot::BinarySerializer::value_to_file(&level.unpacked_buffer, output_path)?;
         }
 
-        // if command == "--read" {
-        //   let level = neb::nsmbw::read_level(input_path.to_string(), output_path.to_owned());
-        //   neb::godot::value_to_file(&level, "../test/test.bin");
-        // }
     } else {
         eprintln!("Unknown command or module. Usage: {} <module> --dump <path-to-file.arc> <output-directory>", args[0]);
         std::process::exit(1);
