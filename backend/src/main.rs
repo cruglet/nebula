@@ -30,9 +30,9 @@ fn main() -> Result<()> {
     if module == "nsmbw" {
 
         if command == "--dump" {
-            let mut level = nsmbw::Level::new();
+            let mut level = nsmbw::level::new();
             level.open_archive(input_path.to_string());
-            godot::BinarySerializer::value_to_file(&level.unpacked_buffer, output_path)?;
+            godot::binary_api::BinarySerializer::value_to_file(&level.unpacked_buffer, output_path)?;
         }
 
     } else {

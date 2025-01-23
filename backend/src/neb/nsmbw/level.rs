@@ -13,14 +13,13 @@ pub struct Level {
     pub unpacked_buffer: UnpackedValue
 }
 
-impl Level {
-
-    pub fn new() -> Self {
-        Self { 
-            unpacked_buffer: UnpackedValue::Vec(vec![])
-        }
+pub fn new() -> Level {
+    Level { 
+        unpacked_buffer: UnpackedValue::Vec(vec![])
     }
+}
 
+impl Level {
     pub fn open_archive(&mut self, archive_path: String) {
         
         let mut level_archive = U8::new();
