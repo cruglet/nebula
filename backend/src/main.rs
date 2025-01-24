@@ -1,5 +1,5 @@
-use std::env;
-use std::io::Result;
+use std::{env, fs};
+use std::io::{Read, Result, Write};
 
 pub mod wii;
 pub mod utils;
@@ -33,6 +33,9 @@ fn main() -> Result<()> {
             let mut level = nsmbw::level::new();
             level.open_archive(input_path.to_string());
             godot::binary_api::BinarySerializer::value_to_file(&level.unpacked_buffer, output_path)?;
+
+            let mut tileset = nsmbw::tileset::new();
+            tileset.open_archive("../test/real_tileset.arc".to_owned());
         }
 
     } else {
