@@ -5,7 +5,7 @@ use std::io::Write;
 
 use crate::utils::image_serializer;
 use crate::wii::arc::U8;
-use crate::wii::lz11;
+use crate::wii::lzss;
 
 
 // Translated from Puzzle-Next

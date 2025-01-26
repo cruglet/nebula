@@ -1,3 +1,3 @@
 pub mod arc;
-pub mod lz11;
+pub mod lzss;
 // pub mod wbfs;
