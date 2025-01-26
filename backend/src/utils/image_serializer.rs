@@ -12,8 +12,8 @@ fn prepare_rgb4a3_luts() -> (Vec<u32>, Vec<u32>) {
 
     // RGB4A3
     for d in 0..0x8000 {
-        let (mut alpha, mut red, mut green, mut blue);
-        if true { // Use alpha
+        let (mut alpha, red, green, blue);
+        if true { // use alpha
             alpha = d >> 12;
             alpha = alpha << 5 | alpha << 2 | alpha >> 1;
         } else {
@@ -37,32 +37,28 @@ fn prepare_rgb4a3_luts() -> (Vec<u32>, Vec<u32>) {
 }
 
 
-pub fn rgb4a3_decode(tex: &[u8], use_alpha: bool) -> image::ImageResult<()> {
+pub fn rgb4a3_decode(tex: &[u8], use_alpha: bool) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     let (rgb4a3lut, rgb4a3lut_no_alpha) = prepare_rgb4a3_luts();
     let lut = if use_alpha { &rgb4a3lut } else { &rgb4a3lut_no_alpha };
 
     let mut tx = 0;
     let mut ty = 0;
     let mut iter = tex.iter();
-    let mut dest = vec![0u32; 262144]; // 1024 * 256 = 262144 pixels
+    let mut dest = vec![0u32; 262144]; 
 
-    // Loop over all texels (16384 texels total)
     for i in 0..16384 {
         let temp1 = (i / 256) % 8;
         if temp1 == 0 || temp1 == 7 {
-            // Skip rows
             for _ in 0..32 {
-                iter.next(); // Skip texels
+                iter.next(); 
             }
         } else {
             let temp2 = i % 8;
             if temp2 == 0 || temp2 == 7 {
-                // Skip columns
                 for _ in 0..32 {
-                    iter.next(); // Skip texels
+                    iter.next();
                 }
             } else {
-                // Render the texel
                 for y in ty..ty + 4 {
                     for x in tx..tx + 4 {
                         if let Some(val1) = iter.next() {
@@ -84,7 +80,7 @@ pub fn rgb4a3_decode(tex: &[u8], use_alpha: bool) -> image::ImageResult<()> {
             }
         }
 
-        // Move on to the next texel
+        // move on to the next texel
         tx += 4;
         if tx >= 1024 {
             tx = 0;
@@ -92,7 +88,7 @@ pub fn rgb4a3_decode(tex: &[u8], use_alpha: bool) -> image::ImageResult<()> {
         }
     }
 
-    // Convert the dest vector into an ImageBuffer
+    // convert the dest vector into an ImageBuffer
     let mut img = ImageBuffer::<Rgba<u8>, Vec<u8>>::new(1024, 256);
     for (i, &pixel) in dest.iter().enumerate() {
         let a = ((pixel >> 24) & 0xFF) as u8;
@@ -104,7 +100,44 @@ pub fn rgb4a3_decode(tex: &[u8], use_alpha: bool) -> image::ImageResult<()> {
         img.put_pixel(x, y, Rgba([r, g, b, a]));
     }
 
-    // Save the image as PNG
-    img.save("../test/t.png")
+    img
 }
 
+pub fn minify_image(input_image: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let original_width = input_image.width();
+    let original_height = input_image.height();
+
+    let texel_size = 24;
+    let texel_gap = 8;
+    let edge_gap = 4;
+
+    // Calculate how many texels fit in the original image's width and height
+    let num_texels_x = (original_width - edge_gap * 2) / (texel_size + texel_gap);
+    let num_texels_y = (original_height - edge_gap * 2) / (texel_size + texel_gap);
+
+    // New dimensions after compacting texels
+    let new_width = num_texels_x * texel_size;
+    let new_height = num_texels_y * texel_size;
+
+    let mut output_image = ImageBuffer::<Rgba<u8>, Vec<u8>>::new(new_width, new_height);
+
+    for texel_y in 0..num_texels_y {
+        for texel_x in 0..num_texels_x {
+            let src_x = edge_gap + texel_x * (texel_size + texel_gap);
+            let src_y = edge_gap + texel_y * (texel_size + texel_gap);
+
+            let dest_x = texel_x * texel_size;
+            let dest_y = texel_y * texel_size;
+
+            // Copy the texel from the source to the destination
+            for y in 0..texel_size {
+                for x in 0..texel_size {
+                    let pixel = input_image.get_pixel(src_x + x, src_y + y);
+                    output_image.put_pixel(dest_x + x, dest_y + y, *pixel);
+                }
+            }
+        }
+    }
+
+    output_image
+}
