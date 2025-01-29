@@ -5,10 +5,6 @@ use std::fs;
 use crate::utils::byte_serializer::{self, UnpackedValue};
 use crate::wii::arc::U8;
 
-// Translated From Reggie-Updated
-// https://github.com/NSMBW-Community/Reggie-Updated/tree/fa12de16ea8df33068ae93ec4616f8e67dbc05ca
-
-
 pub struct Level {
     pub unpacked_buffer: UnpackedValue
 }

@@ -4,11 +4,6 @@ use crate::utils::image_serializer;
 use crate::wii::arc::U8;
 use crate::wii::lzss;
 
-
-// Translated from Puzzle-Next
-// https://github.com/Developers-Collective/Puzzle-Next
-
-
 pub struct Tileset {
     pub image_data: Vec<u8>
 }
