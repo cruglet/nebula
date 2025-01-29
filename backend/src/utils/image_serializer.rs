@@ -1,8 +1,5 @@
 extern crate image;
 
-// Sourced form NSMBLib-Updated
-// https://github.com/NSMBW-Community/NSMBLib-Updated/tree/master
-
 use image::{ImageBuffer, Rgba};
 use std::vec::Vec;
 
