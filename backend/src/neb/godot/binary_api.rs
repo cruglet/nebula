@@ -1,4 +1,4 @@
-use std::vec;
+use std::{fs, vec};
 use byteorder::{LittleEndian, WriteBytesExt};
 use crate::utils::byte_serializer::UnpackedValue;
 
@@ -16,7 +16,7 @@ const TYPE_ARRAY: u32 = 28;
 pub struct BinarySerializer {}
 
 impl BinarySerializer {
-    pub fn value_to_file(value: &UnpackedValue, path: &str) -> std::io::Result<()> {
+    pub fn value_to_file(value: &UnpackedValue, path: &str) -> Result<(), std::io::Error> {
         let mut bytes: Vec<u8> = vec![];
         bytes.extend_from_slice(&BinarySerializer::calculate_variant_size(value).to_le_bytes());
         bytes.extend(Self::value_to_bytes(value));
@@ -26,6 +26,15 @@ impl BinarySerializer {
             Err(e) => println!("Failed to write file: {}, error: {}", path, e),
         }
         result
+    }
+
+    pub fn value_from_file(path: &str) -> Option<UnpackedValue> {
+        if let Ok(data) = fs::read(path) {
+            let value = Self::read_variant(&data, &mut 4);
+            return Some(value);
+        }
+        println!("Error loading file!");
+        None
     }
 
     pub fn value_to_bytes(value: &UnpackedValue) -> Vec<u8> {
@@ -73,12 +82,12 @@ impl BinarySerializer {
                 let bytes = s.as_bytes();
                 buffer.write_u32::<LittleEndian>(bytes.len() as u32).unwrap();
                 buffer.extend_from_slice(bytes);
-                // Pad to 4 bytes alignment
+
                 let padding = (4 - (bytes.len() % 4)) % 4;
                 buffer.extend(std::iter::repeat(0).take(padding));
             }
             UnpackedValue::Vec(vec) => {
-                buffer.write_u32::<LittleEndian>(TYPE_ARRAY).unwrap(); // Using dictionary type as per hexdump
+                buffer.write_u32::<LittleEndian>(TYPE_ARRAY).unwrap(); // using dictionary type as per hexdump
                 buffer.write_u32::<LittleEndian>(vec.len() as u32).unwrap();
                 
                 for (_, item) in vec.iter().enumerate() {
@@ -99,6 +108,66 @@ impl BinarySerializer {
         }
     }
 
+    fn read_variant(buffer: &[u8], pos: &mut usize) -> UnpackedValue {
+
+        let type_id = u32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap());
+        *pos += 4;
+    
+        match type_id {
+            TYPE_INT => {
+                let value = i32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap());
+                *pos += 4;
+                UnpackedValue::Int32(value)
+            }
+            TYPE_FLOAT => {
+                let value = f32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap());
+                *pos += 4;
+                UnpackedValue::Float(value)
+            }
+            TYPE_BOOL => {
+                let value = i32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap());
+                *pos += 4;
+                UnpackedValue::Boolean(value != 0)
+            }
+            TYPE_STRING => {
+                let len = u32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap()) as usize;
+                *pos += 4;
+                let s = String::from_utf8(buffer[*pos..*pos + len].to_vec()).unwrap();
+                *pos += len;
+                *pos += (4 - (len % 4)) % 4;
+                UnpackedValue::String(s)
+            }
+            TYPE_ARRAY => {
+                let len = u32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap()) as usize;
+                *pos += 4;
+                let mut vec = Vec::with_capacity(len);
+                for _ in 0..len {
+                    vec.push(Self::read_variant(buffer, pos));
+                }
+                UnpackedValue::Vec(vec)
+            }
+            TYPE_DICTIONARY => {
+                let len = u32::from_le_bytes(buffer[*pos..*pos + 4].try_into().unwrap()) as usize;
+                *pos += 4;
+                let mut map = std::collections::HashMap::new();
+                for _ in 0..len {
+                    if let UnpackedValue::String(key) = Self::read_variant(buffer, pos) {
+                        let value = Self::read_variant(buffer, pos);
+                        map.insert(key, value);
+                    }
+                }
+                UnpackedValue::Map(map)
+            }
+            _ => {
+                *pos -= 4;
+                let x = &buffer[*pos..*pos + 4];
+                println!("pos: {}", pos);
+                println!("buffer: {:?}", x);
+                panic!("Unknown type ID: {}", type_id)
+            },
+        }
+    }
+    
     fn calculate_variant_size(value: &UnpackedValue) -> u32 {
         match value {
             UnpackedValue::UInt8(_) |
