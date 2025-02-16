@@ -70,7 +70,7 @@ fn dump_level(args: &Args) -> Result<()> {
 
 fn dump_tileset(args: &Args) -> Result<()> {
     let mut tileset = nsmbw::tileset::new();
-    tileset.open_archive(args.input_path.clone());
+    tileset.load(args.input_path.clone());
     tileset.extract(args.output_path.clone());
     Ok(())
 }
