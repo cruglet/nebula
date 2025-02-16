@@ -15,7 +15,15 @@ const TYPE_ARRAY: u32 = 28;
 
 pub struct BinarySerializer {}
 
+
 impl BinarySerializer {
+    /// Writes a given `UnpackedValue` into a Godot-readable binary file
+    /// ## Arguments
+    /// * `value` - A reference to an UnpackedValue that needs to be serialized
+    /// * `path` - The file path to write to
+    /// 
+    /// ## Returns
+    /// * `Ok(())` if successful, otherwise `Error`
     pub fn value_to_file(value: &UnpackedValue, path: &str) -> Result<(), std::io::Error> {
         let mut bytes: Vec<u8> = vec![];
         bytes.extend_from_slice(&BinarySerializer::calculate_variant_size(value).to_le_bytes());
@@ -28,6 +36,13 @@ impl BinarySerializer {
         result
     }
 
+    /// Reads a value from a Godot binary file and deserializes it
+    /// 
+    /// ## Arguments
+    /// * `path` - The file path
+    /// 
+    /// ## Returns
+    /// * `Some(UnpackedValue)` if successful, otherwise `None`
     pub fn value_from_file(path: &str) -> Option<UnpackedValue> {
         if let Ok(data) = fs::read(path) {
             let value = Self::read_variant(&data, &mut 4);
