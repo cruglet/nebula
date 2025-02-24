@@ -2,11 +2,11 @@
 /*  freedesktop_screensaver.cpp                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -61,9 +61,9 @@ void FreeDesktopScreenSaver::inhibit() {
 
 	String app_name_string = GLOBAL_GET("application/config/name");
 	CharString app_name_utf8 = app_name_string.utf8();
-	const char *app_name = app_name_string.is_empty() ? "Godot Engine" : app_name_utf8.get_data();
+	const char *app_name = app_name_string.is_empty() ? "Nebula Engine" : app_name_utf8.get_data();
 
-	const char *reason = "Running Godot Engine project";
+	const char *reason = "Running Nebula Engine project";
 
 	DBusMessage *message = dbus_message_new_method_call(
 			BUS_OBJECT_NAME, BUS_OBJECT_PATH, BUS_INTERFACE,

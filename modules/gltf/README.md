@@ -1,4 +1,4 @@
-# Godot GLTF import and export module
+# Nebula GLTF import and export module
 
 In a nutshell, the GLTF module works like this:
 

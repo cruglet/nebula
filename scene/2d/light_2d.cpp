@@ -2,11 +2,11 @@
 /*  light_2d.cpp                                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -442,7 +442,7 @@ real_t PointLight2D::get_texture_scale() const {
 
 #ifndef DISABLE_DEPRECATED
 bool PointLight2D::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "mode" && p_value.is_num()) { // Compatibility with Godot 3.x.
+	if (p_name == "mode" && p_value.is_num()) { // Compatibility with Nebula 3.x.
 		set_blend_mode((BlendMode)(int)p_value);
 		return true;
 	}

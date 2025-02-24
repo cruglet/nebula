@@ -55,7 +55,7 @@ if env.editor_build:
 env_thirdparty.add_source_files(thirdparty_obj, transcoder_sources)
 env.modules_sources += thirdparty_obj
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

@@ -2,11 +2,11 @@
 /*  register_types.cpp                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -54,11 +54,11 @@ void uninitialize_text_server_fb_module(ModuleInitializationLevel p_level) {
 
 #ifdef GDEXTENSION
 
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/core/defs.hpp>
-#include <godot_cpp/core/memory.hpp>
+#include <nebula_cpp/core/class_db.hpp>
+#include <nebula_cpp/core/defs.hpp>
+#include <nebula_cpp/core/memory.hpp>
 
-using namespace godot;
+using namespace nebula;
 
 extern "C" {
 

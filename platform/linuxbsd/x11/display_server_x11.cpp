@@ -2,11 +2,11 @@
 /*  display_server_x11.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -2598,7 +2598,7 @@ void DisplayServerX11::_set_wm_maximized(WindowID p_window, bool p_enabled) {
 	if (p_enabled && window_is_maximize_allowed(p_window)) {
 		// Wait for effective resizing (so the GLX context is too).
 		// Give up after 0.5s, it's not going to happen on this WM.
-		// https://github.com/godotengine/godot/issues/19978
+		// https://github.com/nebulaengine/nebula/issues/19978
 		for (int attempt = 0; window_get_mode(p_window) != WINDOW_MODE_MAXIMIZED && attempt < 50; attempt++) {
 			OS::get_singleton()->delay_usec(10'000);
 		}
@@ -3607,7 +3607,7 @@ void DisplayServerX11::_handle_key_event(WindowID p_window, XKeyEvent *p_event, 
 #endif
 	}
 
-	/* Phase 2, obtain a Godot keycode from the keysym */
+	/* Phase 2, obtain a Nebula keycode from the keysym */
 
 	// KeyMappingX11 just translated the X11 keysym to a PIGUI
 	// keysym, so it works in all platforms the same.
@@ -4087,7 +4087,7 @@ void DisplayServerX11::_set_input_focus(Window p_window, int p_revert_to) {
 	XGetInputFocus(x11_display, &focused_window, &focus_ret_state);
 
 	// Only attempt to change focus if the window isn't already focused, in order to
-	// prevent issues with Godot stealing input focus with alternative window managers.
+	// prevent issues with Nebula stealing input focus with alternative window managers.
 	if (p_window != focused_window) {
 		XSetInputFocus(x11_display, p_window, p_revert_to, CurrentTime);
 	}
@@ -4537,7 +4537,7 @@ void DisplayServerX11::process_events() {
 							xi.state[index] = pos;
 							if (xi.state.size() == 1) {
 								// X11 may send a motion event when a touch gesture begins, that would result
-								// in a spurious mouse motion event being sent to Godot; remember it to be able to filter it out
+								// in a spurious mouse motion event being sent to Nebula; remember it to be able to filter it out
 								xi.mouse_pos_to_filter = pos;
 							}
 							Input::get_singleton()->parse_input_event(st);
@@ -5228,13 +5228,13 @@ void DisplayServerX11::_update_context(WindowData &wd) {
 		CharString name_str;
 		switch (context) {
 			case CONTEXT_EDITOR:
-				name_str = "Godot_Editor";
+				name_str = "Nebula_Editor";
 				break;
 			case CONTEXT_PROJECTMAN:
-				name_str = "Godot_ProjectList";
+				name_str = "Nebula_ProjectList";
 				break;
 			case CONTEXT_ENGINE:
-				name_str = "Godot_Engine";
+				name_str = "Nebula_Engine";
 				break;
 		}
 
@@ -5242,12 +5242,12 @@ void DisplayServerX11::_update_context(WindowData &wd) {
 		if (context == CONTEXT_ENGINE) {
 			String config_name = GLOBAL_GET("application/config/name");
 			if (config_name.length() == 0) {
-				class_str = "Godot_Engine";
+				class_str = "Nebula_Engine";
 			} else {
 				class_str = config_name.utf8();
 			}
 		} else {
-			class_str = "Godot";
+			class_str = "Nebula";
 		}
 
 		classHint->res_class = class_str.ptrw();
@@ -5638,7 +5638,7 @@ DisplayServerX11::WindowID DisplayServerX11::_create_window(WindowMode p_mode, V
 		}
 
 		/* set the titlebar name */
-		XStoreName(x11_display, wd.x11_window, "Godot");
+		XStoreName(x11_display, wd.x11_window, "Nebula");
 		XSetWMProtocols(x11_display, wd.x11_window, &wm_delete, 1);
 		if (xdnd_aware != None) {
 			XChangeProperty(x11_display, wd.x11_window, xdnd_aware, XA_ATOM, 32, PropModeReplace, (unsigned char *)&xdnd_version, 1);
@@ -6217,7 +6217,7 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 
 			if (use_prime) {
 				print_line("Found discrete GPU, setting DRI_PRIME=1 to use it.");
-				print_line("Note: Set DRI_PRIME=0 in the environment to disable Godot from using the discrete GPU.");
+				print_line("Note: Set DRI_PRIME=0 in the environment to disable Nebula from using the discrete GPU.");
 				setenv("DRI_PRIME", "1", 1);
 			}
 		}

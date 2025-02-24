@@ -2,11 +2,11 @@
 /*  doc_tools.cpp                                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -1621,7 +1621,7 @@ Error DocTools::save_classes(const String &p_default_path, const HashMap<String,
 			// Modules are nested deep, so change the path to reference the same schema everywhere.
 			schema_path = save_path.contains("modules/") ? "../../../doc/class.xsd" : "../class.xsd";
 		} else {
-			schema_path = "https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd";
+			schema_path = "https://raw.githubusercontent.com/nebulaengine/nebula/master/doc/class.xsd";
 		}
 		header += vformat(
 				R"( xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="%s">)",

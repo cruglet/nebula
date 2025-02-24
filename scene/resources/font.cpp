@@ -2,11 +2,11 @@
 /*  font.cpp                                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -1894,7 +1894,7 @@ Error FontFile::_load_bitmap_font(const String &p_path, List<String> *r_image_fi
 								ERR_FAIL_V_MSG(ERR_CANT_CREATE, "Unsupported BMFont texture format.");
 							}
 						} else {
-							if ((ch[3] == 0) && (ch[0] == 4) && (ch[1] == 4) && (ch[2] == 4) && img->get_format() == Image::FORMAT_RGBA8) { // might be RGBA8 color, no outline (color part of the image should be sold white, but some apps designed for Godot 3 generate color fonts with this config)
+							if ((ch[3] == 0) && (ch[0] == 4) && (ch[1] == 4) && (ch[2] == 4) && img->get_format() == Image::FORMAT_RGBA8) { // might be RGBA8 color, no outline (color part of the image should be sold white, but some apps designed for Nebula 3 generate color fonts with this config)
 								outline = 0;
 								set_texture_image(0, Vector2i(base_size, 0), page, img);
 							} else if ((ch[0] == 0) && (ch[1] == 0) && (ch[2] == 0) && (ch[3] == 0)) { // RGBA8 color, no outline

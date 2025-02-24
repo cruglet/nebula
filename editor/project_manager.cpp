@@ -2,11 +2,12 @@
 /*  project_manager.cpp                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+
+/* Copyright (c) 2025 Cruglet.                                            *//* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -36,9 +37,11 @@
 #include "core/io/file_access.h"
 #include "core/io/resource_saver.h"
 #include "core/io/stream_peer_tls.h"
+#include "core/object/callable_method_pointer.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/os/time.h"
+#include "core/templates/vector.h"
 #include "core/version.h"
 #include "editor/editor_about.h"
 #include "editor/editor_settings.h"
@@ -46,7 +49,6 @@
 #include "editor/engine_update_label.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/gui/editor_title_bar.h"
-#include "editor/plugins/asset_library_editor_plugin.h"
 #include "editor/project_manager/project_dialog.h"
 #include "editor/project_manager/project_list.h"
 #include "editor/project_manager/project_tag.h"
@@ -70,8 +72,9 @@
 #include "servers/display_server.h"
 #include "servers/navigation_server_3d.h"
 #include "servers/physics_server_2d.h"
+#include "servers/physics_server_3d.h"
 
-constexpr int GODOT4_CONFIG_VERSION = 5;
+constexpr int NEBULA4_CONFIG_VERSION = 5;
 
 ProjectManager *ProjectManager::singleton = nullptr;
 
@@ -126,16 +129,16 @@ void ProjectManager::_notification(int p_what) {
 // Utility data.
 
 Ref<Texture2D> ProjectManager::_file_dialog_get_icon(const String &p_path) {
-	if (p_path.get_extension().to_lower() == "godot") {
-		return singleton->icon_type_cache["GodotMonochrome"];
+	if (p_path.get_extension().to_lower() == "nebula") {
+		return singleton->icon_type_cache["NebulaMonochrome"];
 	}
 
 	return singleton->icon_type_cache["Object"];
 }
 
 Ref<Texture2D> ProjectManager::_file_dialog_get_thumbnail(const String &p_path) {
-	if (p_path.get_extension().to_lower() == "godot") {
-		return singleton->icon_type_cache["GodotFile"];
+	if (p_path.get_extension().to_lower() == "nebula") {
+		return singleton->icon_type_cache["NebulaFile"];
 	}
 
 	return Ref<Texture2D>();
@@ -225,8 +228,8 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 
 		title_bar_logo->set_icon(get_editor_theme_icon(SNAME("TitleBarLogo")));
 
-		_set_main_view_icon(MAIN_VIEW_PROJECTS, get_editor_theme_icon(SNAME("ProjectList")));
-		_set_main_view_icon(MAIN_VIEW_ASSETLIB, get_editor_theme_icon(SNAME("AssetLib")));
+		_set_main_view_icon(MAIN_VIEW_PROJECTS, get_editor_theme_icon(SNAME("Home")));
+		_set_main_view_icon(MAIN_VIEW_THEMES, get_editor_theme_icon(SNAME("Clear")));
 
 		// Project list.
 		{
@@ -235,7 +238,6 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 
 			empty_list_create_project->set_icon(get_editor_theme_icon(SNAME("Add")));
 			empty_list_import_project->set_icon(get_editor_theme_icon(SNAME("Load")));
-			empty_list_open_assetlib->set_icon(get_editor_theme_icon(SNAME("AssetLib")));
 
 			empty_list_online_warning->add_theme_font_override(SceneStringName(font), get_theme_font(SNAME("italic"), EditorStringName(EditorFonts)));
 			empty_list_online_warning->add_theme_color_override(SceneStringName(font_color), get_theme_color(SNAME("font_placeholder_color"), EditorStringName(Editor)));
@@ -248,12 +250,8 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 			create_btn->set_icon(get_editor_theme_icon(SNAME("Add")));
 			import_btn->set_icon(get_editor_theme_icon(SNAME("Load")));
 			scan_btn->set_icon(get_editor_theme_icon(SNAME("Search")));
-			open_btn->set_icon(get_editor_theme_icon(SNAME("Edit")));
-			run_btn->set_icon(get_editor_theme_icon(SNAME("Play")));
-			rename_btn->set_icon(get_editor_theme_icon(SNAME("Rename")));
 			manage_tags_btn->set_icon(get_editor_theme_icon("Script"));
-			erase_btn->set_icon(get_editor_theme_icon(SNAME("Remove")));
-			erase_missing_btn->set_icon(get_editor_theme_icon(SNAME("Clear")));
+			erase_missing_btn->set_icon(get_editor_theme_icon(SNAME("Remove")));
 			create_tag_btn->set_icon(get_editor_theme_icon("Add"));
 
 			tag_error->add_theme_color_override(SceneStringName(font_color), get_theme_color("error_color", EditorStringName(Editor)));
@@ -262,18 +260,9 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 			create_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			import_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			scan_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
-			open_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
-			run_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			rename_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			manage_tags_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
-			erase_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			erase_missing_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
-		}
-
-		// Asset library popup.
-		if (asset_library) {
-			// Removes extra border margins.
-			asset_library->add_theme_style_override(SceneStringName(panel), memnew(StyleBoxEmpty));
 		}
 	}
 }
@@ -344,26 +333,11 @@ void ProjectManager::_select_main_view(int p_id) {
 		// back to the Projects tab.
 		search_box->grab_focus();
 	}
-
-	// The Templates tab's search field is focused on display in the asset
-	// library editor plugin code.
 #endif
 }
 
 void ProjectManager::_show_about() {
 	about_dialog->popup_centered(Size2(780, 500) * EDSCALE);
-}
-
-void ProjectManager::_open_asset_library_confirmed() {
-	const int network_mode = EDITOR_GET("network/connection/network_mode");
-	if (network_mode == EditorSettings::NETWORK_OFFLINE) {
-		EditorSettings::get_singleton()->set_setting("network/connection/network_mode", EditorSettings::NETWORK_ONLINE);
-		EditorSettings::get_singleton()->notify_changes();
-		EditorSettings::get_singleton()->save();
-	}
-
-	asset_library->disable_community_support();
-	_select_main_view(MAIN_VIEW_ASSETLIB);
 }
 
 void ProjectManager::_show_error(const String &p_message, const Size2 &p_min_size) {
@@ -411,14 +385,10 @@ void ProjectManager::_update_list_placeholder() {
 		return;
 	}
 
-	empty_list_open_assetlib->set_visible(asset_library);
-
 	const int network_mode = EDITOR_GET("network/connection/network_mode");
 	if (network_mode == EditorSettings::NETWORK_OFFLINE) {
-		empty_list_open_assetlib->set_text(TTR("Go Online and Open Asset Library"));
 		empty_list_online_warning->set_visible(true);
 	} else {
-		empty_list_open_assetlib->set_text(TTR("Open Asset Library"));
 		empty_list_online_warning->set_visible(false);
 	}
 
@@ -449,6 +419,8 @@ void ProjectManager::_run_project_confirm() {
 
 	for (int i = 0; i < selected_list.size(); ++i) {
 		const String &selected_main = selected_list[i].main_scene;
+		ProjectListItemControl *item = selected_list[i].control;
+		item->connect(SNAME("remove_pressed"), callable_mp(this, &ProjectManager::_erase_project));
 		if (selected_main.is_empty()) {
 			_show_error(TTR("Can't run project: Project has no main scene defined.\nPlease edit the project and set the main scene in the Project Settings under the \"Application\" category."));
 			continue;
@@ -485,7 +457,7 @@ void ProjectManager::_open_selected_projects() {
 
 	const HashSet<String> &selected_list = project_list->get_selected_project_keys();
 	for (const String &path : selected_list) {
-		String conf = path.path_join("project.godot");
+		String conf = path.path_join("project.nebula");
 
 		if (!FileAccess::exists(conf)) {
 			loading_label->hide();
@@ -552,19 +524,19 @@ void ProjectManager::_open_selected_projects_ask() {
 
 	// Check if the config_version property was empty or 0.
 	if (config_version == 0) {
-		ask_update_settings->set_text(vformat(TTR("The selected project \"%s\" does not specify its supported Godot version in its configuration file (\"project.godot\").\n\nProject path: %s\n\nIf you proceed with opening it, it will be converted to Godot's current configuration file format.\n\nWarning: You won't be able to open the project with previous versions of the engine anymore."), project.project_name, project.path));
+		ask_update_settings->set_text(vformat(TTR("The selected project \"%s\" does not specify its supported Nebula version in its configuration file (\"project.nebula\").\n\nProject path: %s\n\nIf you proceed with opening it, it will be converted to Nebula's current configuration file format.\n\nWarning: You won't be able to open the project with previous versions of the engine anymore."), project.project_name, project.path));
 		ask_update_settings->popup_centered(popup_min_size);
 		return;
 	}
 	// Check if we need to convert project settings from an earlier engine version.
 	if (config_version < ProjectSettings::CONFIG_VERSION) {
-		if (config_version == GODOT4_CONFIG_VERSION - 1 && ProjectSettings::CONFIG_VERSION == GODOT4_CONFIG_VERSION) { // Conversion from Godot 3 to 4.
+		if (config_version == NEBULA4_CONFIG_VERSION - 1 && ProjectSettings::CONFIG_VERSION == NEBULA4_CONFIG_VERSION) { // Conversion from Nebula 3 to 4.
 			full_convert_button->show();
-			ask_update_settings->set_text(vformat(TTR("The selected project \"%s\" was generated by Godot 3.x, and needs to be converted for Godot 4.x.\n\nProject path: %s\n\nYou have three options:\n- Convert only the configuration file (\"project.godot\"). Use this to open the project without attempting to convert its scenes, resources and scripts.\n- Convert the entire project including its scenes, resources and scripts (recommended if you are upgrading).\n- Do nothing and go back.\n\nWarning: If you select a conversion option, you won't be able to open the project with previous versions of the engine anymore."), project.project_name, project.path));
-			ask_update_settings->get_ok_button()->set_text(TTR("Convert project.godot Only"));
+			ask_update_settings->set_text(vformat(TTR("The selected project \"%s\" was generated by Nebula 3.x, and needs to be converted for Nebula 4.x.\n\nProject path: %s\n\nYou have three options:\n- Convert only the configuration file (\"project.nebula\"). Use this to open the project without attempting to convert its scenes, resources and scripts.\n- Convert the entire project including its scenes, resources and scripts (recommended if you are upgrading).\n- Do nothing and go back.\n\nWarning: If you select a conversion option, you won't be able to open the project with previous versions of the engine anymore."), project.project_name, project.path));
+			ask_update_settings->get_ok_button()->set_text(TTR("Convert project.nebula Only"));
 		} else {
 			ask_update_settings->set_text(vformat(TTR("The selected project \"%s\" was generated by an older engine version, and needs to be converted for this version.\n\nProject path: %s\n\nDo you want to convert it?\n\nWarning: You won't be able to open the project with previous versions of the engine anymore."), project.project_name, project.path));
-			ask_update_settings->get_ok_button()->set_text(TTR("Convert project.godot"));
+			ask_update_settings->get_ok_button()->set_text(TTR("Convert project.nebula"));
 		}
 		ask_update_settings->popup_centered(popup_min_size);
 		ask_update_settings->get_cancel_button()->grab_focus(); // To prevent accidents.
@@ -575,28 +547,28 @@ void ProjectManager::_open_selected_projects_ask() {
 		_show_error(vformat(TTR("Can't open project \"%s\" at the following path:\n\n%s\n\nThe project settings were created by a newer engine version, whose settings are not compatible with this version."), project.project_name, project.path), popup_min_size);
 		return;
 	}
-	// Check if the project is using features not supported by this build of Godot.
+	// Check if the project is using features not supported by this build of Nebula.
 	if (!unsupported_features.is_empty()) {
 		String warning_message = "";
 		for (int i = 0; i < unsupported_features.size(); i++) {
 			String feature = unsupported_features[i];
 			if (feature == "Double Precision") {
-				warning_message += TTR("Warning: This project uses double precision floats, but this version of\nGodot uses single precision floats. Opening this project may cause data loss.\n\n");
+				warning_message += TTR("Warning: This project uses double precision floats, but this version of\nNebula uses single precision floats. Opening this project may cause data loss.\n\n");
 				unsupported_features.remove_at(i);
 				i--;
 			} else if (feature == "C#") {
-				warning_message += TTR("Warning: This project uses C#, but this build of Godot does not have\nthe Mono module. If you proceed you will not be able to use any C# scripts.\n\n");
+				warning_message += TTR("Warning: This project uses C#, but this build of Nebula does not have\nthe Mono module. If you proceed you will not be able to use any C# scripts.\n\n");
 				unsupported_features.remove_at(i);
 				i--;
 			} else if (ProjectList::project_feature_looks_like_version(feature)) {
-				warning_message += vformat(TTR("Warning: This project was last edited in Godot %s. Opening will change it to Godot %s.\n\n"), Variant(feature), Variant(VERSION_BRANCH));
+				warning_message += vformat(TTR("Warning: This project was last edited in Nebula %s. Opening will change it to Nebula %s.\n\n"), Variant(feature), Variant(VERSION_BRANCH));
 				unsupported_features.remove_at(i);
 				i--;
 			}
 		}
 		if (!unsupported_features.is_empty()) {
 			String unsupported_features_str = String(", ").join(unsupported_features);
-			warning_message += vformat(TTR("Warning: This project uses the following features not supported by this build of Godot:\n\n%s\n\n"), unsupported_features_str);
+			warning_message += vformat(TTR("Warning: This project uses the following features not supported by this build of Nebula:\n\n%s\n\n"), unsupported_features_str);
 		}
 		warning_message += TTR("Open anyway? Project will be modified.");
 		ask_update_label->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
@@ -641,7 +613,8 @@ void ProjectManager::_rename_project() {
 	}
 }
 
-void ProjectManager::_erase_project() {
+void ProjectManager::_erase_project(int index) {
+	project_list->_select_project_nocheck(index);
 	const HashSet<String> &selected_list = project_list->get_selected_project_keys();
 
 	if (selected_list.size() == 0) {
@@ -656,7 +629,7 @@ void ProjectManager::_erase_project() {
 	}
 
 	erase_ask_label->set_text(confirm_message);
-	//delete_project_contents->set_pressed(false);
+	delete_project_contents->set_pressed(false);
 	erase_ask->popup_centered();
 }
 
@@ -689,11 +662,8 @@ void ProjectManager::_update_project_buttons() {
 		}
 	}
 
-	erase_btn->set_disabled(empty_selection);
-	open_btn->set_disabled(empty_selection || is_missing_project_selected);
 	rename_btn->set_disabled(empty_selection || is_missing_project_selected);
 	manage_tags_btn->set_disabled(empty_selection || is_missing_project_selected || selected_projects.size() > 1);
-	run_btn->set_disabled(empty_selection || is_missing_project_selected);
 
 	erase_missing_btn->set_disabled(!project_list->is_any_project_missing());
 }
@@ -802,22 +772,22 @@ void ProjectManager::_apply_project_tags() {
 		}
 	}
 
-	const String project_godot = project_list->get_selected_projects()[0].path.path_join("project.godot");
-	ProjectSettings *cfg = memnew(ProjectSettings(project_godot));
+	const String project_nebula = project_list->get_selected_projects()[0].path.path_join("project.nebula");
+	ProjectSettings *cfg = memnew(ProjectSettings(project_nebula));
 	if (!cfg->is_project_loaded()) {
 		memdelete(cfg);
-		tag_edit_error->set_text(vformat(TTR("Couldn't load project at '%s'. It may be missing or corrupted."), project_godot));
+		tag_edit_error->set_text(vformat(TTR("Couldn't load project at '%s'. It may be missing or corrupted."), project_nebula));
 		tag_edit_error->show();
 		callable_mp((Window *)tag_manage_dialog, &Window::show).call_deferred(); // Make sure the dialog does not disappear.
 		return;
 	} else {
 		tags.sort();
 		cfg->set("application/config/tags", tags);
-		Error err = cfg->save_custom(project_godot);
+		Error err = cfg->save_custom(project_nebula);
 		memdelete(cfg);
 
 		if (err != OK) {
-			tag_edit_error->set_text(vformat(TTR("Couldn't save project at '%s' (error %d)."), project_godot, err));
+			tag_edit_error->set_text(vformat(TTR("Couldn't save project at '%s' (error %d)."), project_nebula, err));
 			tag_edit_error->show();
 			callable_mp((Window *)tag_manage_dialog, &Window::show).call_deferred();
 			return;
@@ -901,7 +871,7 @@ void ProjectManager::_perform_full_project_conversion() {
 	Error err = OS::get_singleton()->create_instance(args);
 	ERR_FAIL_COND(err);
 
-	project_list->set_project_version(path, GODOT4_CONFIG_VERSION);
+	project_list->set_project_version(path, NEBULA4_CONFIG_VERSION);
 }
 
 // Input and I/O.
@@ -1105,7 +1075,7 @@ ProjectManager::ProjectManager() {
 		OS::get_singleton()->set_low_processor_usage_mode(true);
 	}
 
-	// TRANSLATORS: This refers to the application where users manage their Godot projects.
+	// TRANSLATORS: This refers to the application where users manage their Nebula projects.
 	DisplayServer::get_singleton()->window_set_title(VERSION_NAME + String(" - ") + TTR("Project Manager", "Application"));
 
 	SceneTree::get_singleton()->get_root()->connect("files_dropped", callable_mp(this, &ProjectManager::_files_dropped));
@@ -1191,11 +1161,21 @@ ProjectManager::ProjectManager() {
 		right_hbox->set_stretch_ratio(1.0);
 		title_bar->add_child(right_hbox);
 
+		erase_missing_btn = memnew(Button);
+		erase_missing_btn->set_flat(true);
+		erase_missing_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_erase_missing_projects));
+		right_hbox->add_child(erase_missing_btn);
+
+		manage_tags_btn = memnew(Button);
+		manage_tags_btn->set_flat(true);
+		right_hbox->add_child(manage_tags_btn);
+
 		quick_settings_button = memnew(Button);
 		quick_settings_button->set_flat(true);
-		quick_settings_button->set_text(TTR("Settings"));
 		right_hbox->add_child(quick_settings_button);
 		quick_settings_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_show_quick_settings));
+
+
 
 		if (can_expand) {
 			// Add spacer to avoid other controls under the window minimize/maximize/close buttons (right side).
@@ -1213,7 +1193,11 @@ ProjectManager::ProjectManager() {
 	{
 		local_projects_vb = memnew(VBoxContainer);
 		local_projects_vb->set_name("LocalProjectsTab");
-		_add_main_view(MAIN_VIEW_PROJECTS, TTR("Projects"), Ref<Texture2D>(), local_projects_vb);
+		_add_main_view(MAIN_VIEW_PROJECTS, TTR("Home"), Ref<Texture2D>(), local_projects_vb);
+
+		local_themes_vb = memnew(VBoxContainer);
+		local_themes_vb->set_name("LocalThemesTab");
+		_add_main_view(MAIN_VIEW_THEMES, TTR("Themes"), Ref<Texture2D>(), local_themes_vb);
 
 		// Project list's top bar.
 		{
@@ -1292,6 +1276,7 @@ ProjectManager::ProjectManager() {
 			project_list->connect(ProjectList::SIGNAL_LIST_CHANGED, callable_mp(this, &ProjectManager::_update_list_placeholder));
 			project_list->connect(ProjectList::SIGNAL_SELECTION_CHANGED, callable_mp(this, &ProjectManager::_update_project_buttons));
 			project_list->connect(ProjectList::SIGNAL_PROJECT_ASK_OPEN, callable_mp(this, &ProjectManager::_open_selected_projects_ask));
+			project_list->connect(ProjectList::SIGNAL_PROJECT_REMOVE, callable_mp(this, &ProjectManager::_erase_project));
 
 			// Empty project list placeholder.
 			{
@@ -1307,8 +1292,8 @@ ProjectManager::ProjectManager() {
 				empty_list_message->set_h_size_flags(SIZE_EXPAND_FILL);
 				empty_list_message->add_theme_style_override(CoreStringName(normal), memnew(StyleBoxEmpty));
 
-				const String line1 = TTR("You don't have any projects yet.");
-				const String line2 = TTR("Get started by creating a new one,\nimporting one that exists, or by downloading a project template from the Asset Library!");
+				const String line1 = TTR("It seems like you haven't set up a project yet.\n");
+				const String line2 = TTR("Get started by either CREATING or IMPORTING a project.");
 				empty_list_message->set_text(vformat("[center][b]%s[/b] %s[/center]", line1, line2));
 				empty_list_placeholder->add_child(empty_list_message);
 
@@ -1328,102 +1313,42 @@ ProjectManager::ProjectManager() {
 				empty_list_actions->add_child(empty_list_import_project);
 				empty_list_import_project->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_import_project));
 
-				empty_list_open_assetlib = memnew(Button);
-				empty_list_open_assetlib->set_text(TTR("Open Asset Library"));
-				empty_list_open_assetlib->set_theme_type_variation("PanelBackgroundButton");
-				empty_list_actions->add_child(empty_list_open_assetlib);
-				empty_list_open_assetlib->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_asset_library_confirmed));
-
 				empty_list_online_warning = memnew(Label);
 				empty_list_online_warning->set_horizontal_alignment(HorizontalAlignment::HORIZONTAL_ALIGNMENT_CENTER);
 				empty_list_online_warning->set_custom_minimum_size(Size2(220, 0) * EDSCALE);
 				empty_list_online_warning->set_autowrap_mode(TextServer::AUTOWRAP_WORD);
 				empty_list_online_warning->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-				empty_list_online_warning->set_text(TTR("Note: The Asset Library requires an online connection and involves sending data over the internet."));
 				empty_list_placeholder->add_child(empty_list_online_warning);
 			}
 
 			// The side bar with the edit, run, rename, etc. buttons.
-			VBoxContainer *project_list_sidebar = memnew(VBoxContainer);
-			project_list_sidebar->set_custom_minimum_size(Size2(120, 120));
-			project_list_hbox->add_child(project_list_sidebar);
-
-			project_list_sidebar->add_child(memnew(HSeparator));
-
-			open_btn = memnew(Button);
-			open_btn->set_text(TTR("Edit"));
-			open_btn->set_shortcut(ED_SHORTCUT("project_manager/edit_project", TTR("Edit Project"), KeyModifierMask::CMD_OR_CTRL | Key::E));
-			open_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_selected_projects_ask));
-			project_list_sidebar->add_child(open_btn);
-
-			run_btn = memnew(Button);
-			run_btn->set_text(TTR("Run"));
-			run_btn->set_shortcut(ED_SHORTCUT("project_manager/run_project", TTR("Run Project"), KeyModifierMask::CMD_OR_CTRL | Key::R));
-			run_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_run_project));
-			project_list_sidebar->add_child(run_btn);
-
 			rename_btn = memnew(Button);
 			rename_btn->set_text(TTR("Rename"));
 			// The F2 shortcut isn't overridden with Enter on macOS as Enter is already used to edit a project.
 			rename_btn->set_shortcut(ED_SHORTCUT("project_manager/rename_project", TTR("Rename Project"), Key::F2));
 			rename_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_rename_project));
-			project_list_sidebar->add_child(rename_btn);
+			rename_btn->set_scale(Vector2(0, 0));
+			add_child(rename_btn);
 
-			manage_tags_btn = memnew(Button);
-			manage_tags_btn->set_text(TTR("Manage Tags"));
-			project_list_sidebar->add_child(manage_tags_btn);
-
-			erase_btn = memnew(Button);
-			erase_btn->set_text(TTR("Remove"));
-			erase_btn->set_shortcut(ED_SHORTCUT("project_manager/remove_project", TTR("Remove Project"), Key::KEY_DELETE));
-			erase_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_erase_project));
-			project_list_sidebar->add_child(erase_btn);
-
-			Control *filler = memnew(Control);
-			filler->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-			project_list_sidebar->add_child(filler);
-
-			erase_missing_btn = memnew(Button);
-			erase_missing_btn->set_text(TTR("Remove Missing"));
-			erase_missing_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_erase_missing_projects));
-			project_list_sidebar->add_child(erase_missing_btn);
 		}
-	}
-
-	// Asset library view.
-	if (AssetLibraryEditorPlugin::is_available()) {
-		asset_library = memnew(EditorAssetLibrary(true));
-		asset_library->set_name("AssetLibraryTab");
-		_add_main_view(MAIN_VIEW_ASSETLIB, TTR("Asset Library"), Ref<Texture2D>(), asset_library);
-		asset_library->connect("install_asset", callable_mp(this, &ProjectManager::_install_project));
-	} else {
-		VBoxContainer *asset_library_filler = memnew(VBoxContainer);
-		asset_library_filler->set_name("AssetLibraryTab");
-		Button *asset_library_toggle = _add_main_view(MAIN_VIEW_ASSETLIB, TTR("Asset Library"), Ref<Texture2D>(), asset_library_filler);
-		asset_library_toggle->set_disabled(true);
-		asset_library_toggle->set_tooltip_text(TTR("Asset Library not available (due to using Web editor, or because SSL support disabled)."));
 	}
 
 	// Footer bar.
 	{
 		HBoxContainer *footer_bar = memnew(HBoxContainer);
-		footer_bar->set_alignment(BoxContainer::ALIGNMENT_END);
+		footer_bar->set_alignment(BoxContainer::ALIGNMENT_CENTER);
 		footer_bar->add_theme_constant_override("separation", 20 * EDSCALE);
 		main_vbox->add_child(footer_bar);
 
 #ifdef ENGINE_UPDATE_CHECK_ENABLED
-		EngineUpdateLabel *update_label = memnew(EngineUpdateLabel);
-		footer_bar->add_child(update_label);
-		update_label->connect("offline_clicked", callable_mp(this, &ProjectManager::_show_quick_settings));
+		//EngineUpdateLabel *update_label = memnew(EngineUpdateLabel);
+		//footer_bar->add_child(update_label);
+		//update_label->connect("offline_clicked", callable_mp(this, &ProjectManager::_show_quick_settings));
 #endif
 
 		version_btn = memnew(LinkButton);
-		String hash = String(VERSION_HASH);
-		if (hash.length() != 0) {
-			hash = " " + vformat("[%s]", hash.left(9));
-		}
-		version_btn->set_text("v" VERSION_FULL_BUILD + hash);
-		// Fade the version label to be less prominent, but still readable.
+		// Reminder that VERSION_HASH exists
+		version_btn->set_text("v" VERSION_FULL_BUILD);
 		version_btn->set_self_modulate(Color(1, 1, 1, 0.6));
 		version_btn->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
 		String build_date;
@@ -1468,11 +1393,9 @@ ProjectManager::ProjectManager() {
 		erase_ask_label = memnew(Label);
 		erase_ask_vb->add_child(erase_ask_label);
 
-		// Comment out for now until we have a better warning system to
-		// ensure users delete their project only.
-		//delete_project_contents = memnew(CheckBox);
-		//delete_project_contents->set_text(TTR("Also delete project contents (no undo!)"));
-		//erase_ask_vb->add_child(delete_project_contents);
+		delete_project_contents = memnew(CheckBox);
+		delete_project_contents->set_text(TTR("Also delete project contents (no undo!)"));
+		erase_ask_vb->add_child(delete_project_contents);
 
 		multi_open_ask = memnew(ConfirmationDialog);
 		multi_open_ask->set_ok_button_text(TTR("Edit"));
@@ -1493,7 +1416,7 @@ ProjectManager::ProjectManager() {
 
 		ask_full_convert_dialog = memnew(ConfirmationDialog);
 		ask_full_convert_dialog->set_autowrap(true);
-		ask_full_convert_dialog->set_text(TTR("This option will perform full project conversion, updating scenes, resources and scripts from Godot 3 to work in Godot 4.\n\nNote that this is a best-effort conversion, i.e. it makes upgrading the project easier, but it will not open out-of-the-box and will still require manual adjustments.\n\nIMPORTANT: Make sure to backup your project before converting, as this operation makes it impossible to open it in older versions of Godot."));
+		ask_full_convert_dialog->set_text(TTR("This option will perform full project conversion, updating scenes, resources and scripts from Nebula 3 to work in Nebula 4.\n\nNote that this is a best-effort conversion, i.e. it makes upgrading the project easier, but it will not open out-of-the-box and will still require manual adjustments.\n\nIMPORTANT: Make sure to backup your project before converting, as this operation makes it impossible to open it in older versions of Nebula."));
 		ask_full_convert_dialog->connect(SceneStringName(confirmed), callable_mp(this, &ProjectManager::_perform_full_project_conversion));
 		add_child(ask_full_convert_dialog);
 
@@ -1583,9 +1506,11 @@ ProjectManager::ProjectManager() {
 	{
 		project_list->load_project_list();
 
+
 		Ref<DirAccess> dir_access = DirAccess::create(DirAccess::AccessType::ACCESS_FILESYSTEM);
 
 		String default_project_path = EDITOR_GET("filesystem/directories/default_project_path");
+
 		if (!default_project_path.is_empty() && !dir_access->dir_exists(default_project_path)) {
 			Error error = dir_access->make_dir_recursive(default_project_path);
 			if (error != OK) {

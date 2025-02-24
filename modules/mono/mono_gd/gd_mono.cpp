@@ -2,11 +2,11 @@
 /*  gd_mono.cpp                                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -32,7 +32,7 @@
 
 #include "../csharp_script.h"
 #include "../glue/runtime_interop.h"
-#include "../godotsharp_dirs.h"
+#include "../nebulasharp_dirs.h"
 #include "../thirdparty/coreclr_delegates.h"
 #include "../thirdparty/hostfxr.h"
 #include "../utils/path_utils.h"
@@ -87,7 +87,7 @@ String find_hostfxr() {
 #ifdef TOOLS_ENABLED
 	String dotnet_root;
 	String fxr_path;
-	if (godotsharp::hostfxr_resolver::try_get_path(dotnet_root, fxr_path)) {
+	if (nebulasharp::hostfxr_resolver::try_get_path(dotnet_root, fxr_path)) {
 		return fxr_path;
 	}
 
@@ -108,7 +108,7 @@ String find_hostfxr() {
 		// allow us to fail gracefully and show some helpful information in the editor.
 
 		dotnet_root = dotnet_exe.get_base_dir();
-		if (godotsharp::hostfxr_resolver::try_get_path_from_dotnet_root(dotnet_root, fxr_path)) {
+		if (nebulasharp::hostfxr_resolver::try_get_path_from_dotnet_root(dotnet_root, fxr_path)) {
 			return fxr_path;
 		}
 	}
@@ -121,13 +121,13 @@ String find_hostfxr() {
 #else
 
 #if defined(WINDOWS_ENABLED)
-	String probe_path = GodotSharpDirs::get_api_assemblies_dir()
+	String probe_path = NebulaSharpDirs::get_api_assemblies_dir()
 								.path_join("hostfxr.dll");
 #elif defined(MACOS_ENABLED)
-	String probe_path = GodotSharpDirs::get_api_assemblies_dir()
+	String probe_path = NebulaSharpDirs::get_api_assemblies_dir()
 								.path_join("libhostfxr.dylib");
 #elif defined(UNIX_ENABLED)
-	String probe_path = GodotSharpDirs::get_api_assemblies_dir()
+	String probe_path = NebulaSharpDirs::get_api_assemblies_dir()
 								.path_join("libhostfxr.so");
 #else
 #error "Platform not supported (yet?)"
@@ -244,27 +244,27 @@ load_assembly_and_get_function_pointer_fn initialize_hostfxr_self_contained(
 #endif
 
 #ifdef TOOLS_ENABLED
-using godot_plugins_initialize_fn = bool (*)(void *, bool, gdmono::PluginCallbacks *, GDMonoCache::ManagedCallbacks *, const void **, int32_t);
+using nebula_plugins_initialize_fn = bool (*)(void *, bool, gdmono::PluginCallbacks *, GDMonoCache::ManagedCallbacks *, const void **, int32_t);
 #else
-using godot_plugins_initialize_fn = bool (*)(void *, GDMonoCache::ManagedCallbacks *, const void **, int32_t);
+using nebula_plugins_initialize_fn = bool (*)(void *, GDMonoCache::ManagedCallbacks *, const void **, int32_t);
 #endif
 
 #ifdef TOOLS_ENABLED
-godot_plugins_initialize_fn initialize_hostfxr_and_godot_plugins(bool &r_runtime_initialized) {
-	godot_plugins_initialize_fn godot_plugins_initialize = nullptr;
+nebula_plugins_initialize_fn initialize_hostfxr_and_nebula_plugins(bool &r_runtime_initialized) {
+	nebula_plugins_initialize_fn nebula_plugins_initialize = nullptr;
 
-	HostFxrCharString godot_plugins_path = str_to_hostfxr(
-			GodotSharpDirs::get_api_assemblies_dir().path_join("GodotPlugins.dll"));
+	HostFxrCharString nebula_plugins_path = str_to_hostfxr(
+			NebulaSharpDirs::get_api_assemblies_dir().path_join("NebulaPlugins.dll"));
 
 	HostFxrCharString config_path = str_to_hostfxr(
-			GodotSharpDirs::get_api_assemblies_dir().path_join("GodotPlugins.runtimeconfig.json"));
+			NebulaSharpDirs::get_api_assemblies_dir().path_join("NebulaPlugins.runtimeconfig.json"));
 
 	load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer =
 			initialize_hostfxr_for_config(get_data(config_path));
 
 	if (load_assembly_and_get_function_pointer == nullptr) {
 		// Show a message box to the user to make the problem explicit (and explain a potential crash).
-		OS::get_singleton()->alert(TTR("Unable to load .NET runtime, no compatible version was found.\nAttempting to create/edit a project will lead to a crash.\n\nPlease install the .NET SDK 6.0 or later from https://dotnet.microsoft.com/en-us/download and restart Godot."), TTR("Failed to load .NET runtime"));
+		OS::get_singleton()->alert(TTR("Unable to load .NET runtime, no compatible version was found.\nAttempting to create/edit a project will lead to a crash.\n\nPlease install the .NET SDK 6.0 or later from https://dotnet.microsoft.com/en-us/download and restart Nebula."), TTR("Failed to load .NET runtime"));
 		ERR_FAIL_V_MSG(nullptr, ".NET: Failed to load compatible .NET runtime");
 	}
 
@@ -272,23 +272,23 @@ godot_plugins_initialize_fn initialize_hostfxr_and_godot_plugins(bool &r_runtime
 
 	print_verbose(".NET: hostfxr initialized");
 
-	int rc = load_assembly_and_get_function_pointer(get_data(godot_plugins_path),
-			HOSTFXR_STR("GodotPlugins.Main, GodotPlugins"),
+	int rc = load_assembly_and_get_function_pointer(get_data(nebula_plugins_path),
+			HOSTFXR_STR("NebulaPlugins.Main, NebulaPlugins"),
 			HOSTFXR_STR("InitializeFromEngine"),
 			UNMANAGEDCALLERSONLY_METHOD,
 			nullptr,
-			(void **)&godot_plugins_initialize);
-	ERR_FAIL_COND_V_MSG(rc != 0, nullptr, ".NET: Failed to get GodotPlugins initialization function pointer");
+			(void **)&nebula_plugins_initialize);
+	ERR_FAIL_COND_V_MSG(rc != 0, nullptr, ".NET: Failed to get NebulaPlugins initialization function pointer");
 
-	return godot_plugins_initialize;
+	return nebula_plugins_initialize;
 }
 #else
-godot_plugins_initialize_fn initialize_hostfxr_and_godot_plugins(bool &r_runtime_initialized) {
-	godot_plugins_initialize_fn godot_plugins_initialize = nullptr;
+nebula_plugins_initialize_fn initialize_hostfxr_and_nebula_plugins(bool &r_runtime_initialized) {
+	nebula_plugins_initialize_fn nebula_plugins_initialize = nullptr;
 
 	String assembly_name = path::get_csharp_project_name();
 
-	HostFxrCharString assembly_path = str_to_hostfxr(GodotSharpDirs::get_api_assemblies_dir()
+	HostFxrCharString assembly_path = str_to_hostfxr(NebulaSharpDirs::get_api_assemblies_dir()
 															 .path_join(assembly_name + ".dll"));
 
 	load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer =
@@ -300,25 +300,25 @@ godot_plugins_initialize_fn initialize_hostfxr_and_godot_plugins(bool &r_runtime
 	print_verbose(".NET: hostfxr initialized");
 
 	int rc = load_assembly_and_get_function_pointer(get_data(assembly_path),
-			get_data(str_to_hostfxr("GodotPlugins.Game.Main, " + assembly_name)),
+			get_data(str_to_hostfxr("NebulaPlugins.Game.Main, " + assembly_name)),
 			HOSTFXR_STR("InitializeFromGameProject"),
 			UNMANAGEDCALLERSONLY_METHOD,
 			nullptr,
-			(void **)&godot_plugins_initialize);
-	ERR_FAIL_COND_V_MSG(rc != 0, nullptr, ".NET: Failed to get GodotPlugins initialization function pointer");
+			(void **)&nebula_plugins_initialize);
+	ERR_FAIL_COND_V_MSG(rc != 0, nullptr, ".NET: Failed to get NebulaPlugins initialization function pointer");
 
-	return godot_plugins_initialize;
+	return nebula_plugins_initialize;
 }
 
-godot_plugins_initialize_fn try_load_native_aot_library(void *&r_aot_dll_handle) {
+nebula_plugins_initialize_fn try_load_native_aot_library(void *&r_aot_dll_handle) {
 	String assembly_name = path::get_csharp_project_name();
 
 #if defined(WINDOWS_ENABLED)
-	String native_aot_so_path = GodotSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".dll");
+	String native_aot_so_path = NebulaSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".dll");
 #elif defined(MACOS_ENABLED) || defined(IOS_ENABLED)
-	String native_aot_so_path = GodotSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".dylib");
+	String native_aot_so_path = NebulaSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".dylib");
 #elif defined(UNIX_ENABLED)
-	String native_aot_so_path = GodotSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".so");
+	String native_aot_so_path = NebulaSharpDirs::get_api_assemblies_dir().path_join(assembly_name + ".so");
 #else
 #error "Platform not supported (yet?)"
 #endif
@@ -333,9 +333,9 @@ godot_plugins_initialize_fn try_load_native_aot_library(void *&r_aot_dll_handle)
 
 	void *symbol = nullptr;
 
-	err = OS::get_singleton()->get_dynamic_library_symbol_handle(lib, "godotsharp_game_main_init", symbol);
+	err = OS::get_singleton()->get_dynamic_library_symbol_handle(lib, "nebulasharp_game_main_init", symbol);
 	ERR_FAIL_COND_V(err != OK, nullptr);
-	return (godot_plugins_initialize_fn)symbol;
+	return (nebula_plugins_initialize_fn)symbol;
 }
 #endif
 
@@ -351,7 +351,7 @@ bool GDMono::should_initialize() {
 }
 
 static bool _on_core_api_assembly_loaded() {
-	if (!GDMonoCache::godot_api_cache_updated) {
+	if (!GDMonoCache::nebula_api_cache_updated) {
 		return false;
 	}
 
@@ -370,23 +370,23 @@ static bool _on_core_api_assembly_loaded() {
 void GDMono::initialize() {
 	print_verbose(".NET: Initializing module...");
 
-	_init_godot_api_hashes();
+	_init_nebula_api_hashes();
 
-	godot_plugins_initialize_fn godot_plugins_initialize = nullptr;
+	nebula_plugins_initialize_fn nebula_plugins_initialize = nullptr;
 
 #if !defined(IOS_ENABLED)
 	// Check that the .NET assemblies directory exists before trying to use it.
-	if (!DirAccess::exists(GodotSharpDirs::get_api_assemblies_dir())) {
-		OS::get_singleton()->alert(vformat(RTR("Unable to find the .NET assemblies directory.\nMake sure the '%s' directory exists and contains the .NET assemblies."), GodotSharpDirs::get_api_assemblies_dir()), RTR(".NET assemblies not found"));
+	if (!DirAccess::exists(NebulaSharpDirs::get_api_assemblies_dir())) {
+		OS::get_singleton()->alert(vformat(RTR("Unable to find the .NET assemblies directory.\nMake sure the '%s' directory exists and contains the .NET assemblies."), NebulaSharpDirs::get_api_assemblies_dir()), RTR(".NET assemblies not found"));
 		ERR_FAIL_MSG(".NET: Assemblies not found");
 	}
 #endif
 
 	if (!load_hostfxr(hostfxr_dll_handle)) {
 #if !defined(TOOLS_ENABLED)
-		godot_plugins_initialize = try_load_native_aot_library(hostfxr_dll_handle);
+		nebula_plugins_initialize = try_load_native_aot_library(hostfxr_dll_handle);
 
-		if (godot_plugins_initialize != nullptr) {
+		if (nebula_plugins_initialize != nullptr) {
 			is_native_aot = true;
 			runtime_initialized = true;
 		} else {
@@ -395,46 +395,46 @@ void GDMono::initialize() {
 #else
 
 		// Show a message box to the user to make the problem explicit (and explain a potential crash).
-		OS::get_singleton()->alert(TTR("Unable to load .NET runtime, specifically hostfxr.\nAttempting to create/edit a project will lead to a crash.\n\nPlease install the .NET SDK 6.0 or later from https://dotnet.microsoft.com/en-us/download and restart Godot."), TTR("Failed to load .NET runtime"));
+		OS::get_singleton()->alert(TTR("Unable to load .NET runtime, specifically hostfxr.\nAttempting to create/edit a project will lead to a crash.\n\nPlease install the .NET SDK 6.0 or later from https://dotnet.microsoft.com/en-us/download and restart Nebula."), TTR("Failed to load .NET runtime"));
 		ERR_FAIL_MSG(".NET: Failed to load hostfxr");
 #endif
 	}
 
 	if (!is_native_aot) {
-		godot_plugins_initialize = initialize_hostfxr_and_godot_plugins(runtime_initialized);
-		ERR_FAIL_NULL(godot_plugins_initialize);
+		nebula_plugins_initialize = initialize_hostfxr_and_nebula_plugins(runtime_initialized);
+		ERR_FAIL_NULL(nebula_plugins_initialize);
 	}
 
 	int32_t interop_funcs_size = 0;
-	const void **interop_funcs = godotsharp::get_runtime_interop_funcs(interop_funcs_size);
+	const void **interop_funcs = nebulasharp::get_runtime_interop_funcs(interop_funcs_size);
 
 	GDMonoCache::ManagedCallbacks managed_callbacks{};
 
-	void *godot_dll_handle = nullptr;
+	void *nebula_dll_handle = nullptr;
 
 #if defined(UNIX_ENABLED) && !defined(MACOS_ENABLED) && !defined(IOS_ENABLED)
 	// Managed code can access it on its own on other platforms
-	godot_dll_handle = dlopen(nullptr, RTLD_NOW);
+	nebula_dll_handle = dlopen(nullptr, RTLD_NOW);
 #endif
 
 #ifdef TOOLS_ENABLED
 	gdmono::PluginCallbacks plugin_callbacks_res;
-	bool init_ok = godot_plugins_initialize(godot_dll_handle,
+	bool init_ok = nebula_plugins_initialize(nebula_dll_handle,
 			Engine::get_singleton()->is_editor_hint(),
 			&plugin_callbacks_res, &managed_callbacks,
 			interop_funcs, interop_funcs_size);
-	ERR_FAIL_COND_MSG(!init_ok, ".NET: GodotPlugins initialization failed");
+	ERR_FAIL_COND_MSG(!init_ok, ".NET: NebulaPlugins initialization failed");
 
 	plugin_callbacks = plugin_callbacks_res;
 #else
-	bool init_ok = godot_plugins_initialize(godot_dll_handle, &managed_callbacks,
+	bool init_ok = nebula_plugins_initialize(nebula_dll_handle, &managed_callbacks,
 			interop_funcs, interop_funcs_size);
-	ERR_FAIL_COND_MSG(!init_ok, ".NET: GodotPlugins initialization failed");
+	ERR_FAIL_COND_MSG(!init_ok, ".NET: NebulaPlugins initialization failed");
 #endif
 
-	GDMonoCache::update_godot_api_cache(managed_callbacks);
+	GDMonoCache::update_nebula_api_cache(managed_callbacks);
 
-	print_verbose(".NET: GodotPlugins initialized");
+	print_verbose(".NET: NebulaPlugins initialized");
 
 	_on_core_api_assembly_loaded();
 
@@ -462,7 +462,7 @@ void GDMono::_try_load_project_assembly() {
 }
 #endif
 
-void GDMono::_init_godot_api_hashes() {
+void GDMono::_init_nebula_api_hashes() {
 #ifdef DEBUG_METHODS_ENABLED
 	get_api_core_hash();
 
@@ -476,7 +476,7 @@ void GDMono::_init_godot_api_hashes() {
 bool GDMono::_load_project_assembly() {
 	String assembly_name = path::get_csharp_project_name();
 
-	String assembly_path = GodotSharpDirs::get_res_temp_assemblies_dir()
+	String assembly_path = NebulaSharpDirs::get_res_temp_assemblies_dir()
 								   .path_join(assembly_name + ".dll");
 	assembly_path = ProjectSettings::get_singleton()->globalize_path(assembly_path);
 
@@ -506,7 +506,7 @@ void GDMono::reload_failure() {
 		ERR_PRINT_ED(".NET: Giving up on assembly reloading. Please restart the editor if unloading was failing.");
 
 		String assembly_name = path::get_csharp_project_name();
-		String assembly_path = GodotSharpDirs::get_res_temp_assemblies_dir().path_join(assembly_name + ".dll");
+		String assembly_path = NebulaSharpDirs::get_res_temp_assemblies_dir().path_join(assembly_name + ".dll");
 		assembly_path = ProjectSettings::get_singleton()->globalize_path(assembly_path);
 		project_assembly_path = assembly_path.simplify_path();
 		project_assembly_modified_time = FileAccess::get_modified_time(assembly_path);
@@ -519,7 +519,7 @@ Error GDMono::reload_project_assemblies() {
 	finalizing_scripts_domain = true;
 
 	if (!get_plugin_callbacks().UnloadProjectPluginCallback()) {
-		ERR_PRINT_ED(".NET: Failed to unload assemblies. Please check https://github.com/godotengine/godot/issues/78513 for more information.");
+		ERR_PRINT_ED(".NET: Failed to unload assemblies. Please check https://github.com/nebulaengine/nebula/issues/78513 for more information.");
 		reload_failure();
 		return FAILED;
 	}
@@ -562,9 +562,9 @@ GDMono::~GDMono() {
 
 namespace mono_bind {
 
-GodotSharp *GodotSharp::singleton = nullptr;
+NebulaSharp *NebulaSharp::singleton = nullptr;
 
-void GodotSharp::reload_assemblies(bool p_soft_reload) {
+void NebulaSharp::reload_assemblies(bool p_soft_reload) {
 #ifdef GD_MONO_HOT_RELOAD
 	CRASH_COND(CSharpLanguage::get_singleton() == nullptr);
 	// This method may be called more than once with `call_deferred`, so we need to check
@@ -575,11 +575,11 @@ void GodotSharp::reload_assemblies(bool p_soft_reload) {
 #endif
 }
 
-GodotSharp::GodotSharp() {
+NebulaSharp::NebulaSharp() {
 	singleton = this;
 }
 
-GodotSharp::~GodotSharp() {
+NebulaSharp::~NebulaSharp() {
 	singleton = nullptr;
 }
 

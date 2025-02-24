@@ -2,11 +2,11 @@
 /*  gdscript_text_document.cpp                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -69,7 +69,7 @@ void GDScriptTextDocument::didOpen(const Variant &p_param) {
 }
 
 void GDScriptTextDocument::didClose(const Variant &p_param) {
-	// Left empty on purpose. Godot does nothing special on closing a document,
+	// Left empty on purpose. Nebula does nothing special on closing a document,
 	// but it satisfies LSP clients that require didClose be implemented.
 }
 

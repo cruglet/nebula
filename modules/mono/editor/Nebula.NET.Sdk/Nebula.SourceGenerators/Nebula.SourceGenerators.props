@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <!-- $(NebulaProjectDir) is defined by Nebula.NET.Sdk -->
+    <CompilerVisibleProperty Include="NebulaDisabledSourceGenerators" />
+    <CompilerVisibleProperty Include="NebulaProjectDir" />
+    <CompilerVisibleProperty Include="NebulaProjectDirBase64" />
+    <CompilerVisibleProperty Include="NebulaSourceGenerators" />
+    <CompilerVisibleProperty Include="IsNebulaToolsProject" />
+  </ItemGroup>
+</Project>

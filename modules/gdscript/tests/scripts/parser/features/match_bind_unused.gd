@@ -1,4 +1,4 @@
-# https://github.com/godotengine/godot/pull/61666
+# https://github.com/nebulaengine/nebula/pull/61666
 
 func test():
 	var dict := {"key": "value"}

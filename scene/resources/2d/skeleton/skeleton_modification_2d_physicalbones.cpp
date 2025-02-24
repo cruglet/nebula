@@ -2,11 +2,11 @@
 /*  skeleton_modification_2d_physicalbones.cpp                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -36,7 +36,7 @@ bool SkeletonModification2DPhysicalBones::_set(const StringName &p_path, const V
 	String path = p_path;
 
 #ifdef TOOLS_ENABLED
-	// Exposes a way to fetch the PhysicalBone2D nodes from the Godot editor.
+	// Exposes a way to fetch the PhysicalBone2D nodes from the Nebula editor.
 	if (is_setup) {
 		if (Engine::get_singleton()->is_editor_hint()) {
 			if (path.begins_with("fetch_bones")) {

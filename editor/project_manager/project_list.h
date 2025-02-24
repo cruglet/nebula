@@ -2,11 +2,11 @@
 /*  project_list.h                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -46,6 +46,7 @@ class ProjectListItemControl : public HBoxContainer {
 
 	VBoxContainer *main_vbox = nullptr;
 	TextureButton *favorite_button = nullptr;
+	Button *remove_button = nullptr;
 	Button *explore_button = nullptr;
 
 	TextureRect *project_icon = nullptr;
@@ -63,6 +64,7 @@ class ProjectListItemControl : public HBoxContainer {
 
 	void _favorite_button_pressed();
 	void _explore_button_pressed();
+	void _remove_button_pressed();
 
 protected:
 	void _notification(int p_what);
@@ -196,6 +198,7 @@ private:
 
 	void _list_item_input(const Ref<InputEvent> &p_ev, Node *p_hb);
 	void _on_favorite_pressed(Node *p_hb);
+	void _on_remove_pressed(Node *p_hb);
 	void _on_explore_pressed(const String &p_path);
 
 	// Project list selection.
@@ -218,6 +221,7 @@ public:
 	static const char *SIGNAL_LIST_CHANGED;
 	static const char *SIGNAL_SELECTION_CHANGED;
 	static const char *SIGNAL_PROJECT_ASK_OPEN;
+	static const char *SIGNAL_PROJECT_REMOVE;
 
 	static bool project_feature_looks_like_version(const String &p_feature);
 

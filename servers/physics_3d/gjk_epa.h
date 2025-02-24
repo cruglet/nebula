@@ -2,11 +2,11 @@
 /*  gjk_epa.h                                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -31,10 +31,10 @@
 #ifndef GJK_EPA_H
 #define GJK_EPA_H
 
-#include "godot_collision_solver_3d.h"
-#include "godot_shape_3d.h"
+#include "nebula_collision_solver_3d.h"
+#include "nebula_shape_3d.h"
 
-bool gjk_epa_calculate_penetration(const GodotShape3D *p_shape_A, const Transform3D &p_transform_A, const GodotShape3D *p_shape_B, const Transform3D &p_transform_B, GodotCollisionSolver3D::CallbackResult p_result_callback, void *p_userdata, bool p_swap = false, real_t p_margin_A = 0.0, real_t p_margin_B = 0.0);
-bool gjk_epa_calculate_distance(const GodotShape3D *p_shape_A, const Transform3D &p_transform_A, const GodotShape3D *p_shape_B, const Transform3D &p_transform_B, Vector3 &r_result_A, Vector3 &r_result_B);
+bool gjk_epa_calculate_penetration(const NebulaShape3D *p_shape_A, const Transform3D &p_transform_A, const NebulaShape3D *p_shape_B, const Transform3D &p_transform_B, NebulaCollisionSolver3D::CallbackResult p_result_callback, void *p_userdata, bool p_swap = false, real_t p_margin_A = 0.0, real_t p_margin_B = 0.0);
+bool gjk_epa_calculate_distance(const NebulaShape3D *p_shape_A, const Transform3D &p_transform_A, const NebulaShape3D *p_shape_B, const Transform3D &p_transform_B, Vector3 &r_result_A, Vector3 &r_result_B);
 
 #endif // GJK_EPA_H

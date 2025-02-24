@@ -32,7 +32,7 @@ env_thirdparty.Append(
 env_thirdparty.add_source_files(thirdparty_obj, thirdparty_sources)
 env.modules_sources += thirdparty_obj
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

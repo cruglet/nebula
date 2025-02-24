@@ -1,7 +1,7 @@
-# Hebrew translation of the Godot Engine editor interface.
-# Copyright (c) 2014-present Godot Engine contributors.
+# Hebrew translation of the Nebula Engine editor interface.
+# Copyright (c)  Nebula Engine contributors.
 # Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.
-# This file is distributed under the same license as the Godot source code.
+# This file is distributed under the same license as the Nebula source code.
 # Daniel <lorddaniel09@gmail.com>, 2018.
 # Ben Golan <golanben4@gmail.com>, 2017.
 # Luc Stepniewski <lior@gradstein.info>, 2017.
@@ -40,12 +40,12 @@
 # yoval keshet <keshetyoval@gmail.com>, 2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: Godot Engine editor interface\n"
-"Report-Msgid-Bugs-To: https://github.com/godotengine/godot\n"
+"Project-Id-Version: Nebula Engine editor interface\n"
+"Report-Msgid-Bugs-To: https://github.com/nebulaengine/nebula\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2024-08-28 12:59+0000\n"
 "Last-Translator: yoval keshet <keshetyoval@gmail.com>\n"
-"Language-Team: Hebrew <https://hosted.weblate.org/projects/godot-engine/godot/"
+"Language-Team: Hebrew <https://hosted.weblate.org/projects/nebula-engine/nebula/"
 "he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -1136,13 +1136,13 @@ msgstr "שם התיקייה תקין."
 msgid "Double-click to open in browser."
 msgstr "לחיצה כפולה לפתיחה בדפדפן."
 
-msgid "Thanks from the Godot community!"
-msgstr "תודות מקהילת Godot!"
+msgid "Thanks from the Nebula community!"
+msgstr "תודות מקהילת Nebula!"
 
 msgid "(unknown)"
 msgstr "(לא ידוע)"
 
-msgid "Godot Engine contributors"
+msgid "Nebula Engine contributors"
 msgstr "מתנדבי מנוע גודו"
 
 msgid "Project Founders"
@@ -1195,12 +1195,12 @@ msgid "Third-party Licenses"
 msgstr "רשיונות צד שלישי"
 
 msgid ""
-"Godot Engine relies on a number of third-party free and open source "
+"Nebula Engine relies on a number of third-party free and open source "
 "libraries, all compatible with the terms of its MIT license. The following is "
 "an exhaustive list of all such third-party components with their respective "
 "copyright statements and license terms."
 msgstr ""
-"מנוע Godot מסתמך על מספר ספריות צד־שלישי חופשיות ובקוד פתוח, כולן תואמות את "
+"מנוע Nebula מסתמך על מספר ספריות צד־שלישי חופשיות ובקוד פתוח, כולן תואמות את "
 "דרישות רישיון MIT של המנוע. לפניכם רשימה ממצה של כל רכיבי הצד־השלישי במנוע עם "
 "הצהרות זכויות היוצרים ותנאי הרישיון שלהם."
 
@@ -1561,8 +1561,8 @@ msgstr "צור או ייבא פרופיל כדי לערוך מחלקות ומא�
 msgid "New profile name:"
 msgstr "שם פרופיל חדש:"
 
-msgid "Godot Feature Profile"
-msgstr "פרופיל התכונות של Godot"
+msgid "Nebula Feature Profile"
+msgstr "פרופיל התכונות של Nebula"
 
 msgid "Import Profile(s)"
 msgstr "ייבוא פרופיל(ים)"

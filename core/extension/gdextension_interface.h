@@ -2,11 +2,11 @@
 /*  gdextension_interface.h                                               */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -317,7 +317,7 @@ typedef struct {
 	// Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
 	// need or benefit from extra data when calling virtual functions.
 	// Returns user data that will be passed to `call_virtual_with_data_func`.
-	// Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+	// Returning `NULL` from this function signals to Nebula that the virtual function is not overridden.
 	// Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
 	// You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
 	GDExtensionClassGetVirtualCallData get_virtual_call_data_func;
@@ -351,7 +351,7 @@ typedef struct {
 	// Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
 	// need or benefit from extra data when calling virtual functions.
 	// Returns user data that will be passed to `call_virtual_with_data_func`.
-	// Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+	// Returning `NULL` from this function signals to Nebula that the virtual function is not overridden.
 	// Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
 	// You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
 	GDExtensionClassGetVirtualCallData get_virtual_call_data_func;
@@ -720,21 +720,21 @@ typedef GDExtensionInterfaceFunctionPtr (*GDExtensionInterfaceGetProcAddress)(co
  * The GDExtension can then modify the r_initialization structure, setting the minimum initialization level,
  * and providing pointers to functions that will be called at various stages of initialization/shutdown.
  *
- * The rest of the GDExtension's interface to Godot consists of function pointers that can be loaded
+ * The rest of the GDExtension's interface to Nebula consists of function pointers that can be loaded
  * by calling p_get_proc_address("...") with the name of the function.
  *
  * For example:
  *
- *   GDExtensionInterfaceGetGodotVersion get_godot_version = (GDExtensionInterfaceGetGodotVersion)p_get_proc_address("get_godot_version");
+ *   GDExtensionInterfaceGetNebulaVersion get_nebula_version = (GDExtensionInterfaceGetNebulaVersion)p_get_proc_address("get_nebula_version");
  *
  * (Note that snippet may cause "cast between incompatible function types" on some compilers, you can
  * silence this by adding an intermediary `void*` cast.)
  *
  * You can then call it like a normal function:
  *
- *   GDExtensionGodotVersion godot_version;
- *   get_godot_version(&godot_version);
- *   printf("Godot v%d.%d.%d\n", godot_version.major, godot_version.minor, godot_version.patch);
+ *   GDExtensionNebulaVersion nebula_version;
+ *   get_nebula_version(&nebula_version);
+ *   printf("Nebula v%d.%d.%d\n", nebula_version.major, nebula_version.minor, nebula_version.patch);
  *
  * All of these interface functions are described below, together with the name that's used to load it,
  * and the function pointer typedef that shows its signature.
@@ -748,17 +748,17 @@ typedef struct {
 	uint32_t minor;
 	uint32_t patch;
 	const char *string;
-} GDExtensionGodotVersion;
+} GDExtensionNebulaVersion;
 
 /**
- * @name get_godot_version
+ * @name get_nebula_version
  * @since 4.1
  *
- * Gets the Godot version that the GDExtension was loaded into.
+ * Gets the Nebula version that the GDExtension was loaded into.
  *
- * @param r_godot_version A pointer to the structure to write the version information into.
+ * @param r_nebula_version A pointer to the structure to write the version information into.
  */
-typedef void (*GDExtensionInterfaceGetGodotVersion)(GDExtensionGodotVersion *r_godot_version);
+typedef void (*GDExtensionInterfaceGetNebulaVersion)(GDExtensionNebulaVersion *r_nebula_version);
 
 /* INTERFACE: Memory */
 
@@ -797,13 +797,13 @@ typedef void *(*GDExtensionInterfaceMemRealloc)(void *p_ptr, size_t p_bytes);
  */
 typedef void (*GDExtensionInterfaceMemFree)(void *p_ptr);
 
-/* INTERFACE: Godot Core */
+/* INTERFACE: Nebula Core */
 
 /**
  * @name print_error
  * @since 4.1
  *
- * Logs an error to Godot's built-in debugger and to the OS terminal.
+ * Logs an error to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the error.
  * @param p_function The function name where the error occurred.
@@ -817,7 +817,7 @@ typedef void (*GDExtensionInterfacePrintError)(const char *p_description, const 
  * @name print_error_with_message
  * @since 4.1
  *
- * Logs an error with a message to Godot's built-in debugger and to the OS terminal.
+ * Logs an error with a message to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the error.
  * @param p_message The message to show along with the error.
@@ -832,7 +832,7 @@ typedef void (*GDExtensionInterfacePrintErrorWithMessage)(const char *p_descript
  * @name print_warning
  * @since 4.1
  *
- * Logs a warning to Godot's built-in debugger and to the OS terminal.
+ * Logs a warning to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the warning.
  * @param p_function The function name where the warning occurred.
@@ -846,7 +846,7 @@ typedef void (*GDExtensionInterfacePrintWarning)(const char *p_description, cons
  * @name print_warning_with_message
  * @since 4.1
  *
- * Logs a warning with a message to Godot's built-in debugger and to the OS terminal.
+ * Logs a warning with a message to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the warning.
  * @param p_message The message to show along with the warning.
@@ -861,7 +861,7 @@ typedef void (*GDExtensionInterfacePrintWarningWithMessage)(const char *p_descri
  * @name print_script_error
  * @since 4.1
  *
- * Logs a script error to Godot's built-in debugger and to the OS terminal.
+ * Logs a script error to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the error.
  * @param p_function The function name where the error occurred.
@@ -875,7 +875,7 @@ typedef void (*GDExtensionInterfacePrintScriptError)(const char *p_description, 
  * @name print_script_error_with_message
  * @since 4.1
  *
- * Logs a script error with a message to Godot's built-in debugger and to the OS terminal.
+ * Logs a script error with a message to Nebula's built-in debugger and to the OS terminal.
  *
  * @param p_description The code trigging the error.
  * @param p_message The message to show along with the error.
@@ -1582,7 +1582,7 @@ typedef void (*GDExtensionInterfaceStringNewWithLatin1CharsAndLen)(GDExtensionUn
 /**
  * @name string_new_with_utf8_chars_and_len
  * @since 4.1
- * @deprecated in Godot 4.3. Use `string_new_with_utf8_chars_and_len2` instead.
+ * @deprecated in Nebula 4.3. Use `string_new_with_utf8_chars_and_len2` instead.
  *
  * Creates a String from a UTF-8 encoded C string with the given length.
  *
@@ -1609,7 +1609,7 @@ typedef GDExtensionInt (*GDExtensionInterfaceStringNewWithUtf8CharsAndLen2)(GDEx
 /**
  * @name string_new_with_utf16_chars_and_len
  * @since 4.1
- * @deprecated in Godot 4.3. Use `string_new_with_utf16_chars_and_len2` instead.
+ * @deprecated in Nebula 4.3. Use `string_new_with_utf16_chars_and_len2` instead.
  *
  * Creates a String from a UTF-16 encoded C string with the given length.
  *
@@ -1894,7 +1894,7 @@ typedef void (*GDExtensionInterfaceStringNameNewWithUtf8CharsAndLen)(GDExtension
  * @param p_buffer A pointer to the buffer.
  * @param p_size The size of the buffer.
  *
- * @return A Godot error code (ex. OK, ERR_INVALID_DATA, etc).
+ * @return A Nebula error code (ex. OK, ERR_INVALID_DATA, etc).
  *
  * @see XMLParser::open_buffer()
  */
@@ -2445,7 +2445,7 @@ typedef void (*GDExtensionInterfaceObjectSetInstance)(GDExtensionObjectPtr p_o, 
  *
  * Gets the class name of an Object.
  *
- * If the GDExtension wraps the Godot object in an abstraction specific to its class, this is the
+ * If the GDExtension wraps the Nebula object in an abstraction specific to its class, this is the
  * function that should be used to determine which wrapper to use.
  *
  * @param p_object A pointer to the Object.
@@ -2551,7 +2551,7 @@ typedef void (*GDExtensionInterfaceRefSetObject)(GDExtensionRefPtr p_ref, GDExte
 /**
  * @name script_instance_create
  * @since 4.1
- * @deprecated in Godot 4.2. Use `script_instance_create3` instead.
+ * @deprecated in Nebula 4.2. Use `script_instance_create3` instead.
  *
  * Creates a script instance that contains the given info and instance data.
  *
@@ -2565,7 +2565,7 @@ typedef GDExtensionScriptInstancePtr (*GDExtensionInterfaceScriptInstanceCreate)
 /**
  * @name script_instance_create2
  * @since 4.2
- * @deprecated in Godot 4.3. Use `script_instance_create3` instead.
+ * @deprecated in Nebula 4.3. Use `script_instance_create3` instead.
  *
  * Creates a script instance that contains the given info and instance data.
  *
@@ -2638,7 +2638,7 @@ typedef GDExtensionScriptInstanceDataPtr (*GDExtensionInterfaceObjectGetScriptIn
 /**
  * @name callable_custom_create
  * @since 4.2
- * @deprecated in Godot 4.3. Use `callable_custom_create2` instead.
+ * @deprecated in Nebula 4.3. Use `callable_custom_create2` instead.
  *
  * Creates a custom Callable object from a function pointer.
  *
@@ -2683,7 +2683,7 @@ typedef void *(*GDExtensionInterfaceCallableCustomGetUserData)(GDExtensionConstT
  *
  * Constructs an Object of the requested class.
  *
- * The passed class must be a built-in godot class, or an already-registered extension class. In both cases, object_set_instance() should be called to fully initialize the object.
+ * The passed class must be a built-in nebula class, or an already-registered extension class. In both cases, object_set_instance() should be called to fully initialize the object.
  *
  * @param p_classname A pointer to a StringName with the class name.
  *
@@ -2722,7 +2722,7 @@ typedef void *(*GDExtensionInterfaceClassdbGetClassTag)(GDExtensionConstStringNa
 /**
  * @name classdb_register_extension_class
  * @since 4.1
- * @deprecated in Godot 4.2. Use `classdb_register_extension_class3` instead.
+ * @deprecated in Nebula 4.2. Use `classdb_register_extension_class3` instead.
  *
  * Registers an extension class in the ClassDB.
  *
@@ -2738,7 +2738,7 @@ typedef void (*GDExtensionInterfaceClassdbRegisterExtensionClass)(GDExtensionCla
 /**
  * @name classdb_register_extension_class2
  * @since 4.2
- * @deprecated in Godot 4.3. Use `classdb_register_extension_class3` instead.
+ * @deprecated in Nebula 4.3. Use `classdb_register_extension_class3` instead.
  *
  * Registers an extension class in the ClassDB.
  *

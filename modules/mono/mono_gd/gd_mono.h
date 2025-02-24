@@ -2,11 +2,11 @@
 /*  gd_mono.h                                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -31,7 +31,7 @@
 #ifndef GD_MONO_H
 #define GD_MONO_H
 
-#include "../godotsharp_defs.h"
+#include "../nebulasharp_defs.h"
 
 #include "core/io/config_file.h"
 
@@ -83,7 +83,7 @@ class GDMono {
 #ifdef TOOLS_ENABLED
 	uint64_t api_editor_hash = 0;
 #endif
-	void _init_godot_api_hashes();
+	void _init_nebula_api_hashes();
 
 #ifdef TOOLS_ENABLED
 	gdmono::PluginCallbacks plugin_callbacks;
@@ -164,19 +164,19 @@ public:
 
 namespace mono_bind {
 
-class GodotSharp : public Object {
-	GDCLASS(GodotSharp, Object);
+class NebulaSharp : public Object {
+	GDCLASS(NebulaSharp, Object);
 
 protected:
-	static GodotSharp *singleton;
+	static NebulaSharp *singleton;
 
 public:
-	static GodotSharp *get_singleton() { return singleton; }
+	static NebulaSharp *get_singleton() { return singleton; }
 
 	void reload_assemblies(bool p_soft_reload);
 
-	GodotSharp();
-	~GodotSharp();
+	NebulaSharp();
+	~NebulaSharp();
 };
 
 } // namespace mono_bind

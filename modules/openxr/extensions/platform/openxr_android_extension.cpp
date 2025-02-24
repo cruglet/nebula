@@ -2,11 +2,11 @@
 /*  openxr_android_extension.cpp                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -32,7 +32,7 @@
 
 #include "../../openxr_api.h"
 
-#include "java_godot_wrapper.h"
+#include "java_nebula_wrapper.h"
 #include "os_android.h"
 #include "thread_jandroid.h"
 
@@ -52,7 +52,7 @@ OpenXRAndroidExtension::OpenXRAndroidExtension() {
 	ERR_FAIL_NULL(env);
 
 	env->GetJavaVM(&vm);
-	activity_object = env->NewGlobalRef(static_cast<OS_Android *>(OS::get_singleton())->get_godot_java()->get_activity());
+	activity_object = env->NewGlobalRef(static_cast<OS_Android *>(OS::get_singleton())->get_nebula_java()->get_activity());
 }
 
 HashMap<String, bool *> OpenXRAndroidExtension::get_requested_extensions() {

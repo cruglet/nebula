@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{27B00618-A6F2-4828-B922-05CAEB08C286}</ProjectGuid>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <!-- The Nebula editor uses the Debug Nebula API assemblies -->
+    <NebulaApiConfiguration>Debug</NebulaApiConfiguration>
+    <NebulaSourceRootPath>$(SolutionDir)/../../../../</NebulaSourceRootPath>
+    <NebulaOutputDataDir>$(NebulaSourceRootPath)/bin/NebulaSharp</NebulaOutputDataDir>
+    <NebulaApiAssembliesDir>$(NebulaOutputDataDir)/Api/$(NebulaApiConfiguration)</NebulaApiAssembliesDir>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!-- Needed for our source generators to work despite this not being a Nebula game project -->
+  <PropertyGroup>
+    <IsNebulaToolsProject>true</IsNebulaToolsProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="IsNebulaToolsProject" />
+  </ItemGroup>
+  <PropertyGroup Condition=" Exists('$(NebulaApiAssembliesDir)/NebulaSharp.dll') ">
+    <!-- The project is part of the Nebula source tree -->
+    <!-- Use the Nebula source tree output folder instead of '$(ProjectDir)/bin' -->
+    <OutputPath>$(NebulaOutputDataDir)/Tools</OutputPath>
+    <!-- Must not append '$(TargetFramework)' to the output path in this case -->
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3.0" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Rider.PathLocator" Version="1.0.9" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <Reference Include="NebulaSharp">
+      <HintPath>$(NebulaApiAssembliesDir)/NebulaSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NebulaSharpEditor">
+      <HintPath>$(NebulaApiAssembliesDir)/NebulaSharpEditor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Nebula.NET.Sdk\Nebula.SourceGenerators\Nebula.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\..\glue\NebulaSharp\Nebula.SourceGenerators.Internal\Nebula.SourceGenerators.Internal.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NebulaTools.BuildLogger\NebulaTools.BuildLogger.csproj" />
+    <ProjectReference Include="..\NebulaTools.IdeMessaging\NebulaTools.IdeMessaging.csproj" />
+    <ProjectReference Include="..\NebulaTools.ProjectEditor\NebulaTools.ProjectEditor.csproj" />
+    <ProjectReference Include="..\NebulaTools.Core\NebulaTools.Core.csproj" />
+  </ItemGroup>
+</Project>

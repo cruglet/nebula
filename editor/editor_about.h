@@ -2,11 +2,11 @@
 /*  editor_about.h                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -59,9 +59,9 @@ private:
 	ScrollContainer *_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], int p_single_column_flags = 0, bool p_allow_website = false);
 
 	LinkButton *version_btn = nullptr;
-	Tree *_tpl_tree = nullptr;
+	Tree *_about_tree = nullptr;
 	RichTextLabel *license_text_label = nullptr;
-	RichTextLabel *_tpl_text = nullptr;
+	RichTextLabel *_about_text = nullptr;
 	TextureRect *_logo = nullptr;
 	Vector<ItemList *> name_lists;
 

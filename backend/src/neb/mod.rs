@@ -1,2 +1,2 @@
 pub mod nsmbw;
-pub mod godot;
+pub mod nebula;

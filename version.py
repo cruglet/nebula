@@ -1,9 +1,9 @@
-short_name = "godot"
-name = "Godot Engine"
-major = 4
-minor = 3
-patch = 1
-status = "rc"
+short_name = "nebula"
+name = "Nebula Engine"
+major = 0
+minor = 1
+patch = 0
+status = "dev"
 module_config = ""
-website = "https://godotengine.org"
-docs = "4.3"
+website = "https://github.com/cruglet/nebula"
+docs = "0.1"

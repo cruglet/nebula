@@ -2,11 +2,11 @@
 /*  decal.cpp                                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -259,7 +259,7 @@ void Decal::_bind_methods() {
 
 #ifndef DISABLE_DEPRECATED
 bool Decal::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "extents") { // Compatibility with Godot 3.x.
+	if (p_name == "extents") { // Compatibility with Nebula 3.x.
 		set_size((Vector3)p_value * 2);
 		return true;
 	}
@@ -267,7 +267,7 @@ bool Decal::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Decal::_get(const StringName &p_name, Variant &r_property) const {
-	if (p_name == "extents") { // Compatibility with Godot 3.x.
+	if (p_name == "extents") { // Compatibility with Nebula 3.x.
 		r_property = size / 2;
 		return true;
 	}

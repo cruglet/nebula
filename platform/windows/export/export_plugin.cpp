@@ -2,11 +2,11 @@
 /*  export_plugin.cpp                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -433,13 +433,13 @@ void EditorExportPlatformWindows::get_export_options(List<ExportOption> *r_optio
 						"$trigger = New-ScheduledTaskTrigger -Once -At 00:00\n"
 						"$settings = New-ScheduledTaskSettingsSet\n"
 						"$task = New-ScheduledTask -Action $action -Trigger $trigger -Settings $settings\n"
-						"Register-ScheduledTask godot_remote_debug -InputObject $task -Force:$true\n"
-						"Start-ScheduledTask -TaskName godot_remote_debug\n"
-						"while (Get-ScheduledTask -TaskName godot_remote_debug | ? State -eq running) { Start-Sleep -Milliseconds 100 }\n"
-						"Unregister-ScheduledTask -TaskName godot_remote_debug -Confirm:$false -ErrorAction:SilentlyContinue";
+						"Register-ScheduledTask nebula_remote_debug -InputObject $task -Force:$true\n"
+						"Start-ScheduledTask -TaskName nebula_remote_debug\n"
+						"while (Get-ScheduledTask -TaskName nebula_remote_debug | ? State -eq running) { Start-Sleep -Milliseconds 100 }\n"
+						"Unregister-ScheduledTask -TaskName nebula_remote_debug -Confirm:$false -ErrorAction:SilentlyContinue";
 
-	String cleanup_script = "Stop-ScheduledTask -TaskName godot_remote_debug -ErrorAction:SilentlyContinue\n"
-							"Unregister-ScheduledTask -TaskName godot_remote_debug -Confirm:$false -ErrorAction:SilentlyContinue\n"
+	String cleanup_script = "Stop-ScheduledTask -TaskName nebula_remote_debug -ErrorAction:SilentlyContinue\n"
+							"Unregister-ScheduledTask -TaskName nebula_remote_debug -Confirm:$false -ErrorAction:SilentlyContinue\n"
 							"Remove-Item -Recurse -Force '{temp_dir}'";
 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "ssh_remote_deploy/enabled"), false, true));

@@ -2,11 +2,11 @@
 /*  csharp_script.h                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -140,7 +140,7 @@ private:
 
 	/**
 	 * Base script that this script derives from, or null if it derives from a
-	 * native Godot class.
+	 * native Nebula class.
 	 */
 	Ref<CSharpScript> base_script;
 
@@ -428,7 +428,7 @@ class CSharpLanguage : public ScriptLanguage {
 	friend class GDMono;
 
 #ifdef TOOLS_ENABLED
-	EditorPlugin *godotsharp_editor = nullptr;
+	EditorPlugin *nebulasharp_editor = nullptr;
 
 	static void _editor_init_callback();
 #endif
@@ -462,8 +462,8 @@ public:
 	}
 
 #ifdef TOOLS_ENABLED
-	_FORCE_INLINE_ EditorPlugin *get_godotsharp_editor() const {
-		return godotsharp_editor;
+	_FORCE_INLINE_ EditorPlugin *get_nebulasharp_editor() const {
+		return nebulasharp_editor;
 	}
 #endif
 

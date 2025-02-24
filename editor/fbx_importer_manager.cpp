@@ -2,11 +2,11 @@
 /*  fbx_importer_manager.cpp                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -143,7 +143,7 @@ FBXImporterManager::FBXImporterManager() {
 	vb->add_child(memnew(Label(TTR("FBX2glTF is required for importing FBX files if using FBX2glTF.\nAlternatively, you can use ufbx by disabling FBX2glTF.\nPlease download the necessary tool and provide a valid path to the binary:"))));
 	LinkButton *lb = memnew(LinkButton);
 	lb->set_text(TTR("Click this link to download FBX2glTF"));
-	lb->set_uri("https://godotengine.org/fbx-import");
+	lb->set_uri("https://github.com/cruglet/nebula/fbx-import");
 	vb->add_child(lb);
 
 	HBoxContainer *hb = memnew(HBoxContainer);

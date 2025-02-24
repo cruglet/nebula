@@ -2,11 +2,11 @@
 /*  gdextension.cpp                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -196,9 +196,9 @@ class GDExtensionMethodBind : public MethodBind {
 	bool vararg;
 	uint32_t argument_count;
 	PropertyInfo return_value_info;
-	GodotTypeInfo::Metadata return_value_metadata;
+	NebulaTypeInfo::Metadata return_value_metadata;
 	List<PropertyInfo> arguments_info;
-	List<GodotTypeInfo::Metadata> arguments_metadata;
+	List<NebulaTypeInfo::Metadata> arguments_metadata;
 
 #ifdef TOOLS_ENABLED
 	friend class GDExtension;
@@ -230,7 +230,7 @@ public:
 #endif
 
 #ifdef DEBUG_METHODS_ENABLED
-	virtual GodotTypeInfo::Metadata get_argument_meta(int p_arg) const override {
+	virtual NebulaTypeInfo::Metadata get_argument_meta(int p_arg) const override {
 		if (p_arg < 0) {
 			return return_value_metadata;
 		} else {
@@ -241,7 +241,7 @@ public:
 
 	virtual Variant call(Object *p_object, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) const override {
 #ifdef TOOLS_ENABLED
-		ERR_FAIL_COND_V_MSG(!valid, Variant(), vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Godot.", name));
+		ERR_FAIL_COND_V_MSG(!valid, Variant(), vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Nebula.", name));
 		ERR_FAIL_COND_V_MSG(p_object && p_object->is_extension_placeholder(), Variant(), vformat("Cannot call GDExtension method bind '%s' on placeholder instance.", name));
 #endif
 		Variant ret;
@@ -255,7 +255,7 @@ public:
 	}
 	virtual void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
 #ifdef TOOLS_ENABLED
-		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Godot.", name));
+		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Nebula.", name));
 		ERR_FAIL_COND_MSG(p_object && p_object->is_extension_placeholder(), vformat("Cannot call GDExtension method bind '%s' on placeholder instance.", name));
 #endif
 		ERR_FAIL_COND_MSG(vararg, "Vararg methods don't have validated call support. This is most likely an engine bug.");
@@ -287,7 +287,7 @@ public:
 
 	virtual void ptrcall(Object *p_object, const void **p_args, void *r_ret) const override {
 #ifdef TOOLS_ENABLED
-		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Godot.", name));
+		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Nebula.", name));
 		ERR_FAIL_COND_MSG(p_object && p_object->is_extension_placeholder(), vformat("Cannot call GDExtension method bind '%s' on placeholder instance.", name));
 #endif
 		ERR_FAIL_COND_MSG(vararg, "Vararg methods don't have ptrcall support. This is most likely an engine bug.");
@@ -345,14 +345,14 @@ public:
 
 		if (p_method_info->has_return_value) {
 			return_value_info = PropertyInfo(*p_method_info->return_value_info);
-			return_value_metadata = GodotTypeInfo::Metadata(p_method_info->return_value_metadata);
+			return_value_metadata = NebulaTypeInfo::Metadata(p_method_info->return_value_metadata);
 		}
 
 		arguments_info.clear();
 		arguments_metadata.clear();
 		for (uint32_t i = 0; i < p_method_info->argument_count; i++) {
 			arguments_info.push_back(PropertyInfo(p_method_info->arguments_info[i]));
-			arguments_metadata.push_back(GodotTypeInfo::Metadata(p_method_info->arguments_metadata[i]));
+			arguments_metadata.push_back(NebulaTypeInfo::Metadata(p_method_info->arguments_metadata[i]));
 		}
 
 		set_hint_flags(p_method_info->method_flags);
@@ -483,10 +483,10 @@ void GDExtension::_register_extension_class_internal(GDExtensionClassLibraryPtr 
 	if (self->is_reloading && self->extension_classes.has(class_name)) {
 		extension = &self->extension_classes[class_name];
 		if (!parent_extension && parent_class_name != extension->gdextension.parent_class_name) {
-			ERR_FAIL_MSG(vformat("GDExtension class '%s' cannot change parent type from '%s' to '%s' on hot reload. Restart Godot for this change to take effect.", class_name, extension->gdextension.parent_class_name, parent_class_name));
+			ERR_FAIL_MSG(vformat("GDExtension class '%s' cannot change parent type from '%s' to '%s' on hot reload. Restart Nebula for this change to take effect.", class_name, extension->gdextension.parent_class_name, parent_class_name));
 		}
 		if (extension->gdextension.is_runtime != is_runtime) {
-			ERR_PRINT(vformat("GDExtension class '%s' cannot change to/from runtime class on hot reload. Restart Godot for this change to take effect.", class_name));
+			ERR_PRINT(vformat("GDExtension class '%s' cannot change to/from runtime class on hot reload. Restart Nebula for this change to take effect.", class_name));
 			is_runtime = extension->gdextension.is_runtime;
 		}
 		extension->is_reloading = false;
@@ -958,7 +958,7 @@ Error GDExtensionResourceLoader::load_gdextension_resource(const String &p_path,
 		compatible = VERSION_PATCH >= compatibility_minimum[2];
 	}
 	if (!compatible) {
-		ERR_PRINT(vformat("GDExtension only compatible with Godot version %d.%d.%d or later: %s", compatibility_minimum[0], compatibility_minimum[1], compatibility_minimum[2], p_path));
+		ERR_PRINT(vformat("GDExtension only compatible with Nebula version %d.%d.%d or later: %s", compatibility_minimum[0], compatibility_minimum[1], compatibility_minimum[2], p_path));
 		return ERR_INVALID_DATA;
 	}
 
@@ -990,7 +990,7 @@ Error GDExtensionResourceLoader::load_gdextension_resource(const String &p_path,
 #endif
 
 		if (!compatible) {
-			ERR_PRINT(vformat("GDExtension only compatible with Godot version %s or earlier: %s", compat_string, p_path));
+			ERR_PRINT(vformat("GDExtension only compatible with Nebula version %s or earlier: %s", compat_string, p_path));
 			return ERR_INVALID_DATA;
 		}
 	}

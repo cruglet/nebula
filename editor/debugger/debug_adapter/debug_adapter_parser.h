@@ -2,11 +2,11 @@
 /*  debug_adapter_parser.h                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -84,7 +84,7 @@ public:
 	Dictionary req_next(const Dictionary &p_params) const;
 	Dictionary req_stepIn(const Dictionary &p_params) const;
 	Dictionary req_evaluate(const Dictionary &p_params) const;
-	Dictionary req_godot_put_msg(const Dictionary &p_params) const;
+	Dictionary req_nebula_put_msg(const Dictionary &p_params) const;
 
 	// Internal requests
 	Dictionary _launch_process(const Dictionary &p_params) const;

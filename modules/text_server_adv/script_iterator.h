@@ -2,11 +2,11 @@
 /*  script_iterator.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -34,13 +34,13 @@
 #ifdef GDEXTENSION
 
 // Headers for building as GDExtension plug-in.
-#include <godot_cpp/godot.hpp>
-#include <godot_cpp/templates/vector.hpp>
-#include <godot_cpp/variant/string.hpp>
+#include <nebula_cpp/nebula.hpp>
+#include <nebula_cpp/templates/vector.hpp>
+#include <nebula_cpp/variant/string.hpp>
 
-using namespace godot;
+using namespace nebula;
 
-#elif defined(GODOT_MODULE)
+#elif defined(NEBULA_MODULE)
 
 // Headers for building as built-in module.
 #include "core/string/ustring.h"

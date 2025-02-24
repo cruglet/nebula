@@ -2,11 +2,11 @@
 /*  audio_driver_pulseaudio.cpp                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -192,7 +192,7 @@ Error AudioDriverPulseAudio::init_output_device() {
 	// Detect the amount of channels PulseAudio is using
 	// Note: If using an even amount of channels (2, 4, etc) channels and pa_map.channels will be equal,
 	// if not then pa_map.channels will have the real amount of channels PulseAudio is using and channels
-	// will have the amount of channels Godot is using (in this case it's pa_map.channels + 1)
+	// will have the amount of channels Nebula is using (in this case it's pa_map.channels + 1)
 	Error err = detect_channels();
 	if (err != OK) {
 		// This most likely means there are no sinks.

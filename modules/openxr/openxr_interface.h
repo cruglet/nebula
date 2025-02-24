@@ -2,11 +2,11 @@
 /*  openxr_interface.h                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -33,7 +33,7 @@
 
 // A note on multithreading and thread safety in OpenXR.
 //
-// Most entry points will be called from the main thread in Godot
+// Most entry points will be called from the main thread in Nebula
 // however a number of entry points will be called from the
 // rendering thread, potentially while we're already processing
 // the next frame on the main thread.
@@ -85,7 +85,7 @@ private:
 	void _load_action_map();
 
 	struct Action { // An action we've registered with OpenXR
-		String action_name; // Name of our action as presented to Godot (can be altered from the action map)
+		String action_name; // Name of our action as presented to Nebula (can be altered from the action map)
 		OpenXRAction::ActionType action_type; // The action type of this action
 		RID action_rid; // RID of the action registered with our OpenXR API
 	};

@@ -2,11 +2,11 @@
 /*  gltf_document.cpp                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -240,7 +240,7 @@ Error GLTFDocument::_serialize_gltf_extensions(Ref<GLTFState> p_state) const {
 }
 
 Error GLTFDocument::_serialize_scenes(Ref<GLTFState> p_state) {
-	// Godot only supports one scene per glTF file.
+	// Nebula only supports one scene per glTF file.
 	Array scenes;
 	Dictionary scene_dict;
 	scenes.append(scene_dict);
@@ -603,10 +603,10 @@ Error GLTFDocument::_parse_nodes(Ref<GLTFState> p_state) {
 				node->set_scale(_arr_to_vec3(n["scale"]));
 			}
 
-			Transform3D godot_rest_transform;
-			godot_rest_transform.basis.set_quaternion_scale(node->transform.basis.get_rotation_quaternion(), node->transform.basis.get_scale());
-			godot_rest_transform.origin = node->transform.origin;
-			node->set_additional_data("GODOT_rest_transform", godot_rest_transform);
+			Transform3D nebula_rest_transform;
+			nebula_rest_transform.basis.set_quaternion_scale(node->transform.basis.get_rotation_quaternion(), node->transform.basis.get_scale());
+			nebula_rest_transform.origin = node->transform.origin;
+			node->set_additional_data("NEBULA_rest_transform", nebula_rest_transform);
 		}
 
 		if (n.has("extensions")) {
@@ -2802,7 +2802,7 @@ Error GLTFDocument::_parse_meshes(Ref<GLTFState> p_state) {
 			if (p.has("mode")) {
 				const int mode = p["mode"];
 				ERR_FAIL_INDEX_V(mode, 7, ERR_FILE_CORRUPT);
-				// Convert mesh.primitive.mode to Godot Mesh enum. See:
+				// Convert mesh.primitive.mode to Nebula Mesh enum. See:
 				// https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#_mesh_primitive_mode
 				static const Mesh::PrimitiveType primitives2[7] = {
 					Mesh::PRIMITIVE_POINTS, // 0 POINTS
@@ -3595,7 +3595,7 @@ Error GLTFDocument::_parse_images(Ref<GLTFState> p_state, const String &p_base_p
 		//  - a URI with embedded base64-encoded data, or
 		//  - a reference to a bufferView; in that case mimeType must be defined."
 		// Since mimeType is optional for external files and base64 data, we'll have to
-		// fall back on letting Godot parse the data to figure out if it's PNG or JPEG.
+		// fall back on letting Nebula parse the data to figure out if it's PNG or JPEG.
 
 		// We'll assume that we use either URI or bufferView, so let's warn the user
 		// if their image somehow uses both. And fail if it has neither.
@@ -3640,7 +3640,7 @@ Error GLTFDocument::_parse_images(Ref<GLTFState> p_state, const String &p_base_p
 				// ResourceLoader will rely on the file extension to use the relevant loader.
 				// The spec says that if mimeType is defined, it should take precedence (e.g.
 				// there could be a `.png` image which is actually JPEG), but there's no easy
-				// API for that in Godot, so we'd have to load as a buffer (i.e. embedded in
+				// API for that in Nebula, so we'd have to load as a buffer (i.e. embedded in
 				// the material), so we only do that only as fallback.
 				Ref<Texture2D> texture = ResourceLoader::load(uri);
 				if (texture.is_valid()) {
@@ -4591,7 +4591,7 @@ Error GLTFDocument::_create_skins(Ref<GLTFState> p_state) {
 			}
 		}
 
-		gltf_skin->godot_skin = skin;
+		gltf_skin->nebula_skin = skin;
 	}
 
 	// Purge the duplicates!
@@ -4599,7 +4599,7 @@ Error GLTFDocument::_create_skins(Ref<GLTFState> p_state) {
 
 	// Create unique names now, after removing duplicates
 	for (GLTFSkinIndex skin_i = 0; skin_i < p_state->skins.size(); ++skin_i) {
-		Ref<Skin> skin = p_state->skins.write[skin_i]->godot_skin;
+		Ref<Skin> skin = p_state->skins.write[skin_i]->nebula_skin;
 		if (skin->get_name().is_empty()) {
 			// Make a unique name, no gltf node represents this skin
 			skin->set_name(_gen_unique_name(p_state, "Skin"));
@@ -4636,12 +4636,12 @@ bool GLTFDocument::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_s
 void GLTFDocument::_remove_duplicate_skins(Ref<GLTFState> p_state) {
 	for (int i = 0; i < p_state->skins.size(); ++i) {
 		for (int j = i + 1; j < p_state->skins.size(); ++j) {
-			const Ref<Skin> skin_i = p_state->skins[i]->godot_skin;
-			const Ref<Skin> skin_j = p_state->skins[j]->godot_skin;
+			const Ref<Skin> skin_i = p_state->skins[i]->nebula_skin;
+			const Ref<Skin> skin_j = p_state->skins[j]->nebula_skin;
 
 			if (_skins_are_same(skin_i, skin_j)) {
 				// replace it and delete the old
-				p_state->skins.write[j]->godot_skin = skin_i;
+				p_state->skins.write[j]->nebula_skin = skin_i;
 			}
 		}
 	}
@@ -5227,7 +5227,7 @@ void GLTFDocument::_convert_scene_node(Ref<GLTFState> p_state, Node *p_current, 
 	}
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint() && p_gltf_root != -1 && p_current->get_owner() == nullptr) {
-		WARN_VERBOSE("glTF export warning: Node '" + p_current->get_name() + "' has no owner. This is likely a temporary node generated by a @tool script. This would not be saved when saving the Godot scene, therefore it will not be exported to glTF.");
+		WARN_VERBOSE("glTF export warning: Node '" + p_current->get_name() + "' has no owner. This is likely a temporary node generated by a @tool script. This would not be saved when saving the Nebula scene, therefore it will not be exported to glTF.");
 		return;
 	}
 #endif // TOOLS_ENABLED
@@ -5249,7 +5249,7 @@ void GLTFDocument::_convert_scene_node(Ref<GLTFState> p_state, Node *p_current, 
 	} else if (cast_to<Skeleton3D>(p_current)) {
 		Skeleton3D *skel = cast_to<Skeleton3D>(p_current);
 		_convert_skeleton_to_gltf(skel, p_state, p_gltf_parent, p_gltf_root, gltf_node);
-		// We ignore the Godot Engine node that is the skeleton.
+		// We ignore the Nebula Engine node that is the skeleton.
 		return;
 	} else if (cast_to<MultiMeshInstance3D>(p_current)) {
 		MultiMeshInstance3D *multi = cast_to<MultiMeshInstance3D>(p_current);
@@ -5503,7 +5503,7 @@ void GLTFDocument::_convert_skeleton_to_gltf(Skeleton3D *p_skeleton3d, Ref<GLTFS
 	gltf_skeleton.instantiate();
 	// GLTFSkeleton is only used to hold internal p_state data. It will not be written to the document.
 	//
-	gltf_skeleton->godot_skeleton = skeleton;
+	gltf_skeleton->nebula_skeleton = skeleton;
 	GLTFSkeletonIndex skeleton_i = p_state->skeletons.size();
 	p_state->skeleton3d_to_gltf_skeleton[skeleton->get_instance_id()] = skeleton_i;
 	p_state->skeletons.push_back(gltf_skeleton);
@@ -5526,10 +5526,10 @@ void GLTFDocument::_convert_skeleton_to_gltf(Skeleton3D *p_skeleton3d, Ref<GLTFS
 		if (skeleton->get_bone_parent(bone_i) == -1) {
 			gltf_skeleton->roots.push_back(current_node_i);
 		}
-		gltf_skeleton->godot_bone_node.insert(bone_i, current_node_i);
+		gltf_skeleton->nebula_bone_node.insert(bone_i, current_node_i);
 	}
 	for (BoneId bone_i = 0; bone_i < bone_count; bone_i++) {
-		GLTFNodeIndex current_node_i = gltf_skeleton->godot_bone_node[bone_i];
+		GLTFNodeIndex current_node_i = gltf_skeleton->nebula_bone_node[bone_i];
 		BoneId parent_bone_id = skeleton->get_bone_parent(bone_i);
 		if (parent_bone_id == -1) {
 			if (p_parent_node_index != -1) {
@@ -5537,7 +5537,7 @@ void GLTFDocument::_convert_skeleton_to_gltf(Skeleton3D *p_skeleton3d, Ref<GLTFS
 				p_state->nodes.write[p_parent_node_index]->children.push_back(current_node_i);
 			}
 		} else {
-			GLTFNodeIndex parent_node_i = gltf_skeleton->godot_bone_node[parent_bone_id];
+			GLTFNodeIndex parent_node_i = gltf_skeleton->nebula_bone_node[parent_bone_id];
 			p_state->nodes.write[current_node_i]->parent = parent_node_i;
 			p_state->nodes.write[parent_node_i]->children.push_back(current_node_i);
 		}
@@ -5633,7 +5633,7 @@ void GLTFDocument::_generate_scene_node(Ref<GLTFState> p_state, const GLTFNodeIn
 	if (!current_node) {
 		if (gltf_node->skin >= 0 && gltf_node->mesh >= 0 && !gltf_node->children.is_empty()) {
 			// GLTF specifies that skinned meshes should ignore their node transforms,
-			// only being controlled by the skeleton, so Godot will reparent a skinned
+			// only being controlled by the skeleton, so Nebula will reparent a skinned
 			// mesh to its skeleton. However, we still need to ensure any child nodes
 			// keep their place in the tree, so if there are any child nodes, the skinned
 			// mesh must not be the base node, so generate an empty spatial base.
@@ -5688,7 +5688,7 @@ void GLTFDocument::_generate_skeleton_bone_node(Ref<GLTFState> p_state, const GL
 
 	Node3D *current_node = nullptr;
 
-	Skeleton3D *skeleton = p_state->skeletons[gltf_node->skeleton]->godot_skeleton;
+	Skeleton3D *skeleton = p_state->skeletons[gltf_node->skeleton]->nebula_skeleton;
 	// In this case, this node is already a bone in skeleton.
 	const bool is_skinned_mesh = (gltf_node->skin >= 0 && gltf_node->mesh >= 0);
 	const bool requires_extra_node = (gltf_node->mesh >= 0 || gltf_node->camera >= 0 || gltf_node->light >= 0);
@@ -5955,7 +5955,7 @@ void GLTFDocument::_import_animation(Ref<GLTFState> p_state, AnimationPlayer *p_
 		}
 
 		if (gltf_node->skeleton >= 0) {
-			const Skeleton3D *sk = p_state->skeletons[gltf_node->skeleton]->godot_skeleton;
+			const Skeleton3D *sk = p_state->skeletons[gltf_node->skeleton]->nebula_skeleton;
 			ERR_FAIL_NULL(sk);
 
 			const String path = p_animation_player->get_parent()->get_path_to(sk);
@@ -6152,7 +6152,7 @@ void GLTFDocument::_import_animation(Ref<GLTFState> p_state, AnimationPlayer *p_
 			animation->track_set_path(track_idx, blend_path);
 			animation->track_set_imported(track_idx, true); //helps merging later
 
-			// Only LINEAR and STEP (NEAREST) can be supported out of the box by Godot's Animation,
+			// Only LINEAR and STEP (NEAREST) can be supported out of the box by Nebula's Animation,
 			// the other modes have to be baked.
 			GLTFAnimation::Interpolation gltf_interp = track.weight_tracks[i].interpolation;
 			if (gltf_interp == GLTFAnimation::INTERP_LINEAR || gltf_interp == GLTFAnimation::INTERP_STEP) {
@@ -6213,8 +6213,8 @@ void GLTFDocument::_convert_mesh_instances(Ref<GLTFState> p_state) {
 		node->transform = mi->get_transform();
 
 		Node *skel_node = mi->get_node_or_null(mi->get_skeleton_path());
-		Skeleton3D *godot_skeleton = Object::cast_to<Skeleton3D>(skel_node);
-		if (!godot_skeleton || godot_skeleton->get_bone_count() == 0) {
+		Skeleton3D *nebula_skeleton = Object::cast_to<Skeleton3D>(skel_node);
+		if (!nebula_skeleton || nebula_skeleton->get_bone_count() == 0) {
 			continue;
 		}
 		// At this point in the code, we know we have a Skeleton3D with at least one bone.
@@ -6222,18 +6222,18 @@ void GLTFDocument::_convert_mesh_instances(Ref<GLTFState> p_state) {
 		Ref<GLTFSkin> gltf_skin;
 		gltf_skin.instantiate();
 		Array json_joints;
-		if (p_state->skeleton3d_to_gltf_skeleton.has(godot_skeleton->get_instance_id())) {
+		if (p_state->skeleton3d_to_gltf_skeleton.has(nebula_skeleton->get_instance_id())) {
 			// This is a skinned mesh. If the mesh has no ARRAY_WEIGHTS or ARRAY_BONES, it will be invisible.
-			const GLTFSkeletonIndex skeleton_gltf_i = p_state->skeleton3d_to_gltf_skeleton[godot_skeleton->get_instance_id()];
+			const GLTFSkeletonIndex skeleton_gltf_i = p_state->skeleton3d_to_gltf_skeleton[nebula_skeleton->get_instance_id()];
 			Ref<GLTFSkeleton> gltf_skeleton = p_state->skeletons[skeleton_gltf_i];
-			int bone_cnt = godot_skeleton->get_bone_count();
+			int bone_cnt = nebula_skeleton->get_bone_count();
 			ERR_FAIL_COND(bone_cnt != gltf_skeleton->joints.size());
 
 			ObjectID gltf_skin_key;
 			if (skin.is_valid()) {
 				gltf_skin_key = skin->get_instance_id();
 			}
-			ObjectID gltf_skel_key = godot_skeleton->get_instance_id();
+			ObjectID gltf_skel_key = nebula_skeleton->get_instance_id();
 			GLTFSkinIndex skin_gltf_i = -1;
 			GLTFNodeIndex root_gltf_i = -1;
 			if (!gltf_skeleton->roots.is_empty()) {
@@ -6244,17 +6244,17 @@ void GLTFDocument::_convert_mesh_instances(Ref<GLTFState> p_state) {
 			} else {
 				if (skin.is_null()) {
 					// Note that gltf_skin_key should remain null, so these can share a reference.
-					skin = godot_skeleton->create_skin_from_rest_transforms();
+					skin = nebula_skeleton->create_skin_from_rest_transforms();
 				}
 				gltf_skin.instantiate();
-				gltf_skin->godot_skin = skin;
+				gltf_skin->nebula_skin = skin;
 				gltf_skin->set_name(skin->get_name());
 				gltf_skin->skeleton = skeleton_gltf_i;
 				gltf_skin->skin_root = root_gltf_i;
-				//gltf_state->godot_to_gltf_node[skel_node]
+				//gltf_state->nebula_to_gltf_node[skel_node]
 				HashMap<StringName, int> bone_name_to_idx;
 				for (int bone_i = 0; bone_i < bone_cnt; bone_i++) {
-					bone_name_to_idx[godot_skeleton->get_bone_name(bone_i)] = bone_i;
+					bone_name_to_idx[nebula_skeleton->get_bone_name(bone_i)] = bone_i;
 				}
 				for (int bind_i = 0, cnt = skin->get_bind_count(); bind_i < cnt; bind_i++) {
 					int bone_i = skin->get_bind_bone(bind_i);
@@ -6265,13 +6265,13 @@ void GLTFDocument::_convert_mesh_instances(Ref<GLTFState> p_state) {
 					}
 					ERR_CONTINUE(bone_i < 0 || bone_i >= bone_cnt);
 					if (bind_name == StringName()) {
-						bind_name = godot_skeleton->get_bone_name(bone_i);
+						bind_name = nebula_skeleton->get_bone_name(bone_i);
 					}
 					GLTFNodeIndex skeleton_bone_i = gltf_skeleton->joints[bone_i];
 					gltf_skin->joints_original.push_back(skeleton_bone_i);
 					gltf_skin->joints.push_back(skeleton_bone_i);
 					gltf_skin->inverse_binds.push_back(bind_pose);
-					if (godot_skeleton->get_bone_parent(bone_i) == -1) {
+					if (nebula_skeleton->get_bone_parent(bone_i) == -1) {
 						gltf_skin->roots.push_back(skeleton_bone_i);
 					}
 					gltf_skin->joint_i_to_bone_i[bind_i] = bone_i;
@@ -6338,7 +6338,7 @@ void GLTFDocument::_process_mesh_instances(Ref<GLTFState> p_state, Node *p_scene
 
 			const GLTFSkeletonIndex skel_i = p_state->skins.write[node->skin]->skeleton;
 			Ref<GLTFSkeleton> gltf_skeleton = p_state->skeletons.write[skel_i];
-			Skeleton3D *skeleton = gltf_skeleton->godot_skeleton;
+			Skeleton3D *skeleton = gltf_skeleton->nebula_skeleton;
 			ERR_CONTINUE_MSG(skeleton == nullptr, vformat("Unable to find Skeleton for node %d skin %d", node_i, skin_i));
 
 			mi->get_parent()->remove_child(mi);
@@ -6346,7 +6346,7 @@ void GLTFDocument::_process_mesh_instances(Ref<GLTFState> p_state, Node *p_scene
 			skeleton->add_child(mi, true);
 			mi->set_owner(p_scene_root);
 
-			mi->set_skin(p_state->skins.write[skin_i]->godot_skin);
+			mi->set_skin(p_state->skins.write[skin_i]->nebula_skin);
 			mi->set_skeleton_path(mi->get_path_to(skeleton));
 			mi->set_transform(Transform3D());
 		}
@@ -6809,8 +6809,8 @@ void GLTFDocument::_convert_animation(Ref<GLTFState> p_state, AnimationPlayer *p
 			const String &node = node_suffix[0];
 			const NodePath node_path = node;
 			const String &suffix = node_suffix[1];
-			Node *godot_node = animation_base_node->get_node_or_null(node_path);
-			if (!godot_node) {
+			Node *nebula_node = animation_base_node->get_node_or_null(node_path);
+			if (!nebula_node) {
 				continue;
 			}
 			Skeleton3D *skeleton = cast_to<Skeleton3D>(animation_base_node->get_node_or_null(node));
@@ -6819,17 +6819,17 @@ void GLTFDocument::_convert_animation(Ref<GLTFState> p_state, AnimationPlayer *p
 			}
 			GLTFSkeletonIndex skeleton_gltf_i = -1;
 			for (GLTFSkeletonIndex skeleton_i = 0; skeleton_i < p_state->skeletons.size(); skeleton_i++) {
-				if (p_state->skeletons[skeleton_i]->godot_skeleton == cast_to<Skeleton3D>(godot_node)) {
-					skeleton = p_state->skeletons[skeleton_i]->godot_skeleton;
+				if (p_state->skeletons[skeleton_i]->nebula_skeleton == cast_to<Skeleton3D>(nebula_node)) {
+					skeleton = p_state->skeletons[skeleton_i]->nebula_skeleton;
 					skeleton_gltf_i = skeleton_i;
 					ERR_CONTINUE(!skeleton);
 					Ref<GLTFSkeleton> skeleton_gltf = p_state->skeletons[skeleton_gltf_i];
 					int32_t bone = skeleton->find_bone(suffix);
 					ERR_CONTINUE_MSG(bone == -1, vformat("Cannot find the bone %s.", suffix));
-					if (!skeleton_gltf->godot_bone_node.has(bone)) {
+					if (!skeleton_gltf->nebula_bone_node.has(bone)) {
 						continue;
 					}
-					GLTFNodeIndex node_i = skeleton_gltf->godot_bone_node[bone];
+					GLTFNodeIndex node_i = skeleton_gltf->nebula_bone_node[bone];
 					HashMap<int, GLTFAnimation::Track>::Iterator property_track_i = gltf_animation->get_tracks().find(node_i);
 					GLTFAnimation::Track track;
 					if (property_track_i) {
@@ -6841,10 +6841,10 @@ void GLTFDocument::_convert_animation(Ref<GLTFState> p_state, AnimationPlayer *p
 			}
 		} else if (!String(final_track_path).contains(":")) {
 			ERR_CONTINUE(!animation_base_node);
-			Node *godot_node = animation_base_node->get_node_or_null(final_track_path);
-			ERR_CONTINUE_MSG(!godot_node, vformat("Cannot get the node from a skeleton path %s.", final_track_path));
+			Node *nebula_node = animation_base_node->get_node_or_null(final_track_path);
+			ERR_CONTINUE_MSG(!nebula_node, vformat("Cannot get the node from a skeleton path %s.", final_track_path));
 			for (const KeyValue<GLTFNodeIndex, Node *> &scene_node_i : p_state->scene_nodes) {
-				if (scene_node_i.value == godot_node) {
+				if (scene_node_i.value == nebula_node) {
 					GLTFNodeIndex node_i = scene_node_i.key;
 					HashMap<int, GLTFAnimation::Track>::Iterator node_track_i = gltf_animation->get_tracks().find(node_i);
 					GLTFAnimation::Track track;
@@ -6927,7 +6927,7 @@ Dictionary _serialize_texture_transform_uv(Vector2 p_offset, Vector2 p_scale) {
 		texture_transform["scale"] = scale;
 	}
 	Dictionary extension;
-	// Note: Godot doesn't support texture rotation.
+	// Note: Nebula doesn't support texture rotation.
 	if (is_offset || is_scaled) {
 		extension["KHR_texture_transform"] = texture_transform;
 	}
@@ -7153,7 +7153,7 @@ Node *GLTFDocument::_generate_scene_node_tree(Ref<GLTFState> p_state) {
 	ERR_FAIL_COND_V_MSG(err != OK, nullptr, "GLTF: Failed to create skins.");
 	// Generate the node tree.
 	Node *single_root;
-	if (p_state->extensions_used.has("GODOT_single_root")) {
+	if (p_state->extensions_used.has("NEBULA_single_root")) {
 		_generate_scene_node(p_state, 0, nullptr, nullptr);
 		single_root = p_state->scene_nodes[0];
 		if (single_root && single_root->get_owner() && single_root->get_owner() != single_root) {
@@ -7387,7 +7387,7 @@ Error GLTFDocument::append_from_scene(Node *p_node, Ref<GLTFState> p_state, uint
 		}
 	}
 	if (_root_node_mode == RootNodeMode::ROOT_NODE_MODE_SINGLE_ROOT) {
-		state->extensions_used.append("GODOT_single_root");
+		state->extensions_used.append("NEBULA_single_root");
 	}
 	_convert_scene_node(state, p_node, -1, -1);
 	return OK;

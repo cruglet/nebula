@@ -136,9 +136,9 @@ repos:
             core/math/bvh_.*\.inc$|
             platform/(?!android|ios|linuxbsd|macos|web|windows)\w+/.*|
             platform/android/java/lib/src/com/.*|
-            platform/android/java/lib/src/org/godotengine/godot/gl/GLSurfaceView\.java$|
-            platform/android/java/lib/src/org/godotengine/godot/gl/EGLLogWrapper\.java$|
-            platform/android/java/lib/src/org/godotengine/godot/utils/ProcessPhoenix\.java$
+            platform/android/java/lib/src/org/nebulaengine/nebula/gl/GLSurfaceView\.java$|
+            platform/android/java/lib/src/org/nebulaengine/nebula/gl/EGLLogWrapper\.java$|
+            platform/android/java/lib/src/org/nebulaengine/nebula/utils/ProcessPhoenix\.java$
           )
 
       - id: header-guards
@@ -171,7 +171,7 @@ repos:
         entry: python misc/scripts/dotnet_format.py
         types_or: [c#]
 
-# End of upstream Godot pre-commit hooks.
+# End of upstream Nebula pre-commit hooks.
 #
 # Keep this separation to let downstream forks add their own hooks to this file,
 # without running into merge conflicts when rebasing on latest upstream.

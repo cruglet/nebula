@@ -2,11 +2,11 @@
 /*  naming_utils.cpp                                                      */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -45,14 +45,14 @@ HashMap<String, String> _create_hashmap_from_vector(Vector<Pair<String, String>>
 const HashMap<String, String> pascal_case_name_overrides = _create_hashmap_from_vector({
 		{ "BitMap", "Bitmap" },
 		{ "JSONRPC", "JsonRpc" },
-		{ "Object", "GodotObject" },
+		{ "Object", "NebulaObject" },
 		{ "OpenXRIPBinding", "OpenXRIPBinding" },
 		{ "SkeletonModification2DCCDIK", "SkeletonModification2DCcdik" },
 		{ "SkeletonModification2DFABRIK", "SkeletonModification2DFabrik" },
 		{ "SkeletonModification3DCCDIK", "SkeletonModification3DCcdik" },
 		{ "SkeletonModification3DFABRIK", "SkeletonModification3DFabrik" },
 		{ "System", "System_" },
-		{ "Thread", "GodotThread" },
+		{ "Thread", "NebulaThread" },
 });
 
 // Hardcoded collection of PascalCase part conversions.

@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <GodotSdkPackageVersionsFilePath>$(MSBuildThisFileDirectory)\SdkPackageVersions.props</GodotSdkPackageVersionsFilePath>
+    <NebulaSdkPackageVersionsFilePath>$(MSBuildThisFileDirectory)\SdkPackageVersions.props</NebulaSdkPackageVersionsFilePath>
   </PropertyGroup>
-  <Import Project="$(GodotSdkPackageVersionsFilePath)" />
+  <Import Project="$(NebulaSdkPackageVersionsFilePath)" />
 </Project>

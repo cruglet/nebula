@@ -69,7 +69,7 @@ if env["builtin_rvo2_3d"]:
 
 env.modules_sources += thirdparty_obj
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

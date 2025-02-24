@@ -2,11 +2,11 @@
 /*  engine_update_label.cpp                                               */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -47,7 +47,7 @@ bool EngineUpdateLabel::_can_check_updates() const {
 void EngineUpdateLabel::_check_update() {
 	checked_update = true;
 	_set_status(UpdateStatus::BUSY);
-	http->request("https://godotengine.org/versions.json");
+	http->request("https://github.com/cruglet/nebula/versions.json");
 }
 
 void EngineUpdateLabel::_http_request_completed(int p_result, int p_response_code, const PackedStringArray &p_headers, const PackedByteArray &p_body) {
@@ -295,7 +295,7 @@ void EngineUpdateLabel::pressed() {
 		} break;
 
 		case UpdateStatus::UPDATE_AVAILABLE: {
-			OS::get_singleton()->shell_open("https://godotengine.org/download/archive/" + available_newer_version);
+			OS::get_singleton()->shell_open("https://github.com/cruglet/nebula/download/archive/" + available_newer_version);
 		} break;
 
 		default: {

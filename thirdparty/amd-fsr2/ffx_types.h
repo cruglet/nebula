@@ -22,9 +22,9 @@
 #pragma once
 
 #include <stdint.h>
-// -- GODOT start --
+// -- NEBULA start --
 #include <stdlib.h>
-// -- GODOT end --
+// -- NEBULA end --
 
 #if defined (FFX_GCC)
 /// FidelityFX exported functions

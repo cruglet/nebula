@@ -8,7 +8,7 @@ env_noise = env_modules.Clone()
 thirdparty_dir = "#thirdparty/noise/"
 env_noise.Prepend(CPPPATH=[thirdparty_dir])
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

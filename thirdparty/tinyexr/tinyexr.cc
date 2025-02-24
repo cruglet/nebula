@@ -4,9 +4,9 @@
 #endif
 #endif
 
-// -- GODOT start --
+// -- NEBULA start --
 #include <zlib.h> // Should come before including tinyexr.
-// -- GODOT end --
+// -- NEBULA end --
 
 #define TINYEXR_IMPLEMENTATION
 #include "tinyexr.h"

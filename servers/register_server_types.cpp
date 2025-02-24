@@ -2,11 +2,11 @@
 /*  register_server_types.cpp                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -81,7 +81,7 @@
 
 // 2D physics and navigation.
 #include "navigation_server_2d.h"
-#include "physics_2d/godot_physics_server_2d.h"
+#include "physics_2d/nebula_physics_server_2d.h"
 #include "physics_server_2d.h"
 #include "physics_server_2d_wrap_mt.h"
 #include "servers/extensions/physics_server_2d_extension.h"
@@ -89,7 +89,7 @@
 // 3D physics and navigation (3D navigation is needed for 2D).
 #include "navigation_server_3d.h"
 #ifndef _3D_DISABLED
-#include "physics_3d/godot_physics_server_3d.h"
+#include "physics_3d/nebula_physics_server_3d.h"
 #include "physics_server_3d.h"
 #include "physics_server_3d_wrap_mt.h"
 #include "servers/extensions/physics_server_3d_extension.h"
@@ -106,27 +106,27 @@
 ShaderTypes *shader_types = nullptr;
 
 #ifndef _3D_DISABLED
-static PhysicsServer3D *_createGodotPhysics3DCallback() {
+static PhysicsServer3D *_createNebulaPhysics3DCallback() {
 #ifdef THREADS_ENABLED
 	bool using_threads = GLOBAL_GET("physics/3d/run_on_separate_thread");
 #else
 	bool using_threads = false;
 #endif
 
-	PhysicsServer3D *physics_server_3d = memnew(GodotPhysicsServer3D(using_threads));
+	PhysicsServer3D *physics_server_3d = memnew(NebulaPhysicsServer3D(using_threads));
 
 	return memnew(PhysicsServer3DWrapMT(physics_server_3d, using_threads));
 }
 #endif // _3D_DISABLED
 
-static PhysicsServer2D *_createGodotPhysics2DCallback() {
+static PhysicsServer2D *_createNebulaPhysics2DCallback() {
 #ifdef THREADS_ENABLED
 	bool using_threads = GLOBAL_GET("physics/2d/run_on_separate_thread");
 #else
 	bool using_threads = false;
 #endif
 
-	PhysicsServer2D *physics_server_2d = memnew(GodotPhysicsServer2D(using_threads));
+	PhysicsServer2D *physics_server_2d = memnew(NebulaPhysicsServer2D(using_threads));
 
 	return memnew(PhysicsServer2DWrapMT(physics_server_2d, using_threads));
 }
@@ -289,8 +289,8 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, PhysicsServer2DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	PhysicsServer2DManager::get_singleton()->register_server("GodotPhysics2D", callable_mp_static(_createGodotPhysics2DCallback));
-	PhysicsServer2DManager::get_singleton()->set_default_server("GodotPhysics2D");
+	PhysicsServer2DManager::get_singleton()->register_server("NebulaPhysics2D", callable_mp_static(_createNebulaPhysics2DCallback));
+	PhysicsServer2DManager::get_singleton()->set_default_server("NebulaPhysics2D");
 
 	GDREGISTER_ABSTRACT_CLASS(NavigationServer2D);
 	GDREGISTER_CLASS(NavigationPathQueryParameters2D);
@@ -323,8 +323,8 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, PhysicsServer3DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	PhysicsServer3DManager::get_singleton()->register_server("GodotPhysics3D", callable_mp_static(_createGodotPhysics3DCallback));
-	PhysicsServer3DManager::get_singleton()->set_default_server("GodotPhysics3D");
+	PhysicsServer3DManager::get_singleton()->register_server("NebulaPhysics3D", callable_mp_static(_createNebulaPhysics3DCallback));
+	PhysicsServer3DManager::get_singleton()->set_default_server("NebulaPhysics3D");
 
 	GDREGISTER_ABSTRACT_CLASS(XRInterface);
 	GDREGISTER_CLASS(XRVRS);

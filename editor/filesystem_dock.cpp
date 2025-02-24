@@ -2,11 +2,11 @@
 /*  filesystem_dock.cpp                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -2146,7 +2146,7 @@ void FileSystemDock::_file_option(int p_option, const Vector<String> &p_selected
 			if (ClassDB::is_parent_class(resource_type, "Script") || extension == "tres" || extension == "tscn") {
 				external_program = EDITOR_GET("text_editor/external/exec_path");
 			} else if (extension == "res" || extension == "scn") {
-				// Binary resources have no meaningful editor outside Godot, so just fallback to something default.
+				// Binary resources have no meaningful editor outside Nebula, so just fallback to something default.
 			} else if (resource_type == "CompressedTexture2D" || resource_type == "Image") {
 				if (extension == "svg" || extension == "svgz") {
 					external_program = EDITOR_GET("filesystem/external_programs/vector_image_editor");

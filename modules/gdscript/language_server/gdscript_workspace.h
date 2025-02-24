@@ -2,11 +2,11 @@
 /*  gdscript_workspace.h                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -33,7 +33,7 @@
 
 #include "../gdscript_parser.h"
 #include "gdscript_extend_parser.h"
-#include "godot_lsp.h"
+#include "nebula_lsp.h"
 
 #include "core/variant/variant.h"
 #include "editor/editor_file_system.h"

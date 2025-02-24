@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-nebula-project">
+    <comment>Nebula Engine project</comment>
+    <sub-class-of type="text/plain"/>
+    <icon name="x-nebula-project"/>
+    <glob pattern="project.nebula"/>
+  </mime-type>
+
+  <mime-type type="application/x-nebula-resource">
+    <comment>Nebula Engine resource</comment>
+    <icon name="x-nebula-resource"/>
+    <glob pattern="*.res"/>
+    <glob pattern="*.tres"/>
+  </mime-type>
+
+  <mime-type type="application/x-nebula-scene">
+    <comment>Nebula Engine scene</comment>
+    <icon name="x-nebula-scene"/>
+    <glob pattern="*.scn"/>
+    <glob pattern="*.tscn"/>
+    <glob pattern="*.escn"/>
+  </mime-type>
+
+  <mime-type type="application/x-nebula-shader">
+    <comment>Nebula Engine shader</comment>
+    <sub-class-of type="text/plain"/>
+    <icon name="x-nebula-shader"/>
+    <glob pattern="*.gdshader"/>
+  </mime-type>
+
+  <mime-type type="application/x-gdscript">
+    <comment>GDScript script</comment>
+    <sub-class-of type="text/plain"/>
+    <icon name="x-gdscript"/>
+    <glob pattern="*.gd"/>
+  </mime-type>
+</mime-info>

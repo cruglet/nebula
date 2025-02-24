@@ -2,11 +2,11 @@
 /*  rasterizer_gles3.cpp                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -309,7 +309,7 @@ RasterizerGLES3::RasterizerGLES3() {
 			}
 
 			if (callback) {
-				print_line("godot: ENABLING GL DEBUG");
+				print_line("nebula: ENABLING GL DEBUG");
 				glEnable(_EXT_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 				callback((DEBUGPROCARB)_gl_debug_print, nullptr);
 				glEnable(_EXT_DEBUG_OUTPUT);
@@ -349,7 +349,7 @@ RasterizerGLES3::RasterizerGLES3() {
 		}
 	}
 
-	// Disable OpenGL linear to sRGB conversion, because Godot will always do this conversion itself.
+	// Disable OpenGL linear to sRGB conversion, because Nebula will always do this conversion itself.
 	glDisable(GL_FRAMEBUFFER_SRGB);
 
 	// OpenGL needs to be initialized before initializing the Rasterizers

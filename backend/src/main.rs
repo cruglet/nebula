@@ -6,7 +6,7 @@ pub mod wii;
 pub mod utils;
 pub mod neb;
 
-use neb::{godot, nsmbw};
+use neb::{nebula, nsmbw};
 
 const DEFAULT_OUTPUT_DIR: &str = "output";
 
@@ -64,7 +64,7 @@ fn handle_nsmbw_commands(args: &Args) -> Result<()> {
 fn dump_level(args: &Args) -> Result<()> {
     let mut level = nsmbw::level::new();
     level.open_archive(args.input_path.clone());
-    godot::binary_api::BinarySerializer::value_to_file(&level.unpacked_buffer, &args.output_path)?;
+    nebula::binary_api::BinarySerializer::value_to_file(&level.unpacked_buffer, &args.output_path)?;
     Ok(())
 }
 

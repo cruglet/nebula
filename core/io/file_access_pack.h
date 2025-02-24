@@ -2,11 +2,11 @@
 /*  file_access_pack.h                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -38,7 +38,7 @@
 #include "core/templates/list.h"
 #include "core/templates/rb_map.h"
 
-// Godot's packed file magic header ("GDPC" in ASCII).
+// Nebula's packed file magic header ("GDPC" in ASCII).
 #define PACK_HEADER_MAGIC 0x43504447
 // The current packed file format version number.
 #define PACK_FORMAT_VERSION 2

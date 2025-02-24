@@ -19,9 +19,9 @@ All rights reserved.
 #include "vhacdSArray.h"
 #include "vhacdVector.h"
 
-// -- GODOT start --
+// -- NEBULA start --
 #include <cstdint>
-// -- GODOT end --
+// -- NEBULA end --
 
 namespace VHACD {
 class TMMTriangle;

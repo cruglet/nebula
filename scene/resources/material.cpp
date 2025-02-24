@@ -2,11 +2,11 @@
 /*  material.cpp                                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -3550,7 +3550,7 @@ bool StandardMaterial3D::_set(const StringName &p_name, const Variant &p_value) 
 			idx++;
 		}
 
-		WARN_PRINT("Godot 3.x SpatialMaterial remapped parameter not found: " + String(p_name));
+		WARN_PRINT("Nebula 3.x SpatialMaterial remapped parameter not found: " + String(p_name));
 		return true;
 	}
 }

@@ -2,11 +2,11 @@
 /*  test_regex.h                                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -65,7 +65,7 @@ TEST_CASE("[RegEx] Initialization") {
 }
 
 TEST_CASE("[RegEx] Clearing") {
-	RegEx re("Godot");
+	RegEx re("Nebula");
 	REQUIRE(re.is_valid());
 	re.clear();
 	CHECK(re.is_valid() == false);
@@ -164,7 +164,7 @@ TEST_CASE("[RegEx] Substitution with empty input and/or replacement") {
 }
 
 TEST_CASE("[RegEx] Uninitialized use") {
-	const String s = "Godot";
+	const String s = "Nebula";
 
 	RegEx re;
 	ERR_PRINT_OFF;
@@ -177,7 +177,7 @@ TEST_CASE("[RegEx] Uninitialized use") {
 }
 
 TEST_CASE("[RegEx] Empty pattern") {
-	const String s = "Godot";
+	const String s = "Nebula";
 
 	RegEx re;
 	CHECK(re.compile("") == OK);
@@ -185,7 +185,7 @@ TEST_CASE("[RegEx] Empty pattern") {
 }
 
 TEST_CASE("[RegEx] Complex Grouping") {
-	const String test = "https://docs.godotengine.org/en/latest/contributing/";
+	const String test = "https://docs.nebulaengine.org/en/latest/contributing/";
 
 	// Ignored protocol in grouping.
 	RegEx re("^(?:https?://)([a-zA-Z]{2,4})\\.([a-zA-Z][a-zA-Z0-9_\\-]{2,64})\\.([a-zA-Z]{2,4})");
@@ -194,10 +194,10 @@ TEST_CASE("[RegEx] Complex Grouping") {
 
 	CHECK(expr->get_group_count() == 3);
 
-	CHECK(expr->get_string(0) == "https://docs.godotengine.org");
+	CHECK(expr->get_string(0) == "https://docs.nebulaengine.org");
 
 	CHECK(expr->get_string(1) == "docs");
-	CHECK(expr->get_string(2) == "godotengine");
+	CHECK(expr->get_string(2) == "nebulaengine");
 	CHECK(expr->get_string(3) == "org");
 }
 
@@ -227,7 +227,7 @@ TEST_CASE("[RegEx] Number Expression") {
 }
 
 TEST_CASE("[RegEx] Invalid end position") {
-	const String s = "Godot";
+	const String s = "Nebula";
 
 	RegEx re("o");
 	REQUIRE(re.is_valid());
@@ -247,13 +247,13 @@ TEST_CASE("[RegEx] Invalid end position") {
 }
 
 TEST_CASE("[RegEx] Get match string list") {
-	const String s = "Godot Engine";
+	const String s = "Nebula Engine";
 
 	RegEx re("(Go)(dot)");
 	Ref<RegExMatch> match = re.search(s);
 	REQUIRE(match != nullptr);
 	PackedStringArray result;
-	result.append("Godot");
+	result.append("Nebula");
 	result.append("Go");
 	result.append("dot");
 	CHECK(match->get_strings() == result);
@@ -278,7 +278,7 @@ TEST_CASE("[RegEx] Match start and end positions") {
 }
 
 TEST_CASE("[RegEx] Asterisk search all") {
-	const String s = "Godot Engine";
+	const String s = "Nebula Engine";
 
 	RegEx re("o*");
 	REQUIRE(re.is_valid());
@@ -302,7 +302,7 @@ TEST_CASE("[RegEx] Asterisk search all") {
 }
 
 TEST_CASE("[RegEx] Simple lookahead") {
-	const String s = "Godot Engine";
+	const String s = "Nebula Engine";
 
 	RegEx re("o(?=t)");
 	REQUIRE(re.is_valid());
@@ -336,7 +336,7 @@ TEST_CASE("[RegEx] Lookahead groups empty matches") {
 }
 
 TEST_CASE("[RegEx] Simple lookbehind") {
-	const String s = "Godot Engine";
+	const String s = "Nebula Engine";
 
 	RegEx re("(?<=d)o");
 	REQUIRE(re.is_valid());

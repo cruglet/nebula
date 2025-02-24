@@ -2,11 +2,11 @@
 /*  project_settings_editor.cpp                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -623,7 +623,7 @@ void ProjectSettingsEditor::_bind_methods() {
 
 ProjectSettingsEditor::ProjectSettingsEditor(EditorData *p_data) {
 	singleton = this;
-	set_title(TTR("Project Settings (project.godot)"));
+	set_title(TTR("Project Settings (project.nebula)"));
 	set_clamp_to_embedder(true);
 
 	ps = ProjectSettings::get_singleton();

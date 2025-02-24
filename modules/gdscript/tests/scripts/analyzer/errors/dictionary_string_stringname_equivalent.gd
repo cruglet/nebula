@@ -1,4 +1,4 @@
-# https://github.com/godotengine/godot/issues/62957
+# https://github.com/nebulaengine/nebula/issues/62957
 
 func test():
 	var dict = {

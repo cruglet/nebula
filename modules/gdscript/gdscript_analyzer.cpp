@@ -2,11 +2,11 @@
 /*  gdscript_analyzer.cpp                                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -45,7 +45,7 @@
 #include "scene/resources/packed_scene.h"
 
 #if defined(TOOLS_ENABLED) && !defined(DISABLE_DEPRECATED)
-#define SUGGEST_GODOT4_RENAMES
+#define SUGGEST_NEBULA4_RENAMES
 #include "editor/renames_map_3_to_4.h"
 #endif
 
@@ -2972,7 +2972,7 @@ void GDScriptAnalyzer::reduce_binary_op(GDScriptParser::BinaryOpNode *p_binary_o
 	p_binary_op->set_datatype(result);
 }
 
-#ifdef SUGGEST_GODOT4_RENAMES
+#ifdef SUGGEST_NEBULA4_RENAMES
 const char *get_rename_from_map(const char *map[][2], String key) {
 	for (int index = 0; map[index][0]; index++) {
 		if (map[index][0] == key) {
@@ -2982,7 +2982,7 @@ const char *get_rename_from_map(const char *map[][2], String key) {
 	return nullptr;
 }
 
-// Checks if an identifier/function name has been renamed in Godot 4, uses ProjectConverter3To4 for rename map.
+// Checks if an identifier/function name has been renamed in Nebula 4, uses ProjectConverter3To4 for rename map.
 // Returns the new name if found, nullptr otherwise.
 const char *check_for_renamed_identifier(String identifier, GDScriptParser::Node::Type type) {
 	switch (type) {
@@ -3024,7 +3024,7 @@ const char *check_for_renamed_identifier(String identifier, GDScriptParser::Node
 			return nullptr;
 	}
 }
-#endif // SUGGEST_GODOT4_RENAMES
+#endif // SUGGEST_NEBULA4_RENAMES
 
 void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool p_is_await, bool p_is_root) {
 	bool all_is_constant = true;
@@ -3534,9 +3534,9 @@ void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool p_is_a
 		}
 		if (!found && (is_self || (base_type.is_hard_type() && base_type.kind == GDScriptParser::DataType::BUILTIN))) {
 			String base_name = is_self && !p_call->is_super ? "self" : base_type.to_string();
-#ifdef SUGGEST_GODOT4_RENAMES
+#ifdef SUGGEST_NEBULA4_RENAMES
 			String rename_hint;
-			if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_GODOT_4_HINT)).booleanize()) {
+			if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_NEBULA_4_HINT)).booleanize()) {
 				const char *renamed_function_name = check_for_renamed_identifier(p_call->function_name, p_call->type);
 				if (renamed_function_name) {
 					rename_hint = " " + vformat(R"(Did you mean to use "%s"?)", String(renamed_function_name) + "()");
@@ -3545,7 +3545,7 @@ void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool p_is_a
 			push_error(vformat(R"*(Function "%s()" not found in base %s.%s)*", p_call->function_name, base_name, rename_hint), p_call->is_super ? p_call : p_call->callee);
 #else
 			push_error(vformat(R"*(Function "%s()" not found in base %s.)*", p_call->function_name, base_name), p_call->is_super ? p_call : p_call->callee);
-#endif // SUGGEST_GODOT4_RENAMES
+#endif // SUGGEST_NEBULA4_RENAMES
 		} else if (!found && (!p_call->is_super && base_type.is_hard_type() && base_type.is_meta_type)) {
 			push_error(vformat(R"*(Static function "%s()" not found in base "%s".)*", p_call->function_name, base_type.to_string()), p_call);
 		}
@@ -3848,9 +3848,9 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 				p_identifier->reduced_value = result;
 				p_identifier->set_datatype(type_from_variant(result, p_identifier));
 			} else if (base.is_hard_type()) {
-#ifdef SUGGEST_GODOT4_RENAMES
+#ifdef SUGGEST_NEBULA4_RENAMES
 				String rename_hint;
-				if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_GODOT_4_HINT)).booleanize()) {
+				if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_NEBULA_4_HINT)).booleanize()) {
 					const char *renamed_identifier_name = check_for_renamed_identifier(name, p_identifier->type);
 					if (renamed_identifier_name) {
 						rename_hint = " " + vformat(R"(Did you mean to use "%s"?)", renamed_identifier_name);
@@ -3859,7 +3859,7 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 				push_error(vformat(R"(Cannot find constant "%s" on base "%s".%s)", name, base.to_string(), rename_hint), p_identifier);
 #else
 				push_error(vformat(R"(Cannot find constant "%s" on base "%s".)", name, base.to_string()), p_identifier);
-#endif // SUGGEST_GODOT4_RENAMES
+#endif // SUGGEST_NEBULA4_RENAMES
 			}
 		} else {
 			switch (base.builtin_type) {
@@ -3892,9 +3892,9 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 						return;
 					}
 					if (base.is_hard_type()) {
-#ifdef SUGGEST_GODOT4_RENAMES
+#ifdef SUGGEST_NEBULA4_RENAMES
 						String rename_hint;
-						if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_GODOT_4_HINT)).booleanize()) {
+						if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_NEBULA_4_HINT)).booleanize()) {
 							const char *renamed_identifier_name = check_for_renamed_identifier(name, p_identifier->type);
 							if (renamed_identifier_name) {
 								rename_hint = " " + vformat(R"(Did you mean to use "%s"?)", renamed_identifier_name);
@@ -3903,7 +3903,7 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 						push_error(vformat(R"(Cannot find property "%s" on base "%s".%s)", name, base.to_string(), rename_hint), p_identifier);
 #else
 						push_error(vformat(R"(Cannot find property "%s" on base "%s".)", name, base.to_string()), p_identifier);
-#endif // SUGGEST_GODOT4_RENAMES
+#endif // SUGGEST_NEBULA4_RENAMES
 					}
 				}
 			}
@@ -4408,9 +4408,9 @@ void GDScriptAnalyzer::reduce_identifier(GDScriptParser::IdentifierNode *p_ident
 	}
 
 	// Not found.
-#ifdef SUGGEST_GODOT4_RENAMES
+#ifdef SUGGEST_NEBULA4_RENAMES
 	String rename_hint;
-	if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_GODOT_4_HINT)).booleanize()) {
+	if (GLOBAL_GET(GDScriptWarning::get_settings_path_from_code(GDScriptWarning::RENAMED_IN_NEBULA_4_HINT)).booleanize()) {
 		const char *renamed_identifier_name = check_for_renamed_identifier(name, p_identifier->type);
 		if (renamed_identifier_name) {
 			rename_hint = " " + vformat(R"(Did you mean to use "%s"?)", renamed_identifier_name);
@@ -4419,7 +4419,7 @@ void GDScriptAnalyzer::reduce_identifier(GDScriptParser::IdentifierNode *p_ident
 	push_error(vformat(R"(Identifier "%s" not declared in the current scope.%s)", name, rename_hint), p_identifier);
 #else
 	push_error(vformat(R"(Identifier "%s" not declared in the current scope.)", name), p_identifier);
-#endif // SUGGEST_GODOT4_RENAMES
+#endif // SUGGEST_NEBULA4_RENAMES
 	GDScriptParser::DataType dummy;
 	dummy.kind = GDScriptParser::DataType::VARIANT;
 	p_identifier->set_datatype(dummy); // Just so type is set to something.

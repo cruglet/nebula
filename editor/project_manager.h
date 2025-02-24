@@ -2,11 +2,12 @@
 /*  project_manager.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+
+/* Copyright (c) 2025 Cruglet.                                            *//* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -89,7 +90,7 @@ class ProjectManager : public Control {
 
 	enum MainViewTab {
 		MAIN_VIEW_PROJECTS,
-		MAIN_VIEW_ASSETLIB,
+		MAIN_VIEW_THEMES,
 		MAIN_VIEW_MAX
 	};
 
@@ -105,7 +106,7 @@ class ProjectManager : public Control {
 	void _select_main_view(int p_id);
 
 	VBoxContainer *local_projects_vb = nullptr;
-	EditorAssetLibrary *asset_library = nullptr;
+	VBoxContainer *local_themes_vb = nullptr;
 
 	EditorAbout *about_dialog = nullptr;
 
@@ -151,11 +152,8 @@ class ProjectManager : public Control {
 	Button *create_btn = nullptr;
 	Button *import_btn = nullptr;
 	Button *scan_btn = nullptr;
-	Button *open_btn = nullptr;
-	Button *run_btn = nullptr;
 	Button *rename_btn = nullptr;
 	Button *manage_tags_btn = nullptr;
-	Button *erase_btn = nullptr;
 	Button *erase_missing_btn = nullptr;
 
 	EditorFileDialog *scan_dir = nullptr;
@@ -164,7 +162,7 @@ class ProjectManager : public Control {
 	Label *erase_ask_label = nullptr;
 	// Comment out for now until we have a better warning system to
 	// ensure users delete their project only.
-	//CheckBox *delete_project_contents = nullptr;
+	CheckBox *delete_project_contents = nullptr;
 	ConfirmationDialog *erase_missing_ask = nullptr;
 	ConfirmationDialog *multi_open_ask = nullptr;
 	ConfirmationDialog *multi_run_ask = nullptr;
@@ -181,7 +179,7 @@ class ProjectManager : public Control {
 	void _import_project();
 	void _new_project();
 	void _rename_project();
-	void _erase_project();
+	void _erase_project(int index);
 	void _erase_missing_projects();
 	void _erase_project_confirm();
 	void _erase_missing_projects_confirm();

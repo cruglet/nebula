@@ -2,11 +2,11 @@
 /*  os_windows.cpp                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -210,7 +210,7 @@ void OS_Windows::initialize() {
 
 	process_map = memnew((HashMap<ProcessID, ProcessInfo>));
 
-	// Add current Godot PID to the list of known PIDs
+	// Add current Nebula PID to the list of known PIDs
 	ProcessInfo current_pi = {};
 	PROCESS_INFORMATION current_pi_pi = {};
 	current_pi.pi = current_pi_pi;
@@ -1790,7 +1790,7 @@ String OS_Windows::get_cache_path() const {
 }
 
 // Get properly capitalized engine name for system paths
-String OS_Windows::get_godot_dir_name() const {
+String OS_Windows::get_nebula_dir_name() const {
 	return String(VERSION_SHORT_NAME).capitalize();
 }
 
@@ -1843,11 +1843,11 @@ String OS_Windows::get_user_data_dir() const {
 			}
 			return get_data_path().path_join(custom_dir).replace("\\", "/");
 		} else {
-			return get_data_path().path_join(get_godot_dir_name()).path_join("app_userdata").path_join(appname).replace("\\", "/");
+			return get_data_path().path_join(get_nebula_dir_name()).path_join("app_userdata").path_join(appname).replace("\\", "/");
 		}
 	}
 
-	return get_data_path().path_join(get_godot_dir_name()).path_join("app_userdata").path_join("[unnamed project]");
+	return get_data_path().path_join(get_nebula_dir_name()).path_join("app_userdata").path_join("[unnamed project]");
 }
 
 String OS_Windows::get_unique_id() const {

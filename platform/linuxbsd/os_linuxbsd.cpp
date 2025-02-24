@@ -2,11 +2,11 @@
 /*  os_linuxbsd.cpp                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -687,7 +687,7 @@ Vector<String> OS_LinuxBSD::get_system_fonts() const {
 	}
 	return ret;
 #else
-	ERR_FAIL_V_MSG(Vector<String>(), "Godot was compiled without fontconfig, system font support is disabled.");
+	ERR_FAIL_V_MSG(Vector<String>(), "Nebula was compiled without fontconfig, system font support is disabled.");
 #endif
 }
 
@@ -793,7 +793,7 @@ Vector<String> OS_LinuxBSD::get_system_font_path_for_text(const String &p_font_n
 
 	return ret;
 #else
-	ERR_FAIL_V_MSG(Vector<String>(), "Godot was compiled without fontconfig, system font support is disabled.");
+	ERR_FAIL_V_MSG(Vector<String>(), "Nebula was compiled without fontconfig, system font support is disabled.");
 #endif
 }
 
@@ -849,7 +849,7 @@ String OS_LinuxBSD::get_system_font_path(const String &p_font_name, int p_weight
 
 	return String();
 #else
-	ERR_FAIL_V_MSG(String(), "Godot was compiled without fontconfig, system font support is disabled.");
+	ERR_FAIL_V_MSG(String(), "Nebula was compiled without fontconfig, system font support is disabled.");
 #endif
 }
 

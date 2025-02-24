@@ -2,11 +2,11 @@
 /*  remote_filesystem_client.cpp                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -168,7 +168,7 @@ Error RemoteFilesystemClient::_synchronize_with_server(const String &p_host, int
 	// Connection OK, now send the current file state.
 	print_verbose("Remote Filesystem: Connection OK.");
 
-	// Header (GRFS) - Godot Remote File System
+	// Header (GRFS) - Nebula Remote File System
 	print_verbose("Remote Filesystem: Sending header");
 	tcp_client->put_u8('G');
 	tcp_client->put_u8('R');

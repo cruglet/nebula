@@ -2,11 +2,11 @@
 /*  object.cpp                                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -1134,7 +1134,7 @@ Error Object::emit_signalp(const StringName &p_name, const Variant **p_args, int
 	}
 
 	// If this is a ref-counted object, prevent it from being destroyed during signal emission,
-	// which is needed in certain edge cases; e.g., https://github.com/godotengine/godot/issues/73889.
+	// which is needed in certain edge cases; e.g., https://github.com/nebulaengine/nebula/issues/73889.
 	Ref<RefCounted> rc = Ref<RefCounted>(Object::cast_to<RefCounted>(this));
 
 	// Ensure that disconnecting the signal or even deleting the object
@@ -1717,7 +1717,7 @@ void Object::_bind_methods() {
 	::ClassDB::add_virtual_method(get_class_static(), m_method, true, Vector<String>(), true);
 
 	MethodInfo notification_mi("_notification", PropertyInfo(Variant::INT, "what"));
-	notification_mi.arguments_metadata.push_back(GodotTypeInfo::Metadata::METADATA_INT_IS_INT32);
+	notification_mi.arguments_metadata.push_back(NebulaTypeInfo::Metadata::METADATA_INT_IS_INT32);
 	BIND_OBJ_CORE_METHOD(notification_mi);
 	BIND_OBJ_CORE_METHOD(MethodInfo(Variant::BOOL, "_set", PropertyInfo(Variant::STRING_NAME, "property"), PropertyInfo(Variant::NIL, "value")));
 #ifdef TOOLS_ENABLED

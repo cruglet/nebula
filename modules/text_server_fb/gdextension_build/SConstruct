@@ -33,7 +33,7 @@ if sys.stdout.isatty() and sys.platform == "win32":
 
 time_at_start = time.time()
 
-env = SConscript("./godot-cpp/SConstruct")
+env = SConscript("./nebula-cpp/SConstruct")
 env.__class__.disable_warnings = methods.disable_warnings
 
 opts = Variables([], ARGUMENTS)
@@ -312,7 +312,7 @@ if env["platform"] == "macos":
     methods.write_macos_plist(
         f'./bin/libtextserver_fallback.macos.{env["target"]}.framework',
         f'libtextserver_fallback.macos.{env["target"]}',
-        "org.godotengine.textserver_fallback",
+        "org.nebulaengine.textserver_fallback",
         "Fallback Text Server",
     )
     library = env.SharedLibrary(

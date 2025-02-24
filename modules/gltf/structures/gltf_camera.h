@@ -2,11 +2,11 @@
 /*  gltf_camera.h                                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -43,7 +43,7 @@ class GLTFCamera : public Resource {
 
 private:
 	// GLTF has no default camera values, they should always be specified in
-	// the GLTF file. Here we default to Godot's default camera settings.
+	// the GLTF file. Here we default to Nebula's default camera settings.
 	bool perspective = true;
 	real_t fov = Math::deg_to_rad(75.0);
 	real_t size_mag = 0.5;

@@ -2,11 +2,11 @@
 /*  node_3d_editor_plugin.cpp                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -2085,7 +2085,7 @@ void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
 
 		} else if (m->get_button_mask().has_flag(MouseButtonMask::MIDDLE)) {
 			const Key mod = _get_key_modifier(m);
-			if (nav_scheme == NAVIGATION_GODOT) {
+			if (nav_scheme == NAVIGATION_NEBULA) {
 				if (mod == _get_key_modifier_setting("editors/3d/navigation/pan_modifier")) {
 					nav_mode = NAVIGATION_PAN;
 				} else if (mod == _get_key_modifier_setting("editors/3d/navigation/zoom_modifier")) {
@@ -2155,7 +2155,7 @@ void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
 		NavigationScheme nav_scheme = (NavigationScheme)EDITOR_GET("editors/3d/navigation/navigation_scheme").operator int();
 		NavigationMode nav_mode = NAVIGATION_NONE;
 
-		if (nav_scheme == NAVIGATION_GODOT) {
+		if (nav_scheme == NAVIGATION_NEBULA) {
 			const Key mod = _get_key_modifier(pan_gesture);
 
 			if (mod == _get_key_modifier_setting("editors/3d/navigation/pan_modifier")) {
@@ -5167,7 +5167,7 @@ void Node3DEditorViewport::update_transform_numeric() {
 			break;
 		case TRANSFORM_SCALE:
 			// To halve the size of an object in Blender, you scale it by 0.5.
-			// Doing the same in Godot is considered scaling it by -0.5.
+			// Doing the same in Nebula is considered scaling it by -0.5.
 			motion *= (value - 1.0);
 			set_message(vformat(TTR("Scaling %s."), motion));
 			break;

@@ -54,7 +54,7 @@ if env["builtin_msdfgen"]:
         env.Append(LIBS=[lib])
 
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

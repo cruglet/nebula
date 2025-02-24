@@ -114,7 +114,7 @@ if env["builtin_embree"]:
     env.modules_sources += thirdparty_obj
 
 
-# Godot source files
+# Nebula source files
 
 module_obj = []
 

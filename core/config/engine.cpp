@@ -2,11 +2,11 @@
 /*  engine.cpp                                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -32,7 +32,6 @@
 
 #include "core/authors.gen.h"
 #include "core/config/project_settings.h"
-#include "core/donors.gen.h"
 #include "core/license.gen.h"
 #include "core/variant/typed_array.h"
 #include "core/version.h"
@@ -145,58 +144,11 @@ static Array array_from_info(const char *const *info_list) {
 	return arr;
 }
 
-static Array array_from_info_count(const char *const *info_list, int info_count) {
-	Array arr;
-	for (int i = 0; i < info_count; i++) {
-		arr.push_back(String::utf8(info_list[i]));
-	}
-	return arr;
-}
-
 Dictionary Engine::get_author_info() const {
 	Dictionary dict;
-
-	dict["lead_developers"] = array_from_info(AUTHORS_LEAD_DEVELOPERS);
-	dict["project_managers"] = array_from_info(AUTHORS_PROJECT_MANAGERS);
-	dict["founders"] = array_from_info(AUTHORS_FOUNDERS);
-	dict["developers"] = array_from_info(AUTHORS_DEVELOPERS);
+	dict["contributors"] = array_from_info(AUTHORS_CONTRIBUTORS);
 
 	return dict;
-}
-
-TypedArray<Dictionary> Engine::get_copyright_info() const {
-	TypedArray<Dictionary> components;
-	for (int component_index = 0; component_index < COPYRIGHT_INFO_COUNT; component_index++) {
-		const ComponentCopyright &cp_info = COPYRIGHT_INFO[component_index];
-		Dictionary component_dict;
-		component_dict["name"] = String::utf8(cp_info.name);
-		Array parts;
-		for (int i = 0; i < cp_info.part_count; i++) {
-			const ComponentCopyrightPart &cp_part = cp_info.parts[i];
-			Dictionary part_dict;
-			part_dict["files"] = array_from_info_count(cp_part.files, cp_part.file_count);
-			part_dict["copyright"] = array_from_info_count(cp_part.copyright_statements, cp_part.copyright_count);
-			part_dict["license"] = String::utf8(cp_part.license);
-			parts.push_back(part_dict);
-		}
-		component_dict["parts"] = parts;
-
-		components.push_back(component_dict);
-	}
-	return components;
-}
-
-Dictionary Engine::get_donor_info() const {
-	Dictionary donors;
-	donors["patrons"] = array_from_info(DONORS_PATRONS);
-	donors["platinum_sponsors"] = array_from_info(DONORS_SPONSORS_PLATINUM);
-	donors["gold_sponsors"] = array_from_info(DONORS_SPONSORS_GOLD);
-	donors["silver_sponsors"] = array_from_info(DONORS_SPONSORS_SILVER);
-	donors["diamond_members"] = array_from_info(DONORS_MEMBERS_DIAMOND);
-	donors["titanium_members"] = array_from_info(DONORS_MEMBERS_TITANIUM);
-	donors["platinum_members"] = array_from_info(DONORS_MEMBERS_PLATINUM);
-	donors["gold_members"] = array_from_info(DONORS_MEMBERS_GOLD);
-	return donors;
 }
 
 Dictionary Engine::get_license_info() const {
@@ -208,7 +160,7 @@ Dictionary Engine::get_license_info() const {
 }
 
 String Engine::get_license_text() const {
-	return String(GODOT_LICENSE_TEXT);
+	return String(NEBULA_LICENSE_TEXT);
 }
 
 String Engine::get_architecture_name() const {

@@ -1,4 +1,4 @@
-# https://github.com/godotengine/godot/issues/72501
+# https://github.com/nebulaengine/nebula/issues/72501
 extends Node
 
 func test():

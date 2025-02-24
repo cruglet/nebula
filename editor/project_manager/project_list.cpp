@@ -2,11 +2,11 @@
 /*  project_list.cpp                                                      */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -65,6 +65,8 @@ void ProjectListItemControl::_notification(int p_what) {
 			project_path->add_theme_color_override(SceneStringName(font_color), get_theme_color(SceneStringName(font_color), SNAME("Tree")));
 			project_unsupported_features->set_texture(get_editor_theme_icon(SNAME("NodeWarning")));
 
+			remove_button->set_icon(get_editor_theme_icon(SNAME("Remove")));
+			remove_button->set_flat(true);
 			favorite_button->set_texture_normal(get_editor_theme_icon(SNAME("Favorites")));
 			if (project_is_missing) {
 				explore_button->set_icon(get_editor_theme_icon(SNAME("FileBroken")));
@@ -102,6 +104,10 @@ void ProjectListItemControl::_favorite_button_pressed() {
 
 void ProjectListItemControl::_explore_button_pressed() {
 	emit_signal(SNAME("explore_pressed"));
+}
+
+void ProjectListItemControl::_remove_button_pressed() {
+	emit_signal(SNAME("remove_pressed"));
 }
 
 void ProjectListItemControl::set_project_title(const String &p_title) {
@@ -153,7 +159,7 @@ void ProjectListItemControl::set_unsupported_features(PackedStringArray p_featur
 				}
 				if (VERSION_MAJOR != project_version_major || VERSION_MINOR <= project_version_minor) {
 					// Don't show a warning if the project was last edited in a previous minor version.
-					tooltip_text += TTR("This project was last edited in a different Godot version: ") + p_features[i] + "\n";
+					tooltip_text += TTR("This project was last edited in a different Nebula version: ") + p_features[i] + "\n";
 				}
 				p_features.remove_at(i);
 				i--;
@@ -225,6 +231,7 @@ void ProjectListItemControl::set_is_grayed(bool p_grayed) {
 void ProjectListItemControl::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("favorite_pressed"));
 	ADD_SIGNAL(MethodInfo("explore_pressed"));
+	ADD_SIGNAL(MethodInfo("remove_pressed"));
 }
 
 ProjectListItemControl::ProjectListItemControl() {
@@ -269,6 +276,10 @@ ProjectListItemControl::ProjectListItemControl() {
 
 		tag_container = memnew(HBoxContainer);
 		title_hb->add_child(tag_container);
+
+		remove_button = memnew(Button);
+		title_hb->add_child(remove_button);
+		remove_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectListItemControl::_remove_button_pressed));
 
 		Control *spacer = memnew(Control);
 		spacer->set_custom_minimum_size(Size2(10, 10));
@@ -346,6 +357,7 @@ struct ProjectListComparator {
 const char *ProjectList::SIGNAL_LIST_CHANGED = "list_changed";
 const char *ProjectList::SIGNAL_SELECTION_CHANGED = "selection_changed";
 const char *ProjectList::SIGNAL_PROJECT_ASK_OPEN = "project_ask_open";
+const char *ProjectList::SIGNAL_PROJECT_REMOVE = "remove_project";
 
 // Helpers.
 
@@ -386,7 +398,7 @@ void ProjectList::_migrate_config() {
 	EditorSettings::get_singleton()->get_property_list(&properties);
 
 	for (const PropertyInfo &E : properties) {
-		// This is actually something like "projects/C:::Documents::Godot::Projects::MyGame"
+		// This is actually something like "projects/C:::Documents::Nebula::Projects::MyGame"
 		String property_key = E.name;
 		if (!property_key.begins_with("projects/")) {
 			continue;
@@ -414,7 +426,7 @@ void ProjectList::save_config() {
 // Load project data from p_property_key and return it in a ProjectList::Item.
 // p_favorite is passed directly into the Item.
 ProjectList::Item ProjectList::load_project_data(const String &p_path, bool p_favorite) {
-	String conf = p_path.path_join("project.godot");
+	String conf = p_path.path_join("project.nebula");
 	bool grayed = false;
 	bool missing = false;
 
@@ -432,7 +444,7 @@ ProjectList::Item ProjectList::load_project_data(const String &p_path, bool p_fa
 	}
 
 	if (config_version > ProjectSettings::CONFIG_VERSION) {
-		// Comes from an incompatible (more recent) Godot version, gray it out.
+		// Comes from an incompatible (more recent) Nebula version, gray it out.
 		grayed = true;
 	}
 
@@ -465,7 +477,7 @@ ProjectList::Item ProjectList::load_project_data(const String &p_path, bool p_fa
 	uint64_t last_edited = 0;
 	if (cf_err == OK) {
 		// The modification date marks the date the project was last edited.
-		// This is because the `project.godot` file will always be modified
+		// This is because the `project.nebula` file will always be modified
 		// when editing a project (but not when running it).
 		last_edited = FileAccess::get_modified_time(conf);
 
@@ -649,6 +661,7 @@ void ProjectList::load_project_list() {
 	List<String> sections;
 	_config.load(_config_path);
 	_config.get_sections(&sections);
+	print_line(_config_path);
 
 	for (const String &path : sections) {
 		bool favorite = _config.get_value(path, "favorite", false);
@@ -666,7 +679,7 @@ void ProjectList::_scan_folder_recursive(const String &p_path, List<String> *r_p
 	while (!n.is_empty()) {
 		if (da->current_is_dir() && n[0] != '.') {
 			_scan_folder_recursive(da->get_current_dir().path_join(n), r_projects);
-		} else if (n == "project.godot") {
+		} else if (n == "project.nebula") {
 			r_projects->push_back(da->get_current_dir());
 		}
 		n = da->get_next();
@@ -768,6 +781,7 @@ void ProjectList::_create_project_item_control(int p_index) {
 
 	hb->connect(SceneStringName(gui_input), callable_mp(this, &ProjectList::_list_item_input).bind(hb));
 	hb->connect("favorite_pressed", callable_mp(this, &ProjectList::_on_favorite_pressed).bind(hb));
+	hb->connect("remove_pressed", callable_mp(this, &ProjectList::_on_remove_pressed).bind(hb));
 
 #if !defined(ANDROID_ENABLED) && !defined(WEB_ENABLED)
 	hb->connect("explore_pressed", callable_mp(this, &ProjectList::_on_explore_pressed).bind(item.path));
@@ -876,6 +890,11 @@ void ProjectList::_on_favorite_pressed(Node *p_hb) {
 
 void ProjectList::_on_explore_pressed(const String &p_path) {
 	OS::get_singleton()->shell_show_in_file_manager(p_path, true);
+}
+
+void ProjectList::_on_remove_pressed(Node *p_hb) {
+	int i = p_hb->get_index();
+	emit_signal(ProjectList::SIGNAL_PROJECT_REMOVE, i);
 }
 
 // Project list selection.
@@ -1115,7 +1134,7 @@ void ProjectList::_global_menu_open_project(const Variant &p_tag) {
 	int idx = (int)p_tag;
 
 	if (idx >= 0 && idx < _projects.size()) {
-		String conf = _projects[idx].path.path_join("project.godot");
+		String conf = _projects[idx].path.path_join("project.nebula");
 		List<String> args;
 		args.push_back(conf);
 		OS::get_singleton()->create_instance(args);
@@ -1128,6 +1147,7 @@ void ProjectList::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(SIGNAL_LIST_CHANGED));
 	ADD_SIGNAL(MethodInfo(SIGNAL_SELECTION_CHANGED));
 	ADD_SIGNAL(MethodInfo(SIGNAL_PROJECT_ASK_OPEN));
+	ADD_SIGNAL(MethodInfo(SIGNAL_PROJECT_REMOVE));
 }
 
 ProjectList::ProjectList() {

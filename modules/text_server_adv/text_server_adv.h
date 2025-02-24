@@ -2,11 +2,11 @@
 /*  text_server_adv.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -41,44 +41,44 @@
 #ifdef GDEXTENSION
 // Headers for building as GDExtension plug-in.
 
-#include <godot_cpp/godot.hpp>
+#include <nebula_cpp/nebula.hpp>
 
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/core/ext_wrappers.gen.inc>
-#include <godot_cpp/core/mutex_lock.hpp>
+#include <nebula_cpp/core/class_db.hpp>
+#include <nebula_cpp/core/ext_wrappers.gen.inc>
+#include <nebula_cpp/core/mutex_lock.hpp>
 
-#include <godot_cpp/variant/array.hpp>
-#include <godot_cpp/variant/dictionary.hpp>
-#include <godot_cpp/variant/packed_int32_array.hpp>
-#include <godot_cpp/variant/packed_string_array.hpp>
-#include <godot_cpp/variant/packed_vector2_array.hpp>
-#include <godot_cpp/variant/rect2.hpp>
-#include <godot_cpp/variant/rid.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/typed_array.hpp>
-#include <godot_cpp/variant/vector2.hpp>
-#include <godot_cpp/variant/vector2i.hpp>
+#include <nebula_cpp/variant/array.hpp>
+#include <nebula_cpp/variant/dictionary.hpp>
+#include <nebula_cpp/variant/packed_int32_array.hpp>
+#include <nebula_cpp/variant/packed_string_array.hpp>
+#include <nebula_cpp/variant/packed_vector2_array.hpp>
+#include <nebula_cpp/variant/rect2.hpp>
+#include <nebula_cpp/variant/rid.hpp>
+#include <nebula_cpp/variant/string.hpp>
+#include <nebula_cpp/variant/typed_array.hpp>
+#include <nebula_cpp/variant/vector2.hpp>
+#include <nebula_cpp/variant/vector2i.hpp>
 
-#include <godot_cpp/classes/text_server.hpp>
-#include <godot_cpp/classes/text_server_extension.hpp>
-#include <godot_cpp/classes/text_server_manager.hpp>
+#include <nebula_cpp/classes/text_server.hpp>
+#include <nebula_cpp/classes/text_server_extension.hpp>
+#include <nebula_cpp/classes/text_server_manager.hpp>
 
-#include <godot_cpp/classes/caret_info.hpp>
-#include <godot_cpp/classes/global_constants_binds.hpp>
-#include <godot_cpp/classes/glyph.hpp>
-#include <godot_cpp/classes/image.hpp>
-#include <godot_cpp/classes/image_texture.hpp>
-#include <godot_cpp/classes/ref.hpp>
-#include <godot_cpp/classes/worker_thread_pool.hpp>
+#include <nebula_cpp/classes/caret_info.hpp>
+#include <nebula_cpp/classes/global_constants_binds.hpp>
+#include <nebula_cpp/classes/glyph.hpp>
+#include <nebula_cpp/classes/image.hpp>
+#include <nebula_cpp/classes/image_texture.hpp>
+#include <nebula_cpp/classes/ref.hpp>
+#include <nebula_cpp/classes/worker_thread_pool.hpp>
 
-#include <godot_cpp/templates/hash_map.hpp>
-#include <godot_cpp/templates/hash_set.hpp>
-#include <godot_cpp/templates/rid_owner.hpp>
-#include <godot_cpp/templates/vector.hpp>
+#include <nebula_cpp/templates/hash_map.hpp>
+#include <nebula_cpp/templates/hash_set.hpp>
+#include <nebula_cpp/templates/rid_owner.hpp>
+#include <nebula_cpp/templates/vector.hpp>
 
-using namespace godot;
+using namespace nebula;
 
-#elif defined(GODOT_MODULE)
+#elif defined(NEBULA_MODULE)
 // Headers for building as built-in module.
 
 #include "core/extension/ext_wrappers.gen.inc"

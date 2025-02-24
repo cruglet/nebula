@@ -2,11 +2,11 @@
 /*  editor_dock_manager.cpp                                               */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -238,7 +238,7 @@ void EditorDockManager::_open_dock_in_window(Control *p_dock, bool p_show_window
 	Point2 dock_screen_pos = p_dock->get_screen_position();
 
 	WindowWrapper *wrapper = memnew(WindowWrapper);
-	wrapper->set_window_title(vformat(TTR("%s - Godot Engine"), all_docks[p_dock].title));
+	wrapper->set_window_title(vformat(TTR("%s - Nebula Engine"), all_docks[p_dock].title));
 	wrapper->set_margins_enabled(true);
 
 	EditorNode::get_singleton()->get_gui_base()->add_child(wrapper);

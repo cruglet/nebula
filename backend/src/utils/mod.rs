@@ -1,4 +1,4 @@
-// https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html
+// https://docs.nebulaengine.org/en/stable/tutorials/io/binary_serialization_api.html
 pub mod byte_serializer;
 
 // https://github.com/NSMBW-Community/NSMBLib-Updated/tree/master

@@ -2,11 +2,11 @@
 /*  joypad_macos.mm                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -238,13 +238,13 @@ void JoypadMacOS::joypad_vibration_stop(Joypad *p_joypad, uint64_t p_timestamp) 
 	self = [super init];
 
 	if (self) {
-		[self godot_commonInit];
+		[self nebula_commonInit];
 	}
 
 	return self;
 }
 
-- (void)godot_commonInit {
+- (void)nebula_commonInit {
 	self.isObserving = NO;
 	self.isProcessing = NO;
 }
@@ -340,7 +340,7 @@ void JoypadMacOS::joypad_vibration_stop(Joypad *p_joypad, uint64_t p_timestamp) 
 		controller.playerIndex = [self getFreePlayerIndex];
 	}
 
-	// Tell Godot about our new controller.
+	// Tell Nebula about our new controller.
 	Input::get_singleton()->joy_connection_changed(joy_id, true, String::utf8([controller.vendorName UTF8String]));
 
 	Joypad *joypad = [[Joypad alloc] init:controller];
@@ -380,7 +380,7 @@ void JoypadMacOS::joypad_vibration_stop(Joypad *p_joypad, uint64_t p_timestamp) 
 
 	NSArray *keys = [self getAllKeysForController:controller];
 	for (NSNumber *key in keys) {
-		// Tell Godot this joystick is no longer there.
+		// Tell Nebula this joystick is no longer there.
 		int joy_id = [key intValue];
 		Input::get_singleton()->joy_connection_changed(joy_id, false, "");
 

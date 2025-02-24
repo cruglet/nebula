@@ -18,7 +18,7 @@ Right now, I'm focused on getting a product that I'm happy with for NSMBW. Newer
 I also need to gauge how difficult it'd be to integrate Newer as an alternative, since a **lot** of it is custom.
 
 In addition, I've deliberately configured this project in a way that can expand functionality to other games, most likely SMG1 & SMG2; 
-this is also the main reason why I chose Godot for my frontend, since I'm already comfortable with it and it already has 3D out of the box (unlike other frameworks I thought about such as Tauri-rust, I am NOT learning OpenGL for potential 3D)
+this is also the main reason why I chose Nebula for my frontend, since I'm already comfortable with it and it already has 3D out of the box (unlike other frameworks I thought about such as Tauri-rust, I am NOT learning OpenGL for potential 3D)
 
 ## Last Thing
 If you want to help out with the project, go right ahead. Just don't be an idiot with the "omg this code is terrrible!!!!!!!" or "what youre doing is dumb and pointless!!1!!!" 

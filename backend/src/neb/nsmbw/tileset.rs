@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs;
 
-use crate::neb::godot;
+use crate::neb::nebula;
 use crate::utils::byte_serializer::UnpackedValue;
 use crate::utils::image_serializer;
 use crate::wii::arc::U8;
@@ -74,7 +74,7 @@ impl Tileset {
         if image.is_empty() { return None }
         image.save(path.clone() + ".png").expect(&format!("Could not write to path: {}", path));
 
-        godot::binary_api::BinarySerializer::value_to_file(&UnpackedValue::Map(tileset_data), &(path.clone() + ".tls")).expect("Could not write to GODOT file!");
+        nebula::binary_api::BinarySerializer::value_to_file(&UnpackedValue::Map(tileset_data), &(path.clone() + ".tls")).expect("Could not write to NEBULA file!");
         
         println!("Tileset extraction successful!");
         Some(&self.image_data)

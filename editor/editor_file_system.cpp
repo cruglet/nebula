@@ -2,11 +2,11 @@
 /*  editor_file_system.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -48,7 +48,7 @@
 #include "scene/resources/packed_scene.h"
 
 EditorFileSystem *EditorFileSystem::singleton = nullptr;
-//the name is the version, to keep compatibility with different versions of Godot
+//the name is the version, to keep compatibility with different versions of Nebula
 #define CACHE_FILE_NAME "filesystem_cache8"
 
 int EditorFileSystemDirectory::find_file_index(const String &p_file) const {
@@ -2826,10 +2826,10 @@ bool EditorFileSystem::_should_skip_directory(const String &p_path) {
 		return true;
 	}
 
-	if (FileAccess::exists(p_path.path_join("project.godot"))) {
+	if (FileAccess::exists(p_path.path_join("project.nebula"))) {
 		// Skip if another project inside this.
 		if (EditorFileSystem::get_singleton()->first_scan) {
-			WARN_PRINT_ONCE(vformat("Detected another project.godot at %s. The folder will be ignored.", p_path));
+			WARN_PRINT_ONCE(vformat("Detected another project.nebula at %s. The folder will be ignored.", p_path));
 		}
 		return true;
 	}

@@ -2,11 +2,11 @@
 /*  gltf_camera.cpp                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -62,9 +62,9 @@ Ref<GLTFCamera> GLTFCamera::from_node(const Camera3D *p_camera) {
 	c.instantiate();
 	ERR_FAIL_NULL_V_MSG(p_camera, c, "Tried to create a GLTFCamera from a Camera3D node, but the given node was null.");
 	c->set_perspective(p_camera->get_projection() == Camera3D::ProjectionType::PROJECTION_PERSPECTIVE);
-	// GLTF spec (yfov) is in radians, Godot's camera (fov) is in degrees.
+	// GLTF spec (yfov) is in radians, Nebula's camera (fov) is in degrees.
 	c->set_fov(Math::deg_to_rad(p_camera->get_fov()));
-	// GLTF spec (xmag and ymag) is a radius in meters, Godot's camera (size) is a diameter in meters.
+	// GLTF spec (xmag and ymag) is a radius in meters, Nebula's camera (size) is a diameter in meters.
 	c->set_size_mag(p_camera->get_size() * 0.5f);
 	c->set_depth_far(p_camera->get_far());
 	c->set_depth_near(p_camera->get_near());
@@ -74,9 +74,9 @@ Ref<GLTFCamera> GLTFCamera::from_node(const Camera3D *p_camera) {
 Camera3D *GLTFCamera::to_node() const {
 	Camera3D *camera = memnew(Camera3D);
 	camera->set_projection(perspective ? Camera3D::PROJECTION_PERSPECTIVE : Camera3D::PROJECTION_ORTHOGONAL);
-	// GLTF spec (yfov) is in radians, Godot's camera (fov) is in degrees.
+	// GLTF spec (yfov) is in radians, Nebula's camera (fov) is in degrees.
 	camera->set_fov(Math::rad_to_deg(fov));
-	// GLTF spec (xmag and ymag) is a radius in meters, Godot's camera (size) is a diameter in meters.
+	// GLTF spec (xmag and ymag) is a radius in meters, Nebula's camera (size) is a diameter in meters.
 	camera->set_size(size_mag * 2.0f);
 	camera->set_near(depth_near);
 	camera->set_far(depth_far);

@@ -2,11 +2,11 @@
 /*  grid_map.h                                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -35,7 +35,7 @@
 #include "scene/resources/3d/mesh_library.h"
 #include "scene/resources/multimesh.h"
 
-//heh heh, godotsphir!! this shares no code and the design is completely different with previous projects i've done..
+//heh heh, nebulasphir!! this shares no code and the design is completely different with previous projects i've done..
 //should scale better with hardware that supports instancing
 
 class PhysicsMaterial;

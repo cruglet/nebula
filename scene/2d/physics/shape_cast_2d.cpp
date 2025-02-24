@@ -2,11 +2,11 @@
 /*  shape_cast_2d.cpp                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -34,7 +34,7 @@
 #include "scene/2d/physics/collision_object_2d.h"
 #include "scene/2d/physics/physics_body_2d.h"
 #include "scene/resources/2d/circle_shape_2d.h"
-#include "servers/physics_2d/godot_physics_server_2d.h"
+#include "servers/physics_2d/nebula_physics_server_2d.h"
 
 void ShapeCast2D::set_target_position(const Vector2 &p_point) {
 	target_position = p_point;

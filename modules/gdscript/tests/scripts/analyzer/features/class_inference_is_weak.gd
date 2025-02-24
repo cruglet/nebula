@@ -1,4 +1,4 @@
-# https://github.com/godotengine/godot/issues/43503
+# https://github.com/nebulaengine/nebula/issues/43503
 
 var test_var = null
 

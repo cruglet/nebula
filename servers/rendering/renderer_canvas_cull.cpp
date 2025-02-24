@@ -2,11 +2,11 @@
 /*  renderer_canvas_cull.cpp                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -2533,7 +2533,7 @@ void RendererCanvasCull::tick() {
 }
 
 void RendererCanvasCull::update_interpolation_tick(bool p_process) {
-#define GODOT_UPDATE_INTERPOLATION_TICK(m_list_prev, m_list_curr, m_type, m_owner_list)      \
+#define NEBULA_UPDATE_INTERPOLATION_TICK(m_list_prev, m_list_curr, m_type, m_owner_list)      \
 	/* Detect any that were on the previous transform list that are no longer active. */     \
 	for (unsigned int n = 0; n < _interpolation_data.m_list_prev->size(); n++) {             \
 		const RID &rid = (*_interpolation_data.m_list_prev)[n];                              \
@@ -2558,11 +2558,11 @@ void RendererCanvasCull::update_interpolation_tick(bool p_process) {
 	SWAP(_interpolation_data.m_list_curr, _interpolation_data.m_list_prev);                  \
 	_interpolation_data.m_list_curr->clear();
 
-	GODOT_UPDATE_INTERPOLATION_TICK(canvas_item_transform_update_list_prev, canvas_item_transform_update_list_curr, Item, canvas_item_owner);
-	GODOT_UPDATE_INTERPOLATION_TICK(canvas_light_transform_update_list_prev, canvas_light_transform_update_list_curr, RendererCanvasRender::Light, canvas_light_owner);
-	GODOT_UPDATE_INTERPOLATION_TICK(canvas_light_occluder_transform_update_list_prev, canvas_light_occluder_transform_update_list_curr, RendererCanvasRender::LightOccluderInstance, canvas_light_occluder_owner);
+	NEBULA_UPDATE_INTERPOLATION_TICK(canvas_item_transform_update_list_prev, canvas_item_transform_update_list_curr, Item, canvas_item_owner);
+	NEBULA_UPDATE_INTERPOLATION_TICK(canvas_light_transform_update_list_prev, canvas_light_transform_update_list_curr, RendererCanvasRender::Light, canvas_light_owner);
+	NEBULA_UPDATE_INTERPOLATION_TICK(canvas_light_occluder_transform_update_list_prev, canvas_light_occluder_transform_update_list_curr, RendererCanvasRender::LightOccluderInstance, canvas_light_occluder_owner);
 
-#undef GODOT_UPDATE_INTERPOLATION_TICK
+#undef NEBULA_UPDATE_INTERPOLATION_TICK
 }
 
 void RendererCanvasCull::InterpolationData::notify_free_canvas_item(RID p_rid, RendererCanvasCull::Item &r_canvas_item) {

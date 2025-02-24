@@ -33,7 +33,7 @@ if sys.stdout.isatty() and sys.platform == "win32":
 
 time_at_start = time.time()
 
-env = SConscript("./godot-cpp/SConstruct")
+env = SConscript("./nebula-cpp/SConstruct")
 env.__class__.disable_warnings = methods.disable_warnings
 
 opts = Variables([], ARGUMENTS)
@@ -416,7 +416,7 @@ if env["platform"] == "android" or env["platform"] == "linuxbsd":
 env_harfbuzz.Append(
     CCFLAGS=[
         "-DU_HAVE_LIB_SUFFIX=1",
-        "-DU_LIB_SUFFIX_C_NAME=_godot",
+        "-DU_LIB_SUFFIX_C_NAME=_nebula",
         "-DHAVE_ICU_BUILTIN",
         "-DHAVE_ICU",
     ]
@@ -740,14 +740,14 @@ env_icu.Append(
         "-DPKGDATA_MODE=static",
         "-DU_ENABLE_DYLOAD=0",
         "-DU_HAVE_LIB_SUFFIX=1",
-        "-DU_LIB_SUFFIX_C_NAME=_godot",
+        "-DU_LIB_SUFFIX_C_NAME=_nebula",
         "-DICU_DATA_NAME=" + icu_data_name,
     ]
 )
 env.Append(
     CXXFLAGS=[
         "-DU_HAVE_LIB_SUFFIX=1",
-        "-DU_LIB_SUFFIX_C_NAME=_godot",
+        "-DU_LIB_SUFFIX_C_NAME=_nebula",
         "-DICU_DATA_NAME=" + icu_data_name,
     ]
 )
@@ -767,7 +767,7 @@ if env["platform"] == "macos":
     methods.write_macos_plist(
         f'./bin/libtextserver_advanced.macos.{env["target"]}.framework',
         f'libtextserver_advanced.macos.{env["target"]}',
-        "org.godotengine.textserver_advanced",
+        "org.nebulaengine.textserver_advanced",
         "ICU / HarfBuzz / Graphite Text Server",
     )
     library = env.SharedLibrary(

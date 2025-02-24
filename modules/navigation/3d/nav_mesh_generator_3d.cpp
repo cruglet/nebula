@@ -2,11 +2,11 @@
 /*  nav_mesh_generator_3d.cpp                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -927,7 +927,7 @@ void NavMeshGenerator3D::generator_bake_from_source_geometry_data(Ref<Navigation
 		for (unsigned int j = 0; j < detail_mesh_ntris; j++) {
 			Vector<int> nav_indices;
 			nav_indices.resize(3);
-			// Polygon order in recast is opposite than godot's
+			// Polygon order in recast is opposite than nebula's
 			int index1 = ((int)(detail_mesh_bverts + detail_mesh_tris[j * 4 + 0]));
 			int index2 = ((int)(detail_mesh_bverts + detail_mesh_tris[j * 4 + 2]));
 			int index3 = ((int)(detail_mesh_bverts + detail_mesh_tris[j * 4 + 1]));

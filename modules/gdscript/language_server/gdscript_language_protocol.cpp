@@ -2,11 +2,11 @@
 /*  gdscript_language_protocol.cpp                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -213,11 +213,11 @@ Dictionary GDScriptLanguageProtocol::initialize(const Dictionary &p_params) {
 }
 
 void GDScriptLanguageProtocol::initialized(const Variant &p_params) {
-	lsp::GodotCapabilities capabilities;
+	lsp::NebulaCapabilities capabilities;
 
 	DocTools *doc = EditorHelp::get_doc_data();
 	for (const KeyValue<String, DocData::ClassDoc> &E : doc->class_list) {
-		lsp::GodotNativeClassInfo gdclass;
+		lsp::NebulaNativeClassInfo gdclass;
 		gdclass.name = E.value.name;
 		gdclass.class_doc = &(E.value);
 		if (ClassDB::ClassInfo *ptr = ClassDB::classes.getptr(StringName(E.value.name))) {

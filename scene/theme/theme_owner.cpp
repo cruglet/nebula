@@ -2,11 +2,11 @@
 /*  theme_owner.cpp                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -166,7 +166,7 @@ void ThemeOwner::propagate_theme_changed(Node *p_to_node, Node *p_owner_node, bo
 			// Has a theme, so we don't want to change the theme owner,
 			// but we still want to propagate in case this child has theme items
 			// it inherits from the theme this node uses.
-			// See https://github.com/godotengine/godot/issues/62844.
+			// See https://github.com/nebulaengine/nebula/issues/62844.
 			assign = false;
 		}
 

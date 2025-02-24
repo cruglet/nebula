@@ -1,16 +1,16 @@
-# Irish translation of the Godot Engine properties.
-# Copyright (c) 2014-present Godot Engine contributors.
+# Irish translation of the Nebula Engine properties.
+# Copyright (c)  Nebula Engine contributors.
 # Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.
-# This file is distributed under the same license as the Godot source code.
+# This file is distributed under the same license as the Nebula source code.
 # Rónán Quill <ronan085@gmail.com>, 2019, 2020.
 # Aindriú Mac Giolla Eoin <aindriu80@gmail.com>, 2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: Godot Engine properties\n"
-"Report-Msgid-Bugs-To: https://github.com/godotengine/godot\n"
+"Project-Id-Version: Nebula Engine properties\n"
+"Report-Msgid-Bugs-To: https://github.com/nebulaengine/nebula\n"
 "PO-Revision-Date: 2024-08-14 13:00+0000\n"
 "Last-Translator: Aindriú Mac Giolla Eoin <aindriu80@gmail.com>\n"
-"Language-Team: Irish <https://hosted.weblate.org/projects/godot-engine/godot-"
+"Language-Team: Irish <https://hosted.weblate.org/projects/nebula-engine/nebula-"
 "properties/ga/>\n"
 "Language: ga\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3548,8 +3548,8 @@ msgstr "Ailt"
 msgid "Roots"
 msgstr "Fréamhacha"
 
-msgid "Godot Bone Node"
-msgstr "Nód Cnámh Godot"
+msgid "Nebula Bone Node"
+msgstr "Nód Cnámh Nebula"
 
 msgid "Skin Root"
 msgstr "Fréamh an Chraicinn"
@@ -3560,8 +3560,8 @@ msgstr "Ailt Bhunaidh"
 msgid "Non Joints"
 msgstr "Neamh-Ailt"
 
-msgid "Godot Skin"
-msgstr "Craiceann Godot"
+msgid "Nebula Skin"
+msgstr "Craiceann Nebula"
 
 msgid "Src Image"
 msgstr "Íomhá Src"

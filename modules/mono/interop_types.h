@@ -2,11 +2,11 @@
 /*  interop_types.h                                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -42,164 +42,164 @@ extern "C" {
 
 // This is taken from the old GDNative, which was removed.
 
-#define GODOT_VARIANT_SIZE (sizeof(real_t) * 4 + sizeof(int64_t))
+#define NEBULA_VARIANT_SIZE (sizeof(real_t) * 4 + sizeof(int64_t))
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_VARIANT_SIZE];
-} godot_variant;
+	uint8_t _dont_touch_that[NEBULA_VARIANT_SIZE];
+} nebula_variant;
 
-#define GODOT_ARRAY_SIZE sizeof(void *)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_ARRAY_SIZE];
-} godot_array;
-
-#define GODOT_DICTIONARY_SIZE sizeof(void *)
+#define NEBULA_ARRAY_SIZE sizeof(void *)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_DICTIONARY_SIZE];
-} godot_dictionary;
+	uint8_t _dont_touch_that[NEBULA_ARRAY_SIZE];
+} nebula_array;
 
-#define GODOT_STRING_SIZE sizeof(void *)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_STRING_SIZE];
-} godot_string;
-
-#define GODOT_STRING_NAME_SIZE sizeof(void *)
+#define NEBULA_DICTIONARY_SIZE sizeof(void *)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_STRING_NAME_SIZE];
-} godot_string_name;
+	uint8_t _dont_touch_that[NEBULA_DICTIONARY_SIZE];
+} nebula_dictionary;
 
-#define GODOT_PACKED_ARRAY_SIZE (2 * sizeof(void *))
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_PACKED_ARRAY_SIZE];
-} godot_packed_array;
-
-#define GODOT_VECTOR2_SIZE (sizeof(real_t) * 2)
+#define NEBULA_STRING_SIZE sizeof(void *)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR2_SIZE];
-} godot_vector2;
+	uint8_t _dont_touch_that[NEBULA_STRING_SIZE];
+} nebula_string;
 
-#define GODOT_VECTOR2I_SIZE (sizeof(int32_t) * 2)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR2I_SIZE];
-} godot_vector2i;
-
-#define GODOT_RECT2_SIZE (sizeof(real_t) * 4)
-
-typedef struct godot_rect2 {
-	uint8_t _dont_touch_that[GODOT_RECT2_SIZE];
-} godot_rect2;
-
-#define GODOT_RECT2I_SIZE (sizeof(int32_t) * 4)
-
-typedef struct godot_rect2i {
-	uint8_t _dont_touch_that[GODOT_RECT2I_SIZE];
-} godot_rect2i;
-
-#define GODOT_VECTOR3_SIZE (sizeof(real_t) * 3)
+#define NEBULA_STRING_NAME_SIZE sizeof(void *)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR3_SIZE];
-} godot_vector3;
+	uint8_t _dont_touch_that[NEBULA_STRING_NAME_SIZE];
+} nebula_string_name;
 
-#define GODOT_VECTOR3I_SIZE (sizeof(int32_t) * 3)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR3I_SIZE];
-} godot_vector3i;
-
-#define GODOT_TRANSFORM2D_SIZE (sizeof(real_t) * 6)
+#define NEBULA_PACKED_ARRAY_SIZE (2 * sizeof(void *))
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_TRANSFORM2D_SIZE];
-} godot_transform2d;
+	uint8_t _dont_touch_that[NEBULA_PACKED_ARRAY_SIZE];
+} nebula_packed_array;
 
-#define GODOT_VECTOR4_SIZE (sizeof(real_t) * 4)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR4_SIZE];
-} godot_vector4;
-
-#define GODOT_VECTOR4I_SIZE (sizeof(int32_t) * 4)
+#define NEBULA_VECTOR2_SIZE (sizeof(real_t) * 2)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_VECTOR4I_SIZE];
-} godot_vector4i;
+	uint8_t _dont_touch_that[NEBULA_VECTOR2_SIZE];
+} nebula_vector2;
 
-#define GODOT_PLANE_SIZE (sizeof(real_t) * 4)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_PLANE_SIZE];
-} godot_plane;
-
-#define GODOT_QUATERNION_SIZE (sizeof(real_t) * 4)
+#define NEBULA_VECTOR2I_SIZE (sizeof(int32_t) * 2)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_QUATERNION_SIZE];
-} godot_quaternion;
+	uint8_t _dont_touch_that[NEBULA_VECTOR2I_SIZE];
+} nebula_vector2i;
 
-#define GODOT_AABB_SIZE (sizeof(real_t) * 6)
+#define NEBULA_RECT2_SIZE (sizeof(real_t) * 4)
 
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_AABB_SIZE];
-} godot_aabb;
+typedef struct nebula_rect2 {
+	uint8_t _dont_touch_that[NEBULA_RECT2_SIZE];
+} nebula_rect2;
 
-#define GODOT_BASIS_SIZE (sizeof(real_t) * 9)
+#define NEBULA_RECT2I_SIZE (sizeof(int32_t) * 4)
 
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_BASIS_SIZE];
-} godot_basis;
+typedef struct nebula_rect2i {
+	uint8_t _dont_touch_that[NEBULA_RECT2I_SIZE];
+} nebula_rect2i;
 
-#define GODOT_TRANSFORM3D_SIZE (sizeof(real_t) * 12)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_TRANSFORM3D_SIZE];
-} godot_transform3d;
-
-#define GODOT_PROJECTION_SIZE (sizeof(real_t) * 4 * 4)
+#define NEBULA_VECTOR3_SIZE (sizeof(real_t) * 3)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_PROJECTION_SIZE];
-} godot_projection;
+	uint8_t _dont_touch_that[NEBULA_VECTOR3_SIZE];
+} nebula_vector3;
+
+#define NEBULA_VECTOR3I_SIZE (sizeof(int32_t) * 3)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_VECTOR3I_SIZE];
+} nebula_vector3i;
+
+#define NEBULA_TRANSFORM2D_SIZE (sizeof(real_t) * 6)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_TRANSFORM2D_SIZE];
+} nebula_transform2d;
+
+#define NEBULA_VECTOR4_SIZE (sizeof(real_t) * 4)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_VECTOR4_SIZE];
+} nebula_vector4;
+
+#define NEBULA_VECTOR4I_SIZE (sizeof(int32_t) * 4)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_VECTOR4I_SIZE];
+} nebula_vector4i;
+
+#define NEBULA_PLANE_SIZE (sizeof(real_t) * 4)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_PLANE_SIZE];
+} nebula_plane;
+
+#define NEBULA_QUATERNION_SIZE (sizeof(real_t) * 4)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_QUATERNION_SIZE];
+} nebula_quaternion;
+
+#define NEBULA_AABB_SIZE (sizeof(real_t) * 6)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_AABB_SIZE];
+} nebula_aabb;
+
+#define NEBULA_BASIS_SIZE (sizeof(real_t) * 9)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_BASIS_SIZE];
+} nebula_basis;
+
+#define NEBULA_TRANSFORM3D_SIZE (sizeof(real_t) * 12)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_TRANSFORM3D_SIZE];
+} nebula_transform3d;
+
+#define NEBULA_PROJECTION_SIZE (sizeof(real_t) * 4 * 4)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_PROJECTION_SIZE];
+} nebula_projection;
 
 // Colors should always use 32-bit floats, so don't use real_t here.
-#define GODOT_COLOR_SIZE (sizeof(float) * 4)
+#define NEBULA_COLOR_SIZE (sizeof(float) * 4)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_COLOR_SIZE];
-} godot_color;
+	uint8_t _dont_touch_that[NEBULA_COLOR_SIZE];
+} nebula_color;
 
-#define GODOT_NODE_PATH_SIZE sizeof(void *)
-
-typedef struct {
-	uint8_t _dont_touch_that[GODOT_NODE_PATH_SIZE];
-} godot_node_path;
-
-#define GODOT_RID_SIZE sizeof(uint64_t)
+#define NEBULA_NODE_PATH_SIZE sizeof(void *)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_RID_SIZE];
-} godot_rid;
+	uint8_t _dont_touch_that[NEBULA_NODE_PATH_SIZE];
+} nebula_node_path;
+
+#define NEBULA_RID_SIZE sizeof(uint64_t)
+
+typedef struct {
+	uint8_t _dont_touch_that[NEBULA_RID_SIZE];
+} nebula_rid;
 
 // Alignment hardcoded in `core/variant/callable.h`.
-#define GODOT_CALLABLE_SIZE (16)
+#define NEBULA_CALLABLE_SIZE (16)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_CALLABLE_SIZE];
-} godot_callable;
+	uint8_t _dont_touch_that[NEBULA_CALLABLE_SIZE];
+} nebula_callable;
 
 // Alignment hardcoded in `core/variant/callable.h`.
-#define GODOT_SIGNAL_SIZE (16)
+#define NEBULA_SIGNAL_SIZE (16)
 
 typedef struct {
-	uint8_t _dont_touch_that[GODOT_SIGNAL_SIZE];
-} godot_signal;
+	uint8_t _dont_touch_that[NEBULA_SIGNAL_SIZE];
+} nebula_signal;
 
 #ifdef __cplusplus
 }

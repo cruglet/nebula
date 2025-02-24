@@ -2,11 +2,11 @@
 /*  gltf_light.cpp                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -119,7 +119,7 @@ Ref<GLTFLight> GLTFLight::from_node(const Light3D *p_light) {
 		l->light_type = "directional";
 		const DirectionalLight3D *light = cast_to<const DirectionalLight3D>(p_light);
 		l->intensity = light->get_param(DirectionalLight3D::PARAM_ENERGY);
-		l->range = FLT_MAX; // Range for directional lights is infinite in Godot.
+		l->range = FLT_MAX; // Range for directional lights is infinite in Nebula.
 	} else if (cast_to<const OmniLight3D>(p_light)) {
 		l->light_type = "point";
 		const OmniLight3D *light = cast_to<const OmniLight3D>(p_light);

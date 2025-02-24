@@ -2,11 +2,11 @@
 /*  editor_file_dialog.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -734,7 +734,7 @@ void EditorFileDialog::_item_list_item_rmb_clicked(int p_item, const Vector2 &p_
 	// Allow specific actions only on one item.
 	bool single_item_selected = item_list->get_selected_items().size() == 1;
 
-	// Disallow deleting the .import folder, Godot kills a cat if you do and it is possibly a senseless novice action.
+	// Disallow deleting the .import folder, Nebula kills a cat if you do and it is possibly a senseless novice action.
 	bool allow_delete = true;
 	for (int i = 0; i < item_list->get_item_count(); i++) {
 		if (!item_list->is_selected(i)) {

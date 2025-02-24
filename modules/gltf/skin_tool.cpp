@@ -2,11 +2,11 @@
 /*  skin_tool.cpp                                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -103,7 +103,7 @@ void SkinTool::_capture_nodes_for_multirooted_skin(Vector<Ref<GLTFNode>> &r_node
 	}
 
 	// Go up the tree till all of the multiple roots of the skin are at the same hierarchy level.
-	// This sucks, but 99% of all game engines (not just Godot) would have this same issue.
+	// This sucks, but 99% of all game engines (not just Nebula) would have this same issue.
 	for (int i = 0; i < roots.size(); ++i) {
 		SkinNodeIndex current_node = roots[i];
 		while (r_nodes[current_node]->height > maxHeight) {
@@ -290,7 +290,7 @@ Error SkinTool::_determine_skeletons(
 	if (!p_single_skeleton_roots.is_empty()) {
 		Ref<GLTFSkin> skin;
 		skin.instantiate();
-		skin->set_name("godot_single_skeleton_root");
+		skin->set_name("nebula_single_skeleton_root");
 		for (GLTFNodeIndex i = 0; i < p_single_skeleton_roots.size(); i++) {
 			skin->joints.push_back(p_single_skeleton_roots[i]);
 		}
@@ -548,7 +548,7 @@ Error SkinTool::_create_skeletons(
 		Ref<GLTFSkeleton> gltf_skeleton = skeletons.write[skel_i];
 
 		Skeleton3D *skeleton = memnew(Skeleton3D);
-		gltf_skeleton->godot_skeleton = skeleton;
+		gltf_skeleton->nebula_skeleton = skeleton;
 		skeleton3d_to_gltf_skeleton[skeleton->get_instance_id()] = skel_i;
 
 		// Make a unique name, no gltf node represents this skeleton
@@ -596,7 +596,7 @@ Error SkinTool::_create_skeletons(
 			node->set_name(_gen_unique_bone_name(unique_names, node->get_name()));
 
 			skeleton->add_bone(node->get_name());
-			Transform3D rest_transform = node->get_additional_data("GODOT_rest_transform");
+			Transform3D rest_transform = node->get_additional_data("NEBULA_rest_transform");
 			skeleton->set_bone_rest(bone_index, rest_transform);
 			skeleton->set_bone_pose_position(bone_index, node->transform.origin);
 			skeleton->set_bone_pose_rotation(bone_index, node->transform.basis.get_rotation_quaternion());
@@ -631,7 +631,7 @@ Error SkinTool::_map_skin_joints_indices_to_skeleton_bone_indices(
 			const SkinNodeIndex node_i = skin->joints_original[joint_index];
 			const Ref<GLTFNode> node = nodes[node_i];
 
-			const int bone_index = skeleton->godot_skeleton->find_bone(node->get_name());
+			const int bone_index = skeleton->nebula_skeleton->find_bone(node->get_name());
 			ERR_FAIL_COND_V(bone_index < 0, FAILED);
 
 			skin->joint_i_to_bone_i.insert(joint_index, bone_index);
@@ -669,7 +669,7 @@ Error SkinTool::_create_skins(Vector<Ref<GLTFSkin>> &skins, Vector<Ref<GLTFNode>
 			}
 		}
 
-		gltf_skin->godot_skin = skin;
+		gltf_skin->nebula_skin = skin;
 	}
 
 	// Purge the duplicates!
@@ -678,7 +678,7 @@ Error SkinTool::_create_skins(Vector<Ref<GLTFSkin>> &skins, Vector<Ref<GLTFNode>
 	// Create unique names now, after removing duplicates
 	for (GLTFSkinIndex skin_i = 0; skin_i < skins.size(); ++skin_i) {
 		ERR_CONTINUE(skins.get(skin_i).is_null());
-		Ref<Skin> skin = skins.write[skin_i]->godot_skin;
+		Ref<Skin> skin = skins.write[skin_i]->nebula_skin;
 		ERR_CONTINUE(skin.is_null());
 		if (skin->get_name().is_empty()) {
 			// Make a unique name, no node represents this skin
@@ -740,12 +740,12 @@ bool SkinTool::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_skin_
 void SkinTool::_remove_duplicate_skins(Vector<Ref<GLTFSkin>> &r_skins) {
 	for (int i = 0; i < r_skins.size(); ++i) {
 		for (int j = i + 1; j < r_skins.size(); ++j) {
-			const Ref<Skin> skin_i = r_skins[i]->godot_skin;
-			const Ref<Skin> skin_j = r_skins[j]->godot_skin;
+			const Ref<Skin> skin_i = r_skins[i]->nebula_skin;
+			const Ref<Skin> skin_j = r_skins[j]->nebula_skin;
 
 			if (_skins_are_same(skin_i, skin_j)) {
 				// replace it and delete the old
-				r_skins.write[j]->godot_skin = skin_i;
+				r_skins.write[j]->nebula_skin = skin_i;
 			}
 		}
 	}

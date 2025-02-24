@@ -2,11 +2,11 @@
 /*  editor_icons.cpp                                                      */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -71,7 +71,7 @@ Ref<ImageTexture> editor_generate_icon(int p_index, float p_scale, float p_satur
 	}
 #else
 	// If the SVG module is disabled, we can't really display the UI well, but at least we won't crash.
-	// 16 pixels is used as it's the most common base size for Godot icons.
+	// 16 pixels is used as it's the most common base size for Nebula icons.
 	img = Image::create_empty(16 * p_scale, 16 * p_scale, false, Image::FORMAT_RGBA8);
 #endif
 
@@ -131,7 +131,7 @@ void editor_register_icons(const Ref<Theme> &p_theme, bool p_dark_theme, float p
 	// The names of the icons to exclude when adjusting for saturation.
 	HashSet<StringName> saturation_exceptions;
 	saturation_exceptions.insert("DefaultProjectIcon");
-	saturation_exceptions.insert("Godot");
+	saturation_exceptions.insert("Nebula");
 	saturation_exceptions.insert("Logo");
 
 	// Accent color conversion map.

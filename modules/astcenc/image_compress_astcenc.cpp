@@ -2,11 +2,11 @@
 /*  image_compress_astcenc.cpp                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -115,7 +115,7 @@ void _compress_astc(Image *r_img, Image::ASTCFormat p_format) {
 	// Context allocation.
 
 	astcenc_context *context;
-	const unsigned int thread_count = 1; // Godot compresses multiple images each on a thread, which is more efficient for large amount of images imported.
+	const unsigned int thread_count = 1; // Nebula compresses multiple images each on a thread, which is more efficient for large amount of images imported.
 	status = astcenc_context_alloc(&config, thread_count, &context);
 	ERR_FAIL_COND_MSG(status != ASTCENC_SUCCESS,
 			vformat("astcenc: Context allocation failed: %s.", astcenc_get_error_string(status)));

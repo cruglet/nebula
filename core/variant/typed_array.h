@@ -2,11 +2,11 @@
 /*  typed_array.h                                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -169,7 +169,7 @@ struct PtrToArg<const TypedArray<T> &> {
 template <typename T>
 struct GetTypeInfo<TypedArray<T>> {
 	static const Variant::Type VARIANT_TYPE = Variant::ARRAY;
-	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;
+	static const NebulaTypeInfo::Metadata METADATA = NebulaTypeInfo::METADATA_NONE;
 	static inline PropertyInfo get_class_info() {
 		return PropertyInfo(Variant::ARRAY, String(), PROPERTY_HINT_ARRAY_TYPE, T::get_class_static());
 	}
@@ -178,7 +178,7 @@ struct GetTypeInfo<TypedArray<T>> {
 template <typename T>
 struct GetTypeInfo<const TypedArray<T> &> {
 	static const Variant::Type VARIANT_TYPE = Variant::ARRAY;
-	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;
+	static const NebulaTypeInfo::Metadata METADATA = NebulaTypeInfo::METADATA_NONE;
 	static inline PropertyInfo get_class_info() {
 		return PropertyInfo(Variant::ARRAY, String(), PROPERTY_HINT_ARRAY_TYPE, T::get_class_static());
 	}
@@ -188,7 +188,7 @@ struct GetTypeInfo<const TypedArray<T> &> {
 	template <>                                                                                                              \
 	struct GetTypeInfo<TypedArray<m_type>> {                                                                                 \
 		static const Variant::Type VARIANT_TYPE = Variant::ARRAY;                                                            \
-		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;                                        \
+		static const NebulaTypeInfo::Metadata METADATA = NebulaTypeInfo::METADATA_NONE;                                        \
 		static inline PropertyInfo get_class_info() {                                                                        \
 			return PropertyInfo(Variant::ARRAY, String(), PROPERTY_HINT_ARRAY_TYPE, Variant::get_type_name(m_variant_type)); \
 		}                                                                                                                    \
@@ -196,7 +196,7 @@ struct GetTypeInfo<const TypedArray<T> &> {
 	template <>                                                                                                              \
 	struct GetTypeInfo<const TypedArray<m_type> &> {                                                                         \
 		static const Variant::Type VARIANT_TYPE = Variant::ARRAY;                                                            \
-		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;                                        \
+		static const NebulaTypeInfo::Metadata METADATA = NebulaTypeInfo::METADATA_NONE;                                        \
 		static inline PropertyInfo get_class_info() {                                                                        \
 			return PropertyInfo(Variant::ARRAY, String(), PROPERTY_HINT_ARRAY_TYPE, Variant::get_type_name(m_variant_type)); \
 		}                                                                                                                    \

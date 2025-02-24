@@ -2,11 +2,11 @@
 /*  openxr_api.cpp                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
-/*                             GODOT ENGINE                               */
-/*                        https://godotengine.org                         */
+/*                             Nebula Engine                              */
+/*                    https://github.com/cruglet/nebula                   */
 /**************************************************************************/
+/* Copyright (c) 2024-present Nebula Engine contributors                  */
 /* Copyright (c) 2014-present Godot Engine contributors (see AUTHORS.md). */
-/* Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.                  */
 /*                                                                        */
 /* Permission is hereby granted, free of charge, to any person obtaining  */
 /* a copy of this software and associated documentation files (the        */
@@ -270,7 +270,7 @@ OpenXRAPI *OpenXRAPI::singleton = nullptr;
 Vector<OpenXRExtensionWrapper *> OpenXRAPI::registered_extension_wrappers;
 
 bool OpenXRAPI::openxr_is_enabled(bool p_check_run_in_editor) {
-	// @TODO we need an overrule switch so we can force enable openxr, i.e run "godot --openxr_enabled"
+	// @TODO we need an overrule switch so we can force enable openxr, i.e run "nebula --openxr_enabled"
 
 	if (Engine::get_singleton()->is_editor_hint() && p_check_run_in_editor) {
 		// Disabled for now, using XR inside of the editor we'll be working on during the coming months.
@@ -523,7 +523,7 @@ bool OpenXRAPI::create_instance() {
 	XrApplicationInfo application_info{
 		"", // applicationName, we'll set this down below
 		1, // applicationVersion, we don't currently have this
-		"Godot Game Engine", // engineName
+		"Nebula Game Engine", // engineName
 		VERSION_MAJOR * 10000 + VERSION_MINOR * 100 + VERSION_PATCH, // engineVersion 4.0 -> 40000, 4.0.1 -> 40001, 4.1 -> 40100, etc.
 		XR_CURRENT_API_VERSION // apiVersion
 	};
@@ -1160,11 +1160,11 @@ bool OpenXRAPI::create_main_swapchains(Size2i p_size) {
 
 	/*
 		TODO: We need to improve on this, for now we're taking our old approach of creating our main swapchains and substituting
-		those for the ones Godot normally creates.
+		those for the ones Nebula normally creates.
 		This however means we can only use swapchains for our main XR view.
 
-		It would have been nicer if we could override the swapchain creation in Godot with ours but we have a timing issue here.
-		We can't create XR swapchains until after our XR session is fully instantiated, yet Godot creates its swapchain much earlier.
+		It would have been nicer if we could override the swapchain creation in Nebula with ours but we have a timing issue here.
+		We can't create XR swapchains until after our XR session is fully instantiated, yet Nebula creates its swapchain much earlier.
 
 		We only creates a swapchain for the main output here.
 		Additional swapchains may be created through our composition layer extension.
@@ -1931,7 +1931,7 @@ bool OpenXRAPI::poll_events() {
 				XrEventDataInstanceLossPending *event = (XrEventDataInstanceLossPending *)&runtimeEvent;
 
 				// TODO We get this event if we're about to loose our OpenXR instance.
-				// We should queue exiting Godot at this point.
+				// We should queue exiting Nebula at this point.
 
 				print_verbose(String("OpenXR EVENT: instance loss pending at ") + itos(event->lossTime));
 				return false;
