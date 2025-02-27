@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <NebulaSdkPackageVersionsFilePath>$(MSBuildThisFileDirectory)\SdkPackageVersions.props</NebulaSdkPackageVersionsFilePath>
-  </PropertyGroup>
-  <Import Project="$(NebulaSdkPackageVersionsFilePath)" />
-</Project>
