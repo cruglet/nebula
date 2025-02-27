@@ -1,2 +1,0 @@
-GDTEST_PARSER_ERROR
-"yield" was removed in Nebula 4. Use "await" instead.
