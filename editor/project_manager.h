@@ -154,7 +154,6 @@ class ProjectManager : public Control {
 	Button *scan_btn = nullptr;
 	Button *rename_btn = nullptr;
 	Button *manage_tags_btn = nullptr;
-	Button *erase_missing_btn = nullptr;
 
 	EditorFileDialog *scan_dir = nullptr;
 
@@ -163,7 +162,6 @@ class ProjectManager : public Control {
 	// Comment out for now until we have a better warning system to
 	// ensure users delete their project only.
 	CheckBox *delete_project_contents = nullptr;
-	ConfirmationDialog *erase_missing_ask = nullptr;
 	ConfirmationDialog *multi_open_ask = nullptr;
 	ConfirmationDialog *multi_run_ask = nullptr;
 
@@ -180,9 +178,7 @@ class ProjectManager : public Control {
 	void _new_project();
 	void _rename_project();
 	void _erase_project(int index);
-	void _erase_missing_projects();
 	void _erase_project_confirm();
-	void _erase_missing_projects_confirm();
 	void _update_project_buttons();
 
 	void _on_project_created(const String &dir);

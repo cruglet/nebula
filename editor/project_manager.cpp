@@ -251,7 +251,6 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 			import_btn->set_icon(get_editor_theme_icon(SNAME("Load")));
 			scan_btn->set_icon(get_editor_theme_icon(SNAME("Search")));
 			manage_tags_btn->set_icon(get_editor_theme_icon("Script"));
-			erase_missing_btn->set_icon(get_editor_theme_icon(SNAME("Remove")));
 			create_tag_btn->set_icon(get_editor_theme_icon("Add"));
 
 			tag_error->add_theme_color_override(SceneStringName(font_color), get_theme_color("error_color", EditorStringName(Editor)));
@@ -262,7 +261,6 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 			scan_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			rename_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 			manage_tags_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
-			erase_missing_btn->add_theme_constant_override("h_separation", get_theme_constant(SNAME("sidebar_button_icon_separation"), SNAME("ProjectManager")));
 		}
 	}
 }
@@ -633,19 +631,8 @@ void ProjectManager::_erase_project(int index) {
 	erase_ask->popup_centered();
 }
 
-void ProjectManager::_erase_missing_projects() {
-	erase_missing_ask->set_text(TTR("Remove all missing projects from the list?\nThe project folders' contents won't be modified."));
-	erase_missing_ask->popup_centered();
-}
-
 void ProjectManager::_erase_project_confirm() {
 	project_list->erase_selected_projects(false);
-	_update_project_buttons();
-	_update_list_placeholder();
-}
-
-void ProjectManager::_erase_missing_projects_confirm() {
-	project_list->erase_missing_projects();
 	_update_project_buttons();
 	_update_list_placeholder();
 }
@@ -664,8 +651,6 @@ void ProjectManager::_update_project_buttons() {
 
 	rename_btn->set_disabled(empty_selection || is_missing_project_selected);
 	manage_tags_btn->set_disabled(empty_selection || is_missing_project_selected || selected_projects.size() > 1);
-
-	erase_missing_btn->set_disabled(!project_list->is_any_project_missing());
 }
 
 void ProjectManager::_on_projects_updated() {
@@ -1161,11 +1146,6 @@ ProjectManager::ProjectManager() {
 		right_hbox->set_stretch_ratio(1.0);
 		title_bar->add_child(right_hbox);
 
-		erase_missing_btn = memnew(Button);
-		erase_missing_btn->set_flat(true);
-		erase_missing_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_erase_missing_projects));
-		right_hbox->add_child(erase_missing_btn);
-
 		manage_tags_btn = memnew(Button);
 		manage_tags_btn->set_flat(true);
 		right_hbox->add_child(manage_tags_btn);
@@ -1376,11 +1356,6 @@ ProjectManager::ProjectManager() {
 		scan_dir->set_current_dir(EDITOR_GET("filesystem/directories/default_project_path"));
 		add_child(scan_dir);
 		scan_dir->connect("dir_selected", callable_mp(project_list, &ProjectList::find_projects));
-
-		erase_missing_ask = memnew(ConfirmationDialog);
-		erase_missing_ask->set_ok_button_text(TTR("Remove All"));
-		erase_missing_ask->get_ok_button()->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_erase_missing_projects_confirm));
-		add_child(erase_missing_ask);
 
 		erase_ask = memnew(ConfirmationDialog);
 		erase_ask->set_ok_button_text(TTR("Remove"));
