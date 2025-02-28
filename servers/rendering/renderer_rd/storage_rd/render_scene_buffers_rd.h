@@ -32,7 +32,6 @@
 #define RENDER_SCENE_BUFFERS_RD_H
 
 #include "../effects/fsr2.h"
-#include "../effects/vrs.h"
 #include "../framebuffer_cache_rd.h"
 #include "core/templates/hash_map.h"
 #include "material_storage.h"
@@ -62,13 +61,10 @@
 #define RB_TEX_BACK_DEPTH SNAME("back_depth")
 
 class RenderSceneBuffersRD : public RenderSceneBuffers {
-	GDCLASS(RenderSceneBuffersRD, RenderSceneBuffers);
-
 private:
 	bool can_be_storage = true;
 	uint32_t max_cluster_elements = 512;
 	RD::DataFormat base_data_format = RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
-	RendererRD::VRS *vrs = nullptr;
 	uint64_t auto_exposure_version = 1;
 
 	// Our render target represents our final destination that we display on screen.
@@ -113,10 +109,10 @@ private:
 	};
 
 	struct NTSliceKey {
-		uint32_t layer;
-		uint32_t layers;
-		uint32_t mipmap;
-		uint32_t mipmaps;
+		uint32_t layer = 0U;
+		uint32_t layers = 0U;
+		uint32_t mipmap = 0U;
+		uint32_t mipmaps = 0U;
 		RD::TextureView texture_view;
 
 		bool operator==(const NTSliceKey &p_val) const {
@@ -182,8 +178,6 @@ public:
 	uint32_t get_max_cluster_elements() { return max_cluster_elements; }
 	void set_base_data_format(const RD::DataFormat p_base_data_format) { base_data_format = p_base_data_format; }
 	RD::DataFormat get_base_data_format() const { return base_data_format; }
-	void set_vrs(RendererRD::VRS *p_vrs) { vrs = p_vrs; }
-
 	void cleanup();
 	virtual void configure(const RenderSceneBuffersConfiguration *p_config) override;
 	void configure_for_reflections(const Size2i p_reflection_size);

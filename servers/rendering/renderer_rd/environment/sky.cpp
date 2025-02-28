@@ -751,12 +751,6 @@ void SkyRD::init() {
 		sky_modes.push_back("\n#define USE_QUARTER_RES_PASS\n#define USE_MULTIVIEW\n"); // Quarter res multiview
 
 		sky_shader.shader.initialize(sky_modes, defines);
-
-		if (!RendererCompositorRD::get_singleton()->is_xr_enabled()) {
-			sky_shader.shader.set_variant_enabled(SKY_VERSION_BACKGROUND_MULTIVIEW, false);
-			sky_shader.shader.set_variant_enabled(SKY_VERSION_HALF_RES_MULTIVIEW, false);
-			sky_shader.shader.set_variant_enabled(SKY_VERSION_QUARTER_RES_MULTIVIEW, false);
-		}
 	}
 
 	// register our shader funds

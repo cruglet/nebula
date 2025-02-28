@@ -660,8 +660,6 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 
 	RENDER_TIMESTAMP("Prepare 3D Scene");
 
-	_update_vrs(rb);
-
 	RENDER_TIMESTAMP("Setup 3D Scene");
 
 	/* TODO

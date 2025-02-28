@@ -1637,8 +1637,6 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 	p_render_data->cluster_size = current_cluster_builder->get_cluster_size();
 	p_render_data->cluster_max_elements = current_cluster_builder->get_max_cluster_elements();
 
-	_update_vrs(rb);
-
 	RENDER_TIMESTAMP("Setup 3D Scene");
 
 	bool using_debug_mvs = get_debug_draw_mode() == RS::VIEWPORT_DEBUG_DRAW_MOTION_VECTORS;
@@ -1721,7 +1719,6 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 
 		if (p_render_data->scene_data->view_count > 1) {
 			color_pass_flags |= COLOR_PASS_FLAG_MULTIVIEW;
-			// Try enabling here in case is_xr_enabled() returns false.
 			scene_shader.shader.enable_group(SceneShaderForwardClustered::SHADER_GROUP_MULTIVIEW);
 		}
 

@@ -93,14 +93,6 @@
 #include "physics_server_3d.h"
 #include "physics_server_3d_wrap_mt.h"
 #include "servers/extensions/physics_server_3d_extension.h"
-#include "xr/xr_body_tracker.h"
-#include "xr/xr_controller_tracker.h"
-#include "xr/xr_face_tracker.h"
-#include "xr/xr_hand_tracker.h"
-#include "xr/xr_interface.h"
-#include "xr/xr_interface_extension.h"
-#include "xr/xr_positional_tracker.h"
-#include "xr_server.h"
 #endif // _3D_DISABLED
 
 ShaderTypes *shader_types = nullptr;
@@ -254,7 +246,7 @@ void register_server_types() {
 	GDREGISTER_CLASS(RenderSceneBuffersConfiguration);
 	GDREGISTER_ABSTRACT_CLASS(RenderSceneBuffers);
 	GDREGISTER_CLASS(RenderSceneBuffersExtension);
-	GDREGISTER_CLASS(RenderSceneBuffersRD);
+	// GDREGISTER_CLASS(RenderSceneBuffersRD);
 
 	GDREGISTER_CLASS(FramebufferCacheRD);
 	GDREGISTER_CLASS(UniformSetCacheRD);
@@ -326,17 +318,6 @@ void register_server_types() {
 	PhysicsServer3DManager::get_singleton()->register_server("NebulaPhysics3D", callable_mp_static(_createNebulaPhysics3DCallback));
 	PhysicsServer3DManager::get_singleton()->set_default_server("NebulaPhysics3D");
 
-	GDREGISTER_ABSTRACT_CLASS(XRInterface);
-	GDREGISTER_CLASS(XRVRS);
-	GDREGISTER_CLASS(XRBodyTracker);
-	GDREGISTER_CLASS(XRControllerTracker);
-	GDREGISTER_CLASS(XRFaceTracker);
-	GDREGISTER_CLASS(XRHandTracker);
-	GDREGISTER_CLASS(XRInterfaceExtension); // can't register this as virtual because we need a creation function for our extensions.
-	GDREGISTER_CLASS(XRPose);
-	GDREGISTER_CLASS(XRPositionalTracker);
-	GDREGISTER_CLASS(XRServer);
-	GDREGISTER_ABSTRACT_CLASS(XRTracker);
 #endif // _3D_DISABLED
 
 	GDREGISTER_ABSTRACT_CLASS(NavigationServer3D);
@@ -377,7 +358,6 @@ void register_server_singletons() {
 	Engine::get_singleton()->add_singleton(Engine::Singleton("PhysicsServer2D", PhysicsServer2D::get_singleton(), "PhysicsServer2D"));
 #ifndef _3D_DISABLED
 	Engine::get_singleton()->add_singleton(Engine::Singleton("PhysicsServer3D", PhysicsServer3D::get_singleton(), "PhysicsServer3D"));
-	Engine::get_singleton()->add_singleton(Engine::Singleton("XRServer", XRServer::get_singleton(), "XRServer"));
 #endif // _3D_DISABLED
 
 	OS::get_singleton()->benchmark_end_measure("Servers", "Register Singletons");
