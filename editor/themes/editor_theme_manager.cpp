@@ -250,7 +250,7 @@ EditorThemeManager::ThemeConfiguration EditorThemeManager::_create_theme_config(
 	config.color_picker_button_height = 28 * EDSCALE;
 	config.subresource_hue_tint = EDITOR_GET("docks/property_editor/subresource_hue_tint");
 
-	config.default_contrast = 0.3; // Make sure to keep this in sync with the editor settings definition.
+	config.default_contrast = 0.25; // Make sure to keep this in sync with the editor settings definition.
 
 	// Handle main theme preset.
 	{
@@ -318,7 +318,7 @@ EditorThemeManager::ThemeConfiguration EditorThemeManager::_create_theme_config(
 				preset_draw_extra_borders = true;
 			} else { // Default
 				preset_accent_color = Color(0.44, 0.73, 0.98);
-				preset_base_color = Color(0.125, 0.125, 0.125);
+				preset_base_color = Color("#27292E");
 				preset_contrast = config.default_contrast;
 			}
 

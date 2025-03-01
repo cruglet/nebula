@@ -33,6 +33,7 @@
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/os/time.h"
+#include "core/variant/variant.h"
 #include "core/version.h"
 #include "editor/editor_paths.h"
 #include "editor/editor_settings.h"
@@ -41,11 +42,14 @@
 #include "editor/project_manager/project_tag.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/button.h"
+#include "scene/gui/control.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
+#include "scene/gui/margin_container.h"
 #include "scene/gui/texture_button.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/resources/image_texture.h"
+#include "scene/resources/style_box_flat.h"
 
 void ProjectListItemControl::_notification(int p_what) {
 	switch (p_what) {
@@ -55,6 +59,10 @@ void ProjectListItemControl::_notification(int p_what) {
 				// so use a loading placeholder.
 				project_icon->set_texture(get_editor_theme_icon(SNAME("ProjectIconLoading")));
 			}
+
+			item_stylebox->set_corner_radius_all(12);
+			item_stylebox->set_border_width_all(1);
+			item_stylebox->set_border_color(Color("#44474e"));
 
 			project_title->begin_bulk_theme_override();
 			project_title->add_theme_font_override(SceneStringName(font), get_theme_font(SNAME("title"), EditorStringName(EditorFonts)));
@@ -86,14 +94,22 @@ void ProjectListItemControl::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_DRAW: {
-			if (is_selected) {
-				draw_style_box(get_theme_stylebox(SNAME("selected"), SNAME("Tree")), Rect2(Point2(), get_size()));
-			}
+
+			item_stylebox->set_bg_color(Color("#27292e"));
+
 			if (is_hovering) {
-				draw_style_box(get_theme_stylebox(SNAME("hover"), SNAME("Tree")), Rect2(Point2(), get_size()));
+				item_stylebox->set_bg_color(Color("#34363c"));
 			}
 
-			draw_line(Point2(0, get_size().y + 1), Point2(get_size().x, get_size().y + 1), get_theme_color(SNAME("guide_color"), SNAME("Tree")));
+			if (is_selected) {
+				item_stylebox->set_bg_color(Color("#34363c"));
+			}
+
+			if (is_pressed) {
+				item_stylebox->set_bg_color(Color("#1c1d21"));
+			}
+
+			draw_style_box(item_stylebox, Rect2(Point2(), get_size()));
 		} break;
 	}
 }
@@ -237,17 +253,6 @@ void ProjectListItemControl::_bind_methods() {
 ProjectListItemControl::ProjectListItemControl() {
 	set_focus_mode(FocusMode::FOCUS_ALL);
 
-	VBoxContainer *favorite_box = memnew(VBoxContainer);
-	favorite_box->set_alignment(BoxContainer::ALIGNMENT_CENTER);
-	add_child(favorite_box);
-
-	favorite_button = memnew(TextureButton);
-	favorite_button->set_name("FavoriteButton");
-	// This makes the project's "hover" style display correctly when hovering the favorite icon.
-	favorite_button->set_mouse_filter(MOUSE_FILTER_PASS);
-	favorite_box->add_child(favorite_button);
-	favorite_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectListItemControl::_favorite_button_pressed));
-
 	project_icon = memnew(TextureRect);
 	project_icon->set_name("ProjectIcon");
 	project_icon->set_v_size_flags(SIZE_SHRINK_CENTER);
@@ -261,6 +266,9 @@ ProjectListItemControl::ProjectListItemControl() {
 	ec->set_custom_minimum_size(Size2(0, 1));
 	ec->set_mouse_filter(MOUSE_FILTER_PASS);
 	main_vbox->add_child(ec);
+
+
+	item_stylebox.instantiate();
 
 	// Top half, title, tags and unsupported features labels.
 	{
@@ -276,6 +284,11 @@ ProjectListItemControl::ProjectListItemControl() {
 
 		tag_container = memnew(HBoxContainer);
 		title_hb->add_child(tag_container);
+
+		favorite_button = memnew(TextureButton);
+		favorite_button->set_stretch_mode(TextureButton::StretchMode::STRETCH_KEEP_CENTERED);
+		title_hb->add_child(favorite_button);
+		favorite_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectListItemControl::_favorite_button_pressed));
 
 		remove_button = memnew(Button);
 		title_hb->add_child(remove_button);
@@ -369,6 +382,14 @@ bool ProjectList::project_feature_looks_like_version(const String &p_feature) {
 
 void ProjectList::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_DRAW: {
+			pl_margin_container->add_theme_constant_override(SNAME("margin_left"), 4);
+			pl_margin_container->add_theme_constant_override(SNAME("margin_right"), 4);
+			pl_margin_container->add_theme_constant_override(SNAME("margin_top"), 4);
+			pl_margin_container->add_theme_constant_override(SNAME("margin_bottom"), 4);
+
+			project_list_vbox->add_theme_constant_override(SNAME("separation"), 8);
+		}
 		case NOTIFICATION_PROCESS: {
 			// Load icons as a coroutine to speed up launch when you have hundreds of projects
 			if (_icon_load_index < _projects.size()) {
@@ -661,7 +682,6 @@ void ProjectList::load_project_list() {
 	List<String> sections;
 	_config.load(_config_path);
 	_config.get_sections(&sections);
-	print_line(_config_path);
 
 	for (const String &path : sections) {
 		bool favorite = _config.get_value(path, "favorite", false);
@@ -775,6 +795,8 @@ void ProjectList::_create_project_item_control(int p_index) {
 	hb->set_project_version(item.project_version);
 	hb->set_last_edited_info(!item.missing ? Time::get_singleton()->get_datetime_string_from_unix_time(item.last_edited, true) : TTR("Missing Date"));
 
+	hb->set_default_cursor_shape(CursorShape::CURSOR_POINTING_HAND);
+
 	hb->set_is_favorite(item.favorite);
 	hb->set_is_missing(item.missing);
 	hb->set_is_grayed(item.grayed);
@@ -828,7 +850,11 @@ void ProjectList::_list_item_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
 	int clicked_index = p_hb->get_index();
 	const Item &clicked_project = _projects[clicked_index];
 
-	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
+	if(!clicked_project.control->is_hovering) {
+		clicked_project.control->is_pressed = false;
+	}
+
+	if (mb.is_valid() && mb->get_button_index() == MouseButton::LEFT) {
 		if (mb->is_shift_pressed() && _selected_project_paths.size() > 0 && !_last_clicked.is_empty() && clicked_project.path != _last_clicked) {
 			int anchor_index = -1;
 			for (int i = 0; i < _projects.size(); ++i) {
@@ -850,13 +876,19 @@ void ProjectList::_list_item_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
 		}
 
 		emit_signal(SNAME(SIGNAL_SELECTION_CHANGED));
-
 		// Do not allow opening a project more than once using a single project manager instance.
 		// Opening the same project in several editor instances at once can lead to various issues.
-		if (!mb->is_command_or_control_pressed() && mb->is_double_click() && !project_opening_initiated) {
+		if (!mb->is_command_or_control_pressed() && !mb->is_shift_pressed() && !project_opening_initiated && mb->is_pressed()) {
+			clicked_project.control->is_pressed = true;
+		}
+		if (!mb->is_command_or_control_pressed() && !project_opening_initiated && clicked_project.control->is_pressed && mb->is_released()) {
+			clicked_project.control->is_pressed = false;
 			emit_signal(SNAME(SIGNAL_PROJECT_ASK_OPEN));
 		}
+	} else if (mb.is_valid() && mb->get_button_index() == MouseButton::RIGHT) {
+		emit_signal(SNAME(SIGNAL_SELECTION_CHANGED));
 	}
+
 }
 
 void ProjectList::_on_favorite_pressed(Node *p_hb) {
@@ -1151,9 +1183,13 @@ void ProjectList::_bind_methods() {
 }
 
 ProjectList::ProjectList() {
+	pl_margin_container = memnew(MarginContainer);
+	pl_margin_container->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	add_child(pl_margin_container);
+
 	project_list_vbox = memnew(VBoxContainer);
 	project_list_vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	add_child(project_list_vbox);
+	pl_margin_container->add_child(project_list_vbox);
 
 	_config_path = EditorPaths::get_singleton()->get_data_dir().path_join("projects.cfg");
 	_migrate_config();

@@ -34,6 +34,7 @@
 #include "core/io/config_file.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/scroll_container.h"
+#include "scene/resources/style_box_flat.h"
 
 class Button;
 class Label;
@@ -57,10 +58,11 @@ class ProjectListItemControl : public HBoxContainer {
 	TextureRect *project_unsupported_features = nullptr;
 	HBoxContainer *tag_container = nullptr;
 
+	Ref<StyleBoxFlat> item_stylebox;
+
 	bool project_is_missing = false;
 	bool icon_needs_reload = true;
 	bool is_selected = false;
-	bool is_hovering = false;
 
 	void _favorite_button_pressed();
 	void _explore_button_pressed();
@@ -85,6 +87,9 @@ public:
 	void set_is_favorite(bool p_favorite);
 	void set_is_missing(bool p_missing);
 	void set_is_grayed(bool p_grayed);
+
+	bool is_hovering = false;
+	bool is_pressed = false;
 
 	ProjectListItemControl();
 };
@@ -176,6 +181,7 @@ private:
 	HashSet<String> _selected_project_paths;
 	String _last_clicked; // Project key
 
+	MarginContainer *pl_margin_container = nullptr;
 	VBoxContainer *project_list_vbox = nullptr;
 
 	// Initialization & loading.
