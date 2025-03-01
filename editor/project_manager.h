@@ -176,6 +176,7 @@ class ProjectManager : public Control {
 
 	void _install_project(const String &p_zip_path, const String &p_title);
 	void _import_project();
+	void _open_game();
 	void _new_project();
 	void _rename_project();
 	void _erase_project(int index);

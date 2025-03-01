@@ -38,6 +38,7 @@
 #include "editor/editor_string_names.h"
 #include "editor/editor_vcs_interface.h"
 #include "editor/gui/editor_file_dialog.h"
+#include "editor/project_manager/validate_game_file.h"
 #include "editor/themes/editor_icons.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_box.h"
@@ -371,6 +372,11 @@ void ProjectDialog::_browse_project_path() {
 		fdialog_project->clear_filters();
 		fdialog_project->add_filter("project.nebula", vformat("%s %s", VERSION_NAME, TTR("Project")));
 		fdialog_project->add_filter("*.zip", TTR("ZIP File"));
+	} else if (mode == MODE_OPEN) {
+		fdialog_project->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
+		fdialog_project->clear_filters();
+		fdialog_project->add_filter("*.iso", TTR("ISO File"));
+		fdialog_project->add_filter("*.wbfs", TTR("WBFS File"));
 	} else {
 		fdialog_project->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_DIR);
 	}
@@ -399,14 +405,19 @@ void ProjectDialog::_browse_install_path() {
 }
 
 void ProjectDialog::_project_path_selected(const String &p_path) {
+	if (mode == MODE_OPEN) {
+		_validate_game_file(p_path);
+		mode = MODE_NEW;
+	}
+
 	show_dialog(false);
 
-	if (create_dir->is_pressed() && (mode == MODE_NEW || mode == MODE_INSTALL)) {
+	//if (create_dir->is_pressed() && (mode == MODE_NEW || mode == MODE_INSTALL)) {
 		// Replace parent directory, but keep target dir name.
-		project_path->set_text(p_path.path_join(project_path->get_text().get_file()));
-	} else {
-		project_path->set_text(p_path);
-	}
+	//	project_path->set_text(p_path.path_join(project_path->get_text().get_file()));
+	//} else {
+	//	project_path->set_text(p_path);
+	//}
 
 	_project_path_changed();
 
@@ -431,6 +442,27 @@ void ProjectDialog::_install_path_selected(const String &p_path) {
 	_install_path_changed();
 
 	get_ok_button()->grab_focus();
+}
+
+void ProjectDialog::_validate_game_file(const String &p_path) {
+    ValidateGameFile x = ValidateGameFile();
+
+    CharString utf8_path = p_path.utf8();  // Convert to UTF-8
+    int length = utf8_path.length();       // Get length of the string
+
+    // Allocate a writable buffer (+1 for null terminator)
+    char* modifiable_path = new char[length + 1];
+
+    // Copy string data
+    memcpy(modifiable_path, utf8_path.get_data(), length + 1);  // Includes null terminator
+
+    // Pass to function
+    x.getFileHeader(modifiable_path);
+
+    // Cleanup
+    delete[] modifiable_path;
+
+    print_line(p_path);
 }
 
 void ProjectDialog::_reset_name() {
@@ -780,6 +812,9 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 			default_files_container->hide();
 
 			callable_mp((Control *)project_path, &Control::grab_focus).call_deferred();
+		} else if (mode == MODE_OPEN) {
+			set_title(TTR("Open Game File: "));
+			set_ok_button_text(TTR("Open"));
 		}
 
 		auto_dir = "";

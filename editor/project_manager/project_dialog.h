@@ -45,6 +45,7 @@ class ProjectDialog : public ConfirmationDialog {
 
 public:
 	enum Mode {
+		MODE_OPEN,
 		MODE_NEW,
 		MODE_IMPORT,
 		MODE_INSTALL,
@@ -121,6 +122,8 @@ private:
 
 	void _project_path_selected(const String &p_path);
 	void _install_path_selected(const String &p_path);
+
+	void _validate_game_file(const String &p_path);
 
 	void _reset_name();
 	void _renderer_selected();

@@ -591,6 +591,11 @@ void ProjectManager::_import_project() {
 	project_dialog->ask_for_path_and_show();
 }
 
+void ProjectManager::_open_game() {
+	project_dialog->set_mode(ProjectDialog::MODE_OPEN);
+	project_dialog->ask_for_path_and_show();
+}
+
 void ProjectManager::_new_project() {
 	project_dialog->set_mode(ProjectDialog::MODE_NEW);
 	project_dialog->show_dialog();
@@ -1192,7 +1197,7 @@ ProjectManager::ProjectManager() {
 			create_btn = memnew(Button);
 			create_btn->set_text(TTR("Create"));
 			create_btn->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KeyModifierMask::CMD_OR_CTRL | Key::N));
-			create_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_new_project));
+			create_btn->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_game));
 			hb->add_child(create_btn);
 
 			import_btn = memnew(Button);
@@ -1289,7 +1294,7 @@ ProjectManager::ProjectManager() {
 				empty_list_create_project->set_text(TTR("Create New Project"));
 				empty_list_create_project->set_theme_type_variation("PanelBackgroundButton");
 				empty_list_actions->add_child(empty_list_create_project);
-				empty_list_create_project->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_new_project));
+				empty_list_create_project->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_game));
 
 				empty_list_import_project = memnew(Button);
 				empty_list_import_project->set_text(TTR("Import Existing Project"));
