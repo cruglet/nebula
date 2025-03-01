@@ -632,9 +632,13 @@ void ProjectManager::_erase_project(int index) {
 }
 
 void ProjectManager::_erase_project_confirm() {
-	project_list->erase_selected_projects(false);
+	project_list->erase_selected_projects(delete_contents);
 	_update_project_buttons();
 	_update_list_placeholder();
+}
+
+void ProjectManager::_delete_project_contents_pressed(bool toggle) {
+	delete_contents = toggle;
 }
 
 void ProjectManager::_update_project_buttons() {
@@ -1370,6 +1374,7 @@ ProjectManager::ProjectManager() {
 
 		delete_project_contents = memnew(CheckBox);
 		delete_project_contents->set_text(TTR("Also delete project contents (no undo!)"));
+		delete_project_contents->connect(SNAME("toggled"), callable_mp(this, &ProjectManager::_delete_project_contents_pressed));
 		erase_ask_vb->add_child(delete_project_contents);
 
 		multi_open_ask = memnew(ConfirmationDialog);

@@ -161,6 +161,7 @@ class ProjectManager : public Control {
 	Label *erase_ask_label = nullptr;
 	// Comment out for now until we have a better warning system to
 	// ensure users delete their project only.
+	bool delete_contents = false;
 	CheckBox *delete_project_contents = nullptr;
 	ConfirmationDialog *multi_open_ask = nullptr;
 	ConfirmationDialog *multi_run_ask = nullptr;
@@ -179,6 +180,7 @@ class ProjectManager : public Control {
 	void _rename_project();
 	void _erase_project(int index);
 	void _erase_project_confirm();
+	void _delete_project_contents_pressed(bool toggle);
 	void _update_project_buttons();
 
 	void _on_project_created(const String &dir);
