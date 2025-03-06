@@ -3,9 +3,8 @@
 
 extern "C" {
 
-// LIBDEF
-void test_func();
-
-}
+namespace NSMBW {
+	void test_func();
+}}
 
 #endif

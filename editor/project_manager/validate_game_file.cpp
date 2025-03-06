@@ -32,7 +32,7 @@
 #include "validate_game_file.h"
 
 ValidateGameFile::ValidateGameFile() {
-    test_func();
+	NSMBW::test_func();
 }
 
 ValidateGameFile::~ValidateGameFile() {}
