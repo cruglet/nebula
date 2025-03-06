@@ -44,9 +44,6 @@ class ValidateGameFile {
 	bool isValidWBFSFile();
 
 public:
-	char* getFileHeader(char* f_path);
-
-
 	ValidateGameFile();
 	~ValidateGameFile();
 };

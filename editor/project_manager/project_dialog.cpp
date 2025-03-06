@@ -445,23 +445,6 @@ void ProjectDialog::_install_path_selected(const String &p_path) {
 }
 
 void ProjectDialog::_validate_game_file(const String &p_path) {
-    ValidateGameFile x = ValidateGameFile();
-
-    CharString utf8_path = p_path.utf8();  // Convert to UTF-8
-    int length = utf8_path.length();       // Get length of the string
-
-    // Allocate a writable buffer (+1 for null terminator)
-    char* modifiable_path = new char[length + 1];
-
-    // Copy string data
-    memcpy(modifiable_path, utf8_path.get_data(), length + 1);  // Includes null terminator
-
-    // Pass to function
-    x.getFileHeader(modifiable_path);
-
-    // Cleanup
-    delete[] modifiable_path;
-
     print_line(p_path);
 }
 
@@ -815,6 +798,7 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 		} else if (mode == MODE_OPEN) {
 			set_title(TTR("Open Game File: "));
 			set_ok_button_text(TTR("Open"));
+			ValidateGameFile();
 		}
 
 		auto_dir = "";

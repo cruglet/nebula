@@ -284,7 +284,7 @@ SConscript("templates/SCsub")
 SConscript("string/SCsub")
 SConscript("config/SCsub")
 SConscript("error/SCsub")
-
+SConscript("util/SCsub")
 
 # Build it all as a library
 lib = env.add_library("core", env.core_sources)

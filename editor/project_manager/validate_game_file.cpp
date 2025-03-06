@@ -27,65 +27,13 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
+#include "core/util/wii/nsmbw.h"
 #include "validate_game_file.h"
-#include <iostream>
-#include <fstream>
-#include <vector>
 
-// Define the constructor
 ValidateGameFile::ValidateGameFile() {
-    // Constructor logic (if needed)
+    test_func();
 }
 
-// Define the destructor
-ValidateGameFile::~ValidateGameFile() {
-    // Destructor logic (if needed)
-}
-
-
-static std::string hexVectorToString(const std::vector<char>& hexVec) {
-    return std::string(hexVec.begin(), hexVec.end());  // Convert vector to string
-}
-
-std::vector<char> readBinaryData(const std::string& filepath, std::streampos offset, size_t size) {
-    std::ifstream file(filepath, std::ios::binary);  // Open file in binary mode
-    if (!file) {
-        std::runtime_error("Error: Unable to open file!");  // Fixed: actually throwing an error
-    }
-
-    file.seekg(offset);  // Move to the given offset
-    if (!file) {
-        std::runtime_error("Error: Seeking failed!");
-    }
-
-    std::vector<char> buffer(size);  // Allocate buffer
-    file.read(buffer.data(), size);  // Read binary data
-
-    if (!file) {
-        std::runtime_error("Error: Reading failed!");
-    }
-
-    return buffer;  // Return the binary data
-}
-
-char* ValidateGameFile::getFileHeader(char* f_path) {
-    std::string path = f_path;
-    std::streampos offset = 0x200;
-    size_t size = 6;
-
-    std::vector<char> x = readBinaryData(path, offset, size);
-
-    for (unsigned char byte : x) {
-        printf("%02X ", byte);
-    }
-
-	 std::string disc_id = hexVectorToString(x);
-
-	 std::cout << disc_id << std::endl;
-
-    printf("\n");
-
-    return f_path;  // Returning input for now (modify as needed)
-}
-
+ValidateGameFile::~ValidateGameFile() {}
 
