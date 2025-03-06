@@ -1,8 +1,6 @@
 use std::fs;
 
-
 // gonna add filetype checking later
-
 pub struct LZFile {
     header: u8,
     data: Vec<u8>,
@@ -11,8 +9,7 @@ pub struct LZFile {
 impl LZFile {
     pub fn decompress(&self) -> Option<Vec<u8>> {
         match self.header {
-            0x11 => return self.decompress_lz11(),
-
+            0x11 => self.decompress_lz11(),
             _ => {
                 println!("Unsupported filetype!: {}", self.header);
                 None
@@ -123,18 +120,19 @@ impl LZFile {
                     if current_size > decompressed_size {
                         break;
                     }
-                } else {
-                    if let Some(value) = source_iter.next() {
-                        decompressed_data.push(value);
-                        current_size += 1;
-    
-                        if current_size > decompressed_size {
-                            break;
-                        }
-                    } else {
-                        return None;
-                    }
                 }
+
+					  if let Some(value) = source_iter.next() {
+							decompressed_data.push(value);
+							current_size += 1;
+ 
+							if current_size > decompressed_size {
+								 break;
+							}
+					  } else {
+							return None;
+					  }
+                
     
                 if decompressed_data.len() == decompressed_size {
                     return Some(decompressed_data);
@@ -147,7 +145,7 @@ impl LZFile {
 
 pub fn decompress_raw(data: Vec<u8>) -> Option<Vec<u8>> {
     LZFile::decompress(&LZFile {
-        header: *data.get(0)?,
+        header: *data.first()?,
         data,
     })
 }
@@ -155,7 +153,7 @@ pub fn decompress_raw(data: Vec<u8>) -> Option<Vec<u8>> {
 /* This should preferably be outside */
 pub fn open(path: &str) -> Option<LZFile> {
     let data = fs::read(path).ok()?;
-    let header = *data.get(0)?;
+    let header = *data.first()?;
 
     Some(LZFile {
         header,

@@ -1,8 +1,6 @@
 // Sourced from Reggie! Updated:
 // https://github.com/NSMBW-Community/Reggie-Updated/tree/fa12de16ea8df33068ae93ec4616f8e67dbc05ca
 
-// TODO: figure out and integrate LZ compression if/when i have the sanity for that
-
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
@@ -10,7 +8,7 @@ use std::path::{Path, PathBuf};
 const U8_MAGIC: &[u8] = b"U\xAA8-"; // like what in the actual fuck
 
 #[derive(Debug, Clone)]
-pub struct U8Header {
+struct U8Header {
     tag: [u8; 4],
     rootnode_offset: u32,
     header_size: u32,
@@ -96,11 +94,11 @@ impl U8Node {
 }
 
 #[derive(Debug)]
-pub struct U8 {
+pub struct U8Arc {
     pub files: Vec<(String, Option<Vec<u8>>)>,
 }
 
-impl U8 {
+impl U8Arc {
     pub fn new() -> Self {
         Self { files: Vec::new() }
     }
