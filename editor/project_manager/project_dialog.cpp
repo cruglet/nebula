@@ -33,6 +33,8 @@
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/io/zip_io.h"
+#include "core/util/wii/misc.h"
+#include "core/util/wii/wbfs.h"
 #include "core/version.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
@@ -407,7 +409,7 @@ void ProjectDialog::_browse_install_path() {
 void ProjectDialog::_project_path_selected(const String &p_path) {
 	if (mode == MODE_OPEN) {
 		_validate_game_file(p_path);
-		mode = MODE_NEW;
+		//mode = MODE_NEW;
 	}
 
 	show_dialog(false);
@@ -445,7 +447,16 @@ void ProjectDialog::_install_path_selected(const String &p_path) {
 }
 
 void ProjectDialog::_validate_game_file(const String &p_path) {
-    print_line(p_path);
+	CharString path_utf8 = p_path.utf8();
+	const char* path_cstr = path_utf8.get_data();
+	if (p_path.contains(".wbfs")) {
+		switch(WBFS::validate_wbfs(path_cstr)) {
+			case ISOHeaders::SMNE01: {print_line("NSMBW (US)"); break;}
+			case ISOHeaders::SMNP01: {print_line("NSMBW (PAL)"); break;}
+
+			case ISOHeaders::NIL: {print_line("Unrecognized Game"); break;}
+		}
+	}
 }
 
 void ProjectDialog::_reset_name() {
@@ -798,7 +809,6 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 		} else if (mode == MODE_OPEN) {
 			set_title(TTR("Open Game File: "));
 			set_ok_button_text(TTR("Open"));
-			ValidateGameFile();
 		}
 
 		auto_dir = "";

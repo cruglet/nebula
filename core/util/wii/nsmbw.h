@@ -1,5 +1,5 @@
-#ifndef NEB_LIB_H
-#define NEB_LIB_H
+#ifndef NEB_LIB_NSMBW
+#define NEB_LIB_NSMBW
 
 extern "C" {
 

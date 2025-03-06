@@ -28,12 +28,19 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "core/util/wii/nsmbw.h"
+#include "core/string/print_string.h"
+#include "core/util/wii/misc.h"
+#include "core/util/wii/wbfs.h"
 #include "validate_game_file.h"
 
 ValidateGameFile::ValidateGameFile() {
-	NSMBW::test_func();
+	int game = WBFS::validate_wbfs("bin/SMNE01.wbfs");
+
+	switch(game) {
+		case ISOHeaders::SMNE01: {print_line("nsmbw (US)");}
+
+		case ISOHeaders::NIL: {print_line("idfk");}
+	}
 }
 
 ValidateGameFile::~ValidateGameFile() {}
-

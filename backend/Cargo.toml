@@ -9,3 +9,4 @@ crate-type = ["staticlib"]
 [dependencies]
 byteorder = "1.5.0"
 image = "0.25.5"
+nod = "1.4.4"
