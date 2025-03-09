@@ -2,7 +2,7 @@ use std::ffi::CStr;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 
-static PREDEFINED_STRINGS: [&[u8]; 6] = [
+static PREDEFINED_HEADERS: [&[u8]; 6] = [
     b"SMNE01",
     b"SMNP01",
     b"SMNJ01",
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn validate_wbfs(path: *const i8) -> i8 {
         return -1;
     }
 
-    for (index, check_string) in PREDEFINED_STRINGS.iter().enumerate() {
+    for (index, check_string) in PREDEFINED_HEADERS.iter().enumerate() {
         if buffer.windows(check_string.len()).any(|window| window == *check_string) {
             return index as i8;
         }
