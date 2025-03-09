@@ -229,7 +229,7 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 		title_bar_logo->set_icon(get_editor_theme_icon(SNAME("TitleBarLogo")));
 
 		_set_main_view_icon(MAIN_VIEW_PROJECTS, get_editor_theme_icon(SNAME("Home")));
-		_set_main_view_icon(MAIN_VIEW_THEMES, get_editor_theme_icon(SNAME("Clear")));
+		//_set_main_view_icon(MAIN_VIEW_THEMES, get_editor_theme_icon(SNAME("Clear")));
 
 		// Project list.
 		{
@@ -1184,9 +1184,9 @@ ProjectManager::ProjectManager() {
 		local_projects_vb->set_name("LocalProjectsTab");
 		_add_main_view(MAIN_VIEW_PROJECTS, TTR("Home"), Ref<Texture2D>(), local_projects_vb);
 
-		local_themes_vb = memnew(VBoxContainer);
-		local_themes_vb->set_name("LocalThemesTab");
-		_add_main_view(MAIN_VIEW_THEMES, TTR("Themes"), Ref<Texture2D>(), local_themes_vb);
+		//local_themes_vb = memnew(VBoxContainer);
+		//local_themes_vb->set_name("LocalThemesTab");
+		//_add_main_view(MAIN_VIEW_THEMES, TTR("Themes"), Ref<Texture2D>(), local_themes_vb);
 
 		// Project list's top bar.
 		{
