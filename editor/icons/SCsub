@@ -1,25 +1,87 @@
 #!/usr/bin/env python
-
 Import("env")
-
 import os
-
+import shutil
 import editor_icons_builders
 
+# Define the builder for generating header files from SVGs.
 env["BUILDERS"]["MakeEditorIconsBuilder"] = Builder(
     action=env.Run(editor_icons_builders.make_editor_icons_action),
     suffix=".h",
     src_suffix=".svg",
 )
 
-# Editor's own icons
+# Collect editor's own icons.
 icon_sources = Glob("*.svg")
 
-# Module icons
+# Collect module icons.
 for path in env.module_icons_paths:
     if not os.path.isabs(path):
-        icon_sources += Glob("#" + path + "/*.svg")  # Built-in.
+        icon_sources += Glob("#" + path + "/*.svg")  # Built-in modules.
     else:
-        icon_sources += Glob(path + "/*.svg")  # Custom.
+        icon_sources += Glob(path + "/*.svg")  # Custom modules.
 
-env.Alias("editor_icons", [env.MakeEditorIconsBuilder("#editor/themes/editor_icons.gen.h", icon_sources)])
+# Define a mapping of custom icon paths to their unique names.
+icon_name_map = {
+    "#bundles/nsmbw/meta/banner.svg": "NSMBWBanner",
+    # Add more mappings if needed.
+}
+
+# Prepare a temporary directory for the renamed custom icons.
+temp_dir = os.path.join("editor", "themes", "temp_icons")
+if os.path.exists(temp_dir):
+    # Clean up previous temp files to avoid conflicts
+    shutil.rmtree(temp_dir)
+os.makedirs(temp_dir)
+
+# Get the project root directory to resolve absolute paths
+project_root = env.Dir('#').abspath
+
+# Process custom mapped icons
+for original_path, unique_name in icon_name_map.items():
+    # Handle paths with and without the '#' prefix
+    if original_path.startswith("#"):
+        # The '#' in SCons refers to the project root
+        src_path = os.path.join(project_root, original_path[1:])
+    else:
+        src_path = original_path
+    
+    if os.path.exists(src_path):
+        # Destination file with the desired unique name
+        dest_path = os.path.join(temp_dir, unique_name + ".svg")
+        # Copy the file so its filename becomes the unique name
+        shutil.copy2(src_path, dest_path)
+        # Add the copied file to icon_sources
+        icon_sources.append(env.File(dest_path))
+    else:
+        print(f"Warning: Custom icon file '{src_path}' does not exist.")
+        # Try to find the file relative to the current directory
+        alt_path = os.path.join(os.getcwd(), original_path.lstrip("#"))
+        if os.path.exists(alt_path):
+            dest_path = os.path.join(temp_dir, unique_name + ".svg")
+            shutil.copy2(alt_path, dest_path)
+            icon_sources.append(env.File(dest_path))
+
+# Function to clean up the temporary directory after the build
+def cleanup_temp_dir(target, source, env):
+    target_dir = os.path.join("editor", "icons", "editor")
+    temp_dir_path = os.path.join("editor", "themes", "temp_icons")
+    
+    if os.path.exists(target_dir):
+        print(f"Cleaning up temporary icon directory: {target_dir}")
+        shutil.rmtree(target_dir)
+    
+    if os.path.exists(temp_dir_path):
+        print(f"Cleaning up temporary icons: {temp_dir_path}")
+        shutil.rmtree(temp_dir_path)
+    
+    return 0
+
+# Create the header file
+result = env.MakeEditorIconsBuilder("#editor/themes/editor_icons.gen.h", icon_sources)
+
+# Add a post-action to clean up after the build completes
+env.AddPostAction(result, cleanup_temp_dir)
+
+# Create the alias
+env.Alias("editor_icons", result)
