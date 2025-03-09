@@ -33,6 +33,7 @@
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 #include "core/io/zip_io.h"
+#include "core/math/math_defs.h"
 #include "core/util/wii/misc.h"
 #include "core/util/wii/wbfs.h"
 #include "core/version.h"
@@ -40,11 +41,13 @@
 #include "editor/editor_string_names.h"
 #include "editor/editor_vcs_interface.h"
 #include "editor/gui/editor_file_dialog.h"
+#include "editor/project_manager/project_list.h"
 #include "editor/project_manager/validate_game_file.h"
 #include "editor/themes/editor_icons.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/check_button.h"
+#include "scene/gui/control.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/separator.h"
@@ -85,8 +88,11 @@ void ProjectDialog::_validate_path() {
 	_set_message("", MESSAGE_SUCCESS, PROJECT_PATH);
 	_set_message("", MESSAGE_SUCCESS, INSTALL_PATH);
 
+	project_preview->set_project_title(project_name->get_text());
+	project_preview->set_project_path(project_path->get_text());
+
 	if (project_name->get_text().strip_edges().is_empty()) {
-		_set_message(TTR("It would be a good idea to name your project."), MESSAGE_ERROR);
+		_set_message(TTR("Please give your project a name."), MESSAGE_ERROR);
 		return;
 	}
 
@@ -136,7 +142,7 @@ void ProjectDialog::_validate_path() {
 
 				String name = String::utf8(fname);
 				if (name.get_file() == "project.nebula") {
-					break; // ret == UNZ_OK.
+					break;
 				}
 
 				ret = unzGoToNextFile(pkg);
@@ -218,7 +224,6 @@ void ProjectDialog::_validate_path() {
 			_set_message(TTR("The project folder exists and is empty."), MESSAGE_SUCCESS, target_path_input_type);
 		}
 
-		// Check if the directory is empty. Not an error, but we want to warn the user.
 		if (d->change_dir(target_path) == OK) {
 			d->list_dir_begin();
 			String n = d->get_next();
@@ -236,7 +241,7 @@ void ProjectDialog::_validate_path() {
 			d->list_dir_end();
 
 			if (!is_folder_empty) {
-				_set_message(TTR("The selected path is not empty. Choosing an empty folder is highly recommended."), MESSAGE_WARNING, target_path_input_type);
+				_set_message(TTR("The selected path is not empty."), MESSAGE_ERROR, target_path_input_type);
 			}
 		}
 	}
@@ -300,10 +305,8 @@ void ProjectDialog::_update_target_auto_dir() {
 			// Update target dir name to new project name / ZIP name.
 			target_path = target_path.get_base_dir().path_join(new_auto_dir);
 		}
-
 		_set_target_path(target_path);
 	}
-
 	auto_dir = new_auto_dir;
 }
 
@@ -359,13 +362,10 @@ void ProjectDialog::_browse_project_path() {
 		path = EDITOR_GET("filesystem/directories/default_project_path");
 	}
 	if (mode == MODE_IMPORT && install_path->is_visible_in_tree()) {
-		// Select last ZIP file.
 		fdialog_project->set_current_path(path);
 	} else if ((mode == MODE_NEW || mode == MODE_INSTALL) && create_dir->is_pressed()) {
-		// Select parent directory of project path.
 		fdialog_project->set_current_dir(path.get_base_dir());
 	} else {
-		// Select project path.
 		fdialog_project->set_current_dir(path);
 	}
 
@@ -408,18 +408,22 @@ void ProjectDialog::_browse_install_path() {
 
 void ProjectDialog::_project_path_selected(const String &p_path) {
 	if (mode == MODE_OPEN) {
-		_validate_game_file(p_path);
-		//mode = MODE_NEW;
+		ISOHeader game = _validate_game_file(p_path);
+		if (game == -1) {
+			emit_signal(SNAME("project_error"), "Unrecognized or unsupported game.\nPlease make sure you are selecting a valid WBFS or ISO file.", Size2());
+			return;
+		}
+		mode = MODE_NEW;
 	}
 
-	show_dialog(false);
+	if (mode == MODE_NEW || mode == MODE_INSTALL) {
+		//Replace parent directory, but keep target dir name.
+		project_path->set_text(p_path.path_join(project_path->get_text().get_file()));
+	} else {
+	 	project_path->set_text(p_path);
+	}
 
-	//if (create_dir->is_pressed() && (mode == MODE_NEW || mode == MODE_INSTALL)) {
-		// Replace parent directory, but keep target dir name.
-	//	project_path->set_text(p_path.path_join(project_path->get_text().get_file()));
-	//} else {
-	//	project_path->set_text(p_path);
-	//}
+	show_dialog(true);
 
 	_project_path_changed();
 
@@ -446,52 +450,16 @@ void ProjectDialog::_install_path_selected(const String &p_path) {
 	get_ok_button()->grab_focus();
 }
 
-void ProjectDialog::_validate_game_file(const String &p_path) {
+ISOHeader ProjectDialog::_validate_game_file(const String &p_path) {
 	CharString path_utf8 = p_path.utf8();
 	const char* path_cstr = path_utf8.get_data();
 	if (p_path.contains(".wbfs")) {
-		switch(WBFS::validate_wbfs(path_cstr)) {
-			case ISOHeaders::SMNE01: {print_line("NSMBW (US)"); break;}
-			case ISOHeaders::SMNP01: {print_line("NSMBW (PAL)"); break;}
-
-			case ISOHeaders::NIL: {print_line("Unrecognized Game"); break;}
-		}
+		return (ISOHeader) WBFS::validate_wbfs(path_cstr);
 	}
 }
 
 void ProjectDialog::_reset_name() {
-	project_name->set_text(TTR("New Game Project"));
-}
-
-void ProjectDialog::_renderer_selected() {
-	ERR_FAIL_NULL(renderer_button_group->get_pressed_button());
-
-	String renderer_type = renderer_button_group->get_pressed_button()->get_meta(SNAME("rendering_method"));
-
-	if (renderer_type == "forward_plus") {
-		renderer_info->set_text(
-				String::utf8("•  ") + TTR("Supports desktop platforms only.") +
-				String::utf8("\n•  ") + TTR("Advanced 3D graphics available.") +
-				String::utf8("\n•  ") + TTR("Can scale to large complex scenes.") +
-				String::utf8("\n•  ") + TTR("Uses RenderingDevice backend.") +
-				String::utf8("\n•  ") + TTR("Slower rendering of simple scenes."));
-	} else if (renderer_type == "mobile") {
-		renderer_info->set_text(
-				String::utf8("•  ") + TTR("Supports desktop + mobile platforms.") +
-				String::utf8("\n•  ") + TTR("Less advanced 3D graphics.") +
-				String::utf8("\n•  ") + TTR("Less scalable for complex scenes.") +
-				String::utf8("\n•  ") + TTR("Uses RenderingDevice backend.") +
-				String::utf8("\n•  ") + TTR("Fast rendering of simple scenes."));
-	} else if (renderer_type == "gl_compatibility") {
-		renderer_info->set_text(
-				String::utf8("•  ") + TTR("Supports desktop, mobile + web platforms.") +
-				String::utf8("\n•  ") + TTR("Least advanced 3D graphics (currently work-in-progress).") +
-				String::utf8("\n•  ") + TTR("Intended for low-end/older devices.") +
-				String::utf8("\n•  ") + TTR("Uses OpenGL 3 backend (OpenGL 3.3/ES 3.0/WebGL2).") +
-				String::utf8("\n•  ") + TTR("Fastest rendering of simple scenes."));
-	} else {
-		WARN_PRINT("Unknown renderer type. Please report this as a bug on GitHub.");
-	}
+	project_name->set_text(TTR("My Project"));
 }
 
 void ProjectDialog::_nonempty_confirmation_ok_pressed() {
@@ -500,18 +468,6 @@ void ProjectDialog::_nonempty_confirmation_ok_pressed() {
 }
 
 void ProjectDialog::ok_pressed() {
-	// Before we create a project, check that the target folder is empty.
-	// If not, we need to ask the user if they're sure they want to do this.
-	if (!is_folder_empty) {
-		ConfirmationDialog *cd = memnew(ConfirmationDialog);
-		cd->set_title(TTR("Warning: This folder is not empty"));
-		cd->set_text(TTR("You are about to create a Nebula project in a non-empty folder.\nThe entire contents of this folder will be imported as project resources!\n\nAre you sure you wish to continue?"));
-		cd->get_ok_button()->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_nonempty_confirmation_ok_pressed));
-		get_parent()->add_child(cd);
-		cd->popup_centered();
-		return;
-	}
-
 	String path = project_path->get_text();
 
 	if (mode == MODE_NEW) {
@@ -529,7 +485,7 @@ void ProjectDialog::ok_pressed() {
 		// Be sure to change this code if/when renderers are changed.
 		// Default values are "forward_plus" for the main setting, "mobile" for the mobile override,
 		// and "gl_compatibility" for the web override.
-		String renderer_type = renderer_button_group->get_pressed_button()->get_meta(SNAME("rendering_method"));
+		String renderer_type = "gl_compatibility";
 		initial_settings["rendering/renderer/rendering_method"] = renderer_type;
 
 		EditorSettings::get_singleton()->set("project_manager/default_renderer", renderer_type);
@@ -541,7 +497,6 @@ void ProjectDialog::ok_pressed() {
 			project_features.push_back("Mobile");
 		} else if (renderer_type == "gl_compatibility") {
 			project_features.push_back("GL Compatibility");
-			// Also change the default rendering method for the mobile override.
 			initial_settings["rendering/renderer/rendering_method.mobile"] = "gl_compatibility";
 		} else {
 			WARN_PRINT("Unknown renderer type. Please report this as a bug on GitHub.");
@@ -550,21 +505,12 @@ void ProjectDialog::ok_pressed() {
 		project_features.sort();
 		initial_settings["application/config/features"] = project_features;
 		initial_settings["application/config/name"] = project_name->get_text().strip_edges();
-		initial_settings["application/config/icon"] = "res://icon.svg";
 
 		Error err = ProjectSettings::get_singleton()->save_custom(path.path_join("project.nebula"), initial_settings, Vector<String>(), false);
 		if (err != OK) {
 			_set_message(TTR("Couldn't create project.nebula in project path."), MESSAGE_ERROR);
 			return;
 		}
-
-		// Store default project icon in SVG format.
-		Ref<FileAccess> fa_icon = FileAccess::open(path.path_join("icon.svg"), FileAccess::WRITE, &err);
-		if (err != OK) {
-			_set_message(TTR("Couldn't create icon.svg in project path."), MESSAGE_ERROR);
-			return;
-		}
-		fa_icon->store_string(get_default_project_icon());
 
 		EditorVCSInterface::create_vcs_metadata_files(EditorVCSInterface::VCSMetadata(vcs_metadata_selection->get_selected()), path);
 	}
@@ -746,7 +692,6 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 
 		name_container->show();
 		install_path_container->hide();
-		renderer_container->hide();
 		default_files_container->hide();
 
 		callable_mp((Control *)project_name, &Control::grab_focus).call_deferred();
@@ -779,7 +724,6 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 
 			name_container->hide();
 			install_path_container->hide();
-			renderer_container->hide();
 			default_files_container->hide();
 
 			// Project path dialog is also opened; no need to change focus.
@@ -789,7 +733,6 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 
 			name_container->show();
 			install_path_container->hide();
-			renderer_container->show();
 			default_files_container->show();
 
 			callable_mp((Control *)project_name, &Control::grab_focus).call_deferred();
@@ -802,7 +745,6 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 
 			name_container->show();
 			install_path_container->hide();
-			renderer_container->hide();
 			default_files_container->hide();
 
 			callable_mp((Control *)project_path, &Control::grab_focus).call_deferred();
@@ -831,6 +773,7 @@ void ProjectDialog::_notification(int p_what) {
 			create_dir->set_icon(get_editor_theme_icon(SNAME("FolderCreate")));
 			project_browse->set_icon(get_editor_theme_icon(SNAME("FolderBrowse")));
 			install_browse->set_icon(get_editor_theme_icon(SNAME("FolderBrowse")));
+			project_preview->set_project_icon(get_editor_theme_icon(SNAME("NSMBWBanner")));
 		} break;
 		case NOTIFICATION_READY: {
 			fdialog_project = memnew(EditorFileDialog);
@@ -838,7 +781,6 @@ void ProjectDialog::_notification(int p_what) {
 			fdialog_project->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
 			fdialog_project->connect("dir_selected", callable_mp(this, &ProjectDialog::_project_path_selected));
 			fdialog_project->connect("file_selected", callable_mp(this, &ProjectDialog::_project_path_selected));
-			fdialog_project->connect("canceled", callable_mp(this, &ProjectDialog::show_dialog).bind(false), CONNECT_DEFERRED);
 			callable_mp((Node *)this, &Node::add_sibling).call_deferred(fdialog_project, false);
 		} break;
 	}
@@ -847,11 +789,27 @@ void ProjectDialog::_notification(int p_what) {
 void ProjectDialog::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("project_created"));
 	ADD_SIGNAL(MethodInfo("projects_updated"));
+	ADD_SIGNAL(MethodInfo("project_error"));
 }
 
 ProjectDialog::ProjectDialog() {
 	VBoxContainer *vb = memnew(VBoxContainer);
+	vb->set_custom_minimum_size(Size2(500,0));
 	add_child(vb);
+
+	Label *preview_text = memnew(Label);
+	preview_text->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	preview_text->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
+	preview_text->set_text("Project Preview");
+	vb->add_child(preview_text);
+
+	project_preview = memnew(ProjectListItemControl);
+	project_preview->is_preview = true;
+	vb->add_child(project_preview);
+
+	HSeparator *pvsp = memnew(HSeparator);
+	pvsp->set_custom_minimum_size(Size2(0, 20));
+	vb->add_child(pvsp);
 
 	name_container = memnew(VBoxContainer);
 	vb->add_child(name_container);
@@ -930,87 +888,15 @@ ProjectDialog::ProjectDialog() {
 	msg->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
 	vb->add_child(msg);
 
-	// Renderer selection.
-	renderer_container = memnew(VBoxContainer);
-	vb->add_child(renderer_container);
-	l = memnew(Label);
-	l->set_text(TTR("Renderer:"));
-	renderer_container->add_child(l);
-	HBoxContainer *rshc = memnew(HBoxContainer);
-	renderer_container->add_child(rshc);
-	renderer_button_group.instantiate();
+	HSeparator *cvsp = memnew(HSeparator);
+	cvsp->set_custom_minimum_size(Size2(0, 20));
+	vb->add_child(cvsp);
 
-	// Left hand side, used for checkboxes to select renderer.
-	Container *rvb = memnew(VBoxContainer);
-	rshc->add_child(rvb);
-
-	String default_renderer_type = "forward_plus";
-	if (EditorSettings::get_singleton()->has_setting("project_manager/default_renderer")) {
-		default_renderer_type = EditorSettings::get_singleton()->get_setting("project_manager/default_renderer");
-	}
-
-	Button *rs_button = memnew(CheckBox);
-	rs_button->set_button_group(renderer_button_group);
-	rs_button->set_text(TTR("Forward+"));
-#if defined(WEB_ENABLED)
-	rs_button->set_disabled(true);
-#endif
-	rs_button->set_meta(SNAME("rendering_method"), "forward_plus");
-	rs_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_renderer_selected));
-	rvb->add_child(rs_button);
-	if (default_renderer_type == "forward_plus") {
-		rs_button->set_pressed(true);
-	}
-	rs_button = memnew(CheckBox);
-	rs_button->set_button_group(renderer_button_group);
-	rs_button->set_text(TTR("Mobile"));
-#if defined(WEB_ENABLED)
-	rs_button->set_disabled(true);
-#endif
-	rs_button->set_meta(SNAME("rendering_method"), "mobile");
-	rs_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_renderer_selected));
-	rvb->add_child(rs_button);
-	if (default_renderer_type == "mobile") {
-		rs_button->set_pressed(true);
-	}
-	rs_button = memnew(CheckBox);
-	rs_button->set_button_group(renderer_button_group);
-	rs_button->set_text(TTR("Compatibility"));
-#if !defined(GLES3_ENABLED)
-	rs_button->set_disabled(true);
-#endif
-	rs_button->set_meta(SNAME("rendering_method"), "gl_compatibility");
-	rs_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_renderer_selected));
-	rvb->add_child(rs_button);
-#if defined(GLES3_ENABLED)
-	if (default_renderer_type == "gl_compatibility") {
-		rs_button->set_pressed(true);
-	}
-#endif
-	rshc->add_child(memnew(VSeparator));
-
-	// Right hand side, used for text explaining each choice.
-	rvb = memnew(VBoxContainer);
-	rvb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	rshc->add_child(rvb);
-	renderer_info = memnew(Label);
-	renderer_info->set_modulate(Color(1, 1, 1, 0.7));
-	rvb->add_child(renderer_info);
-	_renderer_selected();
-
-	l = memnew(Label);
-	l->set_text(TTR("The renderer can be changed later, but scenes may need to be adjusted."));
-	// Add some extra spacing to separate it from the list above and the buttons below.
-	l->set_custom_minimum_size(Size2(0, 40) * EDSCALE);
-	l->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
-	l->set_vertical_alignment(VERTICAL_ALIGNMENT_CENTER);
-	l->set_modulate(Color(1, 1, 1, 0.7));
-	renderer_container->add_child(l);
-
-	default_files_container = memnew(HBoxContainer);
+	default_files_container = memnew(VBoxContainer);
 	vb->add_child(default_files_container);
 	l = memnew(Label);
-	l->set_text(TTR("Version Control Metadata:"));
+	l->set_horizontal_alignment(HORIZONTAL_ALIGNMENT_CENTER);
+	l->set_text(TTR("Version Control"));
 	default_files_container->add_child(l);
 	vcs_metadata_selection = memnew(OptionButton);
 	vcs_metadata_selection->set_custom_minimum_size(Size2(100, 20));
@@ -1021,6 +907,11 @@ ProjectDialog::ProjectDialog() {
 	Control *spacer = memnew(Control);
 	spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	default_files_container->add_child(spacer);
+
+	HSeparator *vvsp = memnew(HSeparator);
+	vvsp->set_custom_minimum_size(Size2(0, 20));
+	default_files_container->add_child(vvsp);
+
 	fdialog_install = memnew(EditorFileDialog);
 	fdialog_install->set_previews_enabled(false); //Crucial, otherwise the engine crashes.
 	fdialog_install->set_access(EditorFileDialog::ACCESS_FILESYSTEM);

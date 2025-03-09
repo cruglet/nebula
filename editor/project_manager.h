@@ -186,6 +186,7 @@ class ProjectManager : public Control {
 
 	void _on_project_created(const String &dir);
 	void _on_projects_updated();
+	void _on_project_error(const String &msg);
 
 	void _on_order_option_changed(int p_idx);
 	void _on_search_term_changed(const String &p_term);

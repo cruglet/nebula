@@ -1408,6 +1408,7 @@ ProjectManager::ProjectManager() {
 		project_dialog = memnew(ProjectDialog);
 		project_dialog->connect("projects_updated", callable_mp(this, &ProjectManager::_on_projects_updated));
 		project_dialog->connect("project_created", callable_mp(this, &ProjectManager::_on_project_created));
+		project_dialog->connect("project_error", callable_mp(this, &ProjectManager::_show_error));
 		add_child(project_dialog);
 
 		error_dialog = memnew(AcceptDialog);

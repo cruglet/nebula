@@ -31,6 +31,8 @@
 #ifndef PROJECT_DIALOG_H
 #define PROJECT_DIALOG_H
 
+#include "core/util/wii/misc.h"
+#include "editor/project_manager/project_list.h"
 #include "scene/gui/dialogs.h"
 
 class Button;
@@ -74,10 +76,7 @@ private:
 	VBoxContainer *project_path_container = nullptr;
 	VBoxContainer *install_path_container = nullptr;
 
-	VBoxContainer *renderer_container = nullptr;
-	Label *renderer_info = nullptr;
-	HBoxContainer *default_files_container = nullptr;
-	Ref<ButtonGroup> renderer_button_group;
+	VBoxContainer *default_files_container = nullptr;
 
 	Label *msg = nullptr;
 	LineEdit *project_name = nullptr;
@@ -85,6 +84,8 @@ private:
 	LineEdit *install_path = nullptr;
 	TextureRect *project_status_rect = nullptr;
 	TextureRect *install_status_rect = nullptr;
+
+	ProjectListItemControl *project_preview = nullptr;
 
 	OptionButton *vcs_metadata_selection = nullptr;
 
@@ -123,10 +124,9 @@ private:
 	void _project_path_selected(const String &p_path);
 	void _install_path_selected(const String &p_path);
 
-	void _validate_game_file(const String &p_path);
+	ISOHeader _validate_game_file(const String &p_path);
 
 	void _reset_name();
-	void _renderer_selected();
 	void _nonempty_confirmation_ok_pressed();
 
 	void ok_pressed() override;

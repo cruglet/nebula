@@ -32,6 +32,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
+#include "core/math/math_defs.h"
 #include "core/os/time.h"
 #include "core/variant/variant.h"
 #include "core/version.h"
@@ -48,6 +49,8 @@
 #include "scene/gui/margin_container.h"
 #include "scene/gui/texture_button.h"
 #include "scene/gui/texture_rect.h"
+#include "scene/main/canvas_item.h"
+#include "scene/main/node.h"
 #include "scene/resources/image_texture.h"
 #include "scene/resources/style_box_flat.h"
 
@@ -58,6 +61,15 @@ void ProjectListItemControl::_notification(int p_what) {
 				// The project icon may not be loaded by the time the control is displayed,
 				// so use a loading placeholder.
 				project_icon->set_texture(get_editor_theme_icon(SNAME("ProjectIconLoading")));
+			}
+
+			{
+				StyleBoxFlat* icon_container_box = memnew(StyleBoxFlat);
+				icon_container_box->set_corner_radius(CORNER_TOP_LEFT, 8);
+				icon_container_box->set_corner_radius(CORNER_BOTTOM_LEFT, 8);
+				icon_container_box->set_corner_radius(CORNER_TOP_RIGHT, 4);
+				icon_container_box->set_corner_radius(CORNER_BOTTOM_RIGHT, 4);
+				project_icon_container->add_theme_style_override(SNAME("panel"), icon_container_box);
 			}
 
 			item_stylebox->set_corner_radius_all(12);
@@ -84,7 +96,7 @@ void ProjectListItemControl::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_MOUSE_ENTER: {
-			is_hovering = true;
+			is_hovering = !is_preview;
 			queue_redraw();
 		} break;
 
@@ -94,7 +106,6 @@ void ProjectListItemControl::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_DRAW: {
-
 			item_stylebox->set_bg_color(Color("#27292e"));
 
 			if (is_hovering) {
@@ -102,7 +113,7 @@ void ProjectListItemControl::_notification(int p_what) {
 			}
 
 			if (is_selected) {
-				item_stylebox->set_bg_color(Color("#34363c"));
+				item_stylebox->set_bg_color(Color("#404249"));
 			}
 
 			if (is_pressed) {
@@ -111,6 +122,15 @@ void ProjectListItemControl::_notification(int p_what) {
 
 			draw_style_box(item_stylebox, Rect2(Point2(), get_size()));
 		} break;
+
+		case NOTIFICATION_ENTER_TREE: {
+			if(is_preview) {
+				set_focus_mode(FOCUS_NONE);
+				favorite_button->set_focus_mode(FOCUS_NONE);
+				remove_button->set_focus_mode(FOCUS_NONE);
+				explore_button->set_focus_mode(FOCUS_NONE);
+			}
+		}
 	}
 }
 
@@ -148,7 +168,7 @@ void ProjectListItemControl::set_project_icon(const Ref<Texture2D> &p_icon) {
 	// The default project icon is 128×128 to look crisp on hiDPI displays,
 	// but we want the actual displayed size to be 64×64 on loDPI displays.
 	project_icon->set_expand_mode(TextureRect::EXPAND_IGNORE_SIZE);
-	project_icon->set_custom_minimum_size(Size2(64, 64) * EDSCALE);
+	project_icon->set_custom_minimum_size(Size2(128, 64) * EDSCALE);
 	project_icon->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
 
 	project_icon->set_texture(p_icon);
@@ -253,10 +273,16 @@ void ProjectListItemControl::_bind_methods() {
 ProjectListItemControl::ProjectListItemControl() {
 	set_focus_mode(FocusMode::FOCUS_ALL);
 
+	project_icon_container = memnew(Panel);
+	project_icon_container->set_custom_minimum_size(Size2(128, 64));
+	project_icon_container->set_mouse_filter(MOUSE_FILTER_IGNORE);
+	project_icon_container->set_clip_children_mode(CLIP_CHILDREN_ONLY);
+
 	project_icon = memnew(TextureRect);
 	project_icon->set_name("ProjectIcon");
 	project_icon->set_v_size_flags(SIZE_SHRINK_CENTER);
-	add_child(project_icon);
+	project_icon_container->add_child(project_icon);
+	add_child(project_icon_container);
 
 	main_vbox = memnew(VBoxContainer);
 	main_vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -529,23 +555,7 @@ void ProjectList::_update_icons_async() {
 
 void ProjectList::_load_project_icon(int p_index) {
 	Item &item = _projects.write[p_index];
-
-	Ref<Texture2D> default_icon = get_editor_theme_icon(SNAME("DefaultProjectIcon"));
-	Ref<Texture2D> icon;
-	if (!item.icon.is_empty()) {
-		Ref<Image> img;
-		img.instantiate();
-		Error err = img->load(item.icon.replace_first("res://", item.path + "/"));
-		if (err == OK) {
-			img->resize(default_icon->get_width(), default_icon->get_height(), Image::INTERPOLATE_LANCZOS);
-			icon = ImageTexture::create_from_image(img);
-		}
-	}
-	if (icon.is_null()) {
-		icon = default_icon;
-	}
-
-	item.control->set_project_icon(icon);
+	item.control->set_project_icon(get_editor_theme_icon(SNAME("NSMBWBanner")));
 }
 
 // Project list updates.
@@ -850,6 +860,10 @@ void ProjectList::_list_item_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
 	int clicked_index = p_hb->get_index();
 	const Item &clicked_project = _projects[clicked_index];
 
+	if (clicked_project.control->is_preview) {
+		return;
+	}
+
 	if(!clicked_project.control->is_hovering) {
 		clicked_project.control->is_pressed = false;
 	}
@@ -881,7 +895,10 @@ void ProjectList::_list_item_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
 		if (!mb->is_command_or_control_pressed() && !mb->is_shift_pressed() && !project_opening_initiated && mb->is_pressed()) {
 			clicked_project.control->is_pressed = true;
 		}
-		if (!mb->is_command_or_control_pressed() && !project_opening_initiated && clicked_project.control->is_pressed && mb->is_released()) {
+		if (!mb->is_command_or_control_pressed() && !mb->is_shift_pressed() && !project_opening_initiated && mb->is_released()) {
+			clicked_project.control->is_pressed = false;
+		}
+		if (!mb->is_command_or_control_pressed() && mb->is_double_click() && !project_opening_initiated) {
 			clicked_project.control->is_pressed = false;
 			emit_signal(SNAME(SIGNAL_PROJECT_ASK_OPEN));
 		}

@@ -50,6 +50,7 @@ class ProjectListItemControl : public HBoxContainer {
 	Button *remove_button = nullptr;
 	Button *explore_button = nullptr;
 
+	Panel *project_icon_container = nullptr;
 	TextureRect *project_icon = nullptr;
 	Label *project_title = nullptr;
 	Label *project_path = nullptr;
@@ -90,6 +91,7 @@ public:
 
 	bool is_hovering = false;
 	bool is_pressed = false;
+	bool is_preview = false;
 
 	ProjectListItemControl();
 };
