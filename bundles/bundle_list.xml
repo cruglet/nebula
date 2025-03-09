@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<bundles>
+	<bundle type="NSMBW" engine_id="1" name="New Super Mario Bros. Wii">
+		<regions>
+		  <SMNE01>0</SMNE01>
+		  <SMNP01>1</SMNP01>
+		  <SMNJ01>2</SMNJ01>
+	  </regions>
+  </bundle>
+</bundles>
