@@ -37,9 +37,9 @@ ValidateGameFile::ValidateGameFile() {
 	int game = WBFS::validate_wbfs("bin/SMNE01.wbfs");
 
 	switch(game) {
-		case ISOHeaders::SMNE01: {print_line("nsmbw (US)");}
+		case ISOHeader::SMNE01: {print_line("nsmbw (US)");}
 
-		case ISOHeaders::NIL: {print_line("idfk");}
+		case ISOHeader::NIL: {print_line("idfk");}
 	}
 }
 

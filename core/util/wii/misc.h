@@ -1,7 +1,7 @@
 #ifndef NEB_LIB_MISC
 #define NEB_LIB_MISC
 
-enum ISOHeaders {
+enum ISOHeader {
 	// NSMBW Headers
 	NIL = -1,
 	SMNE01, // (USA)
