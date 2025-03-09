@@ -1,9 +1,9 @@
 short_name = "nebula"
 name = "Nebula Engine"
 major = 0
-minor = 1
+minor = 0
 patch = 0
 status = "dev"
 module_config = ""
 website = "https://github.com/cruglet/nebula"
-docs = "0.1"
+docs = "0.0"
