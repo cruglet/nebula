@@ -90,9 +90,7 @@ class SceneTreeDock : public VBoxContainer {
 		TOOL_SCENE_CLEAR_INHERITANCE_CONFIRM,
 		TOOL_SCENE_OPEN_INHERITED,
 		TOOL_TOGGLE_SCENE_UNIQUE_NAME,
-		TOOL_CREATE_2D_SCENE,
-		TOOL_CREATE_3D_SCENE,
-		TOOL_CREATE_USER_INTERFACE,
+		TOOL_CREATE_NSMBW_LEVEL_SCENE,
 		TOOL_CREATE_FAVORITE,
 		TOOL_CENTER_PARENT,
 
@@ -122,11 +120,7 @@ class SceneTreeDock : public VBoxContainer {
 	VBoxContainer *beginner_node_shortcuts = nullptr;
 	VBoxContainer *favorite_node_shortcuts = nullptr;
 
-	Button *button_2d = nullptr;
-	Button *button_3d = nullptr;
-	Button *button_ui = nullptr;
-	Button *button_custom = nullptr;
-	Button *button_clipboard = nullptr;
+	Button *button_nsmbw_level = nullptr;
 
 	HBoxContainer *button_hb = nullptr;
 	Button *edit_local, *edit_remote;

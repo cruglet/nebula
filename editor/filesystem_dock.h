@@ -159,12 +159,8 @@ private:
 
 	Button *button_dock_placement = nullptr;
 
-	Button *button_toggle_display_mode = nullptr;
 	Button *button_reload = nullptr;
 	Button *button_file_list_display_mode = nullptr;
-	Button *button_hist_next = nullptr;
-	Button *button_hist_prev = nullptr;
-	LineEdit *current_path_line_edit = nullptr;
 
 	HBoxContainer *toolbar2_hbc = nullptr;
 	LineEdit *tree_search_box = nullptr;
@@ -345,8 +341,6 @@ private:
 
 	void _search(EditorFileSystemDirectory *p_path, List<FileInfo> *matches, int p_max_items);
 
-	void _set_current_path_line_edit_text(const String &p_path);
-
 	Variant get_drag_data_fw(const Point2 &p_point, Control *p_from);
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
 	void drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from);
@@ -398,7 +392,6 @@ public:
 	String get_current_directory() const;
 
 	void navigate_to_path(const String &p_path);
-	void focus_on_path();
 	void focus_on_filter();
 
 	ScriptCreateDialog *get_script_create_dialog() const;

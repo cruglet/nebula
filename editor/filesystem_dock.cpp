@@ -209,7 +209,7 @@ bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 	String lpath = p_dir->get_path();
 
 	if (dname.is_empty()) {
-		dname = "res://";
+		dname = "root";
 	}
 
 	// Set custom folder color (if applicable).
@@ -483,7 +483,6 @@ void FileSystemDock::_update_display_mode(bool p_force) {
 	if (p_force || old_display_mode != display_mode) {
 		switch (display_mode) {
 			case DISPLAY_MODE_TREE_ONLY:
-				button_toggle_display_mode->set_icon(get_editor_theme_icon(SNAME("Panels1")));
 				tree->show();
 				tree->set_v_size_flags(SIZE_EXPAND_FILL);
 				toolbar2_hbc->show();
@@ -500,7 +499,6 @@ void FileSystemDock::_update_display_mode(bool p_force) {
 				const int actual_offset = is_vertical ? split_box_offset_v : split_box_offset_h;
 				split_box->set_split_offset(actual_offset);
 				const StringName icon = is_vertical ? SNAME("Panels2") : SNAME("Panels2Alt");
-				button_toggle_display_mode->set_icon(get_editor_theme_icon(icon));
 
 				tree->show();
 				tree->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -525,11 +523,8 @@ void FileSystemDock::_notification(int p_what) {
 
 			button_file_list_display_mode->connect(SceneStringName(pressed), callable_mp(this, &FileSystemDock::_toggle_file_display));
 			files->connect("item_activated", callable_mp(this, &FileSystemDock::_file_list_activate_file));
-			button_hist_next->connect(SceneStringName(pressed), callable_mp(this, &FileSystemDock::_fw_history));
-			button_hist_prev->connect(SceneStringName(pressed), callable_mp(this, &FileSystemDock::_bw_history));
 			file_list_popup->connect(SceneStringName(id_pressed), callable_mp(this, &FileSystemDock::_file_list_rmb_option));
 			tree_popup->connect(SceneStringName(id_pressed), callable_mp(this, &FileSystemDock::_tree_rmb_option));
-			current_path_line_edit->connect("text_submitted", callable_mp(this, &FileSystemDock::_navigate_to_path).bind(false));
 
 			always_show_folders = bool(EDITOR_GET("docks/filesystem/always_show_folders"));
 
@@ -593,7 +588,6 @@ void FileSystemDock::_notification(int p_what) {
 			} else if (display_mode == DISPLAY_MODE_HSPLIT) {
 				mode_icon = "Panels2Alt";
 			}
-			button_toggle_display_mode->set_icon(get_editor_theme_icon(mode_icon));
 
 			if (file_list_display_mode == FILE_LIST_DISPLAY_LIST) {
 				button_file_list_display_mode->set_icon(get_editor_theme_icon(SNAME("FileThumbnail")));
@@ -608,14 +602,6 @@ void FileSystemDock::_notification(int p_what) {
 			file_list_button_sort->set_icon(get_editor_theme_icon(SNAME("Sort")));
 
 			button_dock_placement->set_icon(get_editor_theme_icon(SNAME("GuiTabMenuHl")));
-
-			if (is_layout_rtl()) {
-				button_hist_next->set_icon(get_editor_theme_icon(SNAME("Back")));
-				button_hist_prev->set_icon(get_editor_theme_icon(SNAME("Forward")));
-			} else {
-				button_hist_next->set_icon(get_editor_theme_icon(SNAME("Forward")));
-				button_hist_prev->set_icon(get_editor_theme_icon(SNAME("Back")));
-			}
 
 			overwrite_dialog_scroll->add_theme_style_override(SceneStringName(panel), get_theme_stylebox(SceneStringName(panel), "Tree"));
 		} break;
@@ -675,7 +661,6 @@ void FileSystemDock::_tree_multi_selected(Object *p_item, int p_column, bool p_s
 	}
 
 	// Display the current path.
-	_set_current_path_line_edit_text(current_path);
 	_push_to_history();
 
 	// Update the file list.
@@ -708,14 +693,6 @@ String FileSystemDock::get_current_directory() const {
 	}
 }
 
-void FileSystemDock::_set_current_path_line_edit_text(const String &p_path) {
-	if (p_path == "Favorites") {
-		current_path_line_edit->set_text(TTR("Favorites"));
-	} else {
-		current_path_line_edit->set_text(current_path);
-	}
-}
-
 void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_favorites) {
 	if (p_path == "Favorites") {
 		current_path = p_path;
@@ -735,7 +712,6 @@ void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_fa
 		}
 	}
 
-	_set_current_path_line_edit_text(current_path);
 	_push_to_history();
 
 	_update_tree(get_uncollapsed_paths(), false, p_select_in_favorites, true);
@@ -921,8 +897,6 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 	}
 
 	files->clear();
-
-	_set_current_path_line_edit_text(current_path);
 
 	String directory = current_path;
 	String file = "";
@@ -1285,8 +1259,6 @@ void FileSystemDock::_preview_invalidated(const String &p_path) {
 }
 
 void FileSystemDock::_fs_changed() {
-	button_hist_prev->set_disabled(history_pos == 0);
-	button_hist_next->set_disabled(history_pos == history.size() - 1);
 	scanning_vb->hide();
 	split_box->show();
 
@@ -1309,8 +1281,6 @@ void FileSystemDock::_fs_changed() {
 }
 
 void FileSystemDock::_set_scanning_mode() {
-	button_hist_prev->set_disabled(true);
-	button_hist_next->set_disabled(true);
 	split_box->hide();
 	scanning_vb->show();
 	set_process(true);
@@ -1339,7 +1309,6 @@ void FileSystemDock::_bw_history() {
 
 void FileSystemDock::_update_history() {
 	current_path = history[history_pos];
-	_set_current_path_line_edit_text(current_path);
 
 	if (tree->is_visible()) {
 		_update_tree(get_uncollapsed_paths());
@@ -1350,9 +1319,6 @@ void FileSystemDock::_update_history() {
 	if (file_list_vb->is_visible()) {
 		_update_file_list(false);
 	}
-
-	button_hist_prev->set_disabled(history_pos == 0);
-	button_hist_next->set_disabled(history_pos == history.size() - 1);
 }
 
 void FileSystemDock::_push_to_history() {
@@ -1366,9 +1332,6 @@ void FileSystemDock::_push_to_history() {
 			history_pos = history_max_size - 1;
 		}
 	}
-
-	button_hist_prev->set_disabled(history_pos == 0);
-	button_hist_next->set_disabled(history_pos == history.size() - 1);
 }
 
 void FileSystemDock::_get_all_items_in_dir(EditorFileSystemDirectory *p_efsd, Vector<String> &r_files, Vector<String> &r_folders) const {
@@ -1734,8 +1697,6 @@ void FileSystemDock::_file_removed(const String &p_file) {
 	while (!da->dir_exists(current_path)) {
 		current_path = current_path.get_base_dir();
 	}
-
-	current_path_line_edit->set_text(current_path);
 }
 
 void FileSystemDock::_folder_removed(const String &p_folder) {
@@ -1764,7 +1725,6 @@ void FileSystemDock::_folder_removed(const String &p_folder) {
 		_update_folder_colors_setting();
 	}
 
-	current_path_line_edit->set_text(current_path);
 	EditorFileSystemDirectory *efd = EditorFileSystem::get_singleton()->get_filesystem_path(current_path);
 	if (efd) {
 		efd->force_update();
@@ -1851,7 +1811,6 @@ void FileSystemDock::_rename_operation_confirm() {
 
 	if (ti) {
 		current_path = new_path;
-		current_path_line_edit->set_text(current_path);
 	}
 
 	print_verbose("FileSystem: calling rescan.");
@@ -1989,7 +1948,6 @@ void FileSystemDock::_move_operation_confirm(const String &p_to_path, bool p_cop
 			_rescan();
 
 			current_path = p_to_path;
-			current_path_line_edit->set_text(current_path);
 		}
 	}
 }
@@ -2670,11 +2628,6 @@ void FileSystemDock::_split_dragged(int p_offset) {
 
 void FileSystemDock::fix_dependencies(const String &p_for_file) {
 	deps_editor->edit(p_for_file);
-}
-
-void FileSystemDock::focus_on_path() {
-	current_path_line_edit->grab_focus();
-	current_path_line_edit->select_all();
 }
 
 void FileSystemDock::focus_on_filter() {
@@ -3408,8 +3361,6 @@ void FileSystemDock::_file_list_empty_clicked(const Vector2 &p_pos, MouseButton 
 		return;
 	}
 
-	current_path = current_path_line_edit->get_text();
-
 	// Favorites isn't a directory so don't show menu.
 	if (current_path == "Favorites") {
 		return;
@@ -3546,8 +3497,6 @@ void FileSystemDock::_tree_gui_input(Ref<InputEvent> p_event) {
 			_tree_rmb_option(FILE_OPEN_EXTERNAL);
 		} else if (ED_IS_SHORTCUT("filesystem_dock/open_in_terminal", p_event)) {
 			_tree_rmb_option(FILE_OPEN_IN_TERMINAL);
-		} else if (ED_IS_SHORTCUT("file_dialog/focus_path", p_event)) {
-			focus_on_path();
 		} else if (ED_IS_SHORTCUT("editor/open_search", p_event)) {
 			focus_on_filter();
 		} else {
@@ -3909,7 +3858,7 @@ void FileSystemDock::load_layout_from_config(Ref<ConfigFile> p_layout, const Str
 
 FileSystemDock::FileSystemDock() {
 	singleton = this;
-	set_name("FileSystem");
+	set_name("Filesystem");
 	current_path = "res://";
 
 	ProjectSettings::get_singleton()->add_hidden_prefix("file_customization/");
@@ -3951,39 +3900,12 @@ FileSystemDock::FileSystemDock() {
 	toolbar_hbc->add_theme_constant_override("separation", 0);
 	top_vbc->add_child(toolbar_hbc);
 
-	button_hist_prev = memnew(Button);
-	button_hist_prev->set_flat(true);
-	button_hist_prev->set_disabled(true);
-	button_hist_prev->set_focus_mode(FOCUS_NONE);
-	button_hist_prev->set_tooltip_text(TTR("Go to previous selected folder/file."));
-	toolbar_hbc->add_child(button_hist_prev);
-
-	button_hist_next = memnew(Button);
-	button_hist_next->set_flat(true);
-	button_hist_next->set_disabled(true);
-	button_hist_next->set_focus_mode(FOCUS_NONE);
-	button_hist_next->set_tooltip_text(TTR("Go to next selected folder/file."));
-	toolbar_hbc->add_child(button_hist_next);
-
-	current_path_line_edit = memnew(LineEdit);
-	current_path_line_edit->set_structured_text_bidi_override(TextServer::STRUCTURED_TEXT_FILE);
-	current_path_line_edit->set_h_size_flags(SIZE_EXPAND_FILL);
-	_set_current_path_line_edit_text(current_path);
-	toolbar_hbc->add_child(current_path_line_edit);
-
 	button_reload = memnew(Button);
 	button_reload->connect(SceneStringName(pressed), callable_mp(this, &FileSystemDock::_rescan));
 	button_reload->set_focus_mode(FOCUS_NONE);
 	button_reload->set_tooltip_text(TTR("Re-Scan Filesystem"));
 	button_reload->hide();
 	toolbar_hbc->add_child(button_reload);
-
-	button_toggle_display_mode = memnew(Button);
-	button_toggle_display_mode->connect(SceneStringName(pressed), callable_mp(this, &FileSystemDock::_change_split_mode));
-	button_toggle_display_mode->set_focus_mode(FOCUS_NONE);
-	button_toggle_display_mode->set_tooltip_text(TTR("Change Split Mode"));
-	button_toggle_display_mode->set_theme_type_variation("FlatMenuButton");
-	toolbar_hbc->add_child(button_toggle_display_mode);
 
 	button_dock_placement = memnew(Button);
 	button_dock_placement->set_flat(true);
