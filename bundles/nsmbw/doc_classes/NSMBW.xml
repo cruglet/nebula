@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="NSMBW" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		The base class for all New Super Mario Bros. Wii classes.
+	</brief_description>
+	<description>
+		The NSMBW class primarily stores data such as the region and disc id, should that be required.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

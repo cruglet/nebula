@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+Import("env")
+Import("env_modules")
+
+SConscript("source/SCsub")
+
+env_nsmbw = env_modules.Clone()
+module_obj = []
+
+env_nsmbw.add_source_files(module_obj, "*.cpp")
+
+env.setdefault("bundles_sources", [])
+env["bundles_sources"] += module_obj

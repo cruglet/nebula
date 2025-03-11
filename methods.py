@@ -1267,6 +1267,7 @@ def generate_vs_project(env, original_args, project_name="nebula"):
     if env.editor_build:
         envsources += env.editor_sources
     envsources += env.platform_sources
+    envsources += env.bundles_sources
 
     headers_active = []
     sources_active = []

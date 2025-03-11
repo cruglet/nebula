@@ -1,5 +1,5 @@
 BASEDIR = .
-CLASSES = "$(BASEDIR)/classes/" "$(BASEDIR)/../modules/" "$(BASEDIR)/../platform/"
+CLASSES = "$(BASEDIR)/classes/" "$(BASEDIR)/../modules/" "$(BASEDIR)/../platform/" "$(BASEDIR)/../bundles/nsmbw/"
 OUTPUTDIR = $(BASEDIR)/_build
 TOOLSDIR = $(BASEDIR)/tools
 JSDIR = "$(BASEDIR)/../platform/web"
