@@ -1730,7 +1730,7 @@ void ScriptEditor::_notification(int p_what) {
 
 			members_overview_alphabeta_sort_button->set_icon(get_editor_theme_icon(SNAME("Sort")));
 
-			filter_scripts->set_right_icon(get_editor_theme_icon(SNAME("Search")));
+			filter_docs->set_right_icon(get_editor_theme_icon(SNAME("Search")));
 			filter_methods->set_right_icon(get_editor_theme_icon(SNAME("Search")));
 
 			filename->add_theme_style_override(CoreStringName(normal), get_theme_stylebox(CoreStringName(normal), SNAME("LineEdit")));
@@ -2263,7 +2263,7 @@ void ScriptEditor::_update_script_names() {
 
 	Vector<_ScriptEditorItemData> sedata_filtered;
 	for (int i = 0; i < sedata.size(); i++) {
-		String filter = filter_scripts->get_text();
+		String filter = filter_docs->get_text();
 		if (filter.is_empty() || filter.is_subsequence_ofn(sedata[i].name)) {
 			sedata_filtered.push_back(sedata[i]);
 		}
@@ -3957,7 +3957,7 @@ void ScriptEditor::_window_changed(bool p_visible) {
 	is_floating = p_visible;
 }
 
-void ScriptEditor::_filter_scripts_text_changed(const String &p_newtext) {
+void ScriptEditor::_filter_docs_text_changed(const String &p_newtext) {
 	_update_script_names();
 }
 
@@ -4018,11 +4018,11 @@ ScriptEditor::ScriptEditor(WindowWrapper *p_wrapper) {
 	scripts_vbox->set_v_size_flags(SIZE_EXPAND_FILL);
 	list_split->add_child(scripts_vbox);
 
-	filter_scripts = memnew(LineEdit);
-	filter_scripts->set_placeholder(TTR("Filter Scripts"));
-	filter_scripts->set_clear_button_enabled(true);
-	filter_scripts->connect(SceneStringName(text_changed), callable_mp(this, &ScriptEditor::_filter_scripts_text_changed));
-	scripts_vbox->add_child(filter_scripts);
+	filter_docs = memnew(LineEdit);
+	filter_docs->set_placeholder(TTR("Filter Docs"));
+	filter_docs->set_clear_button_enabled(true);
+	filter_docs->connect(SceneStringName(text_changed), callable_mp(this, &ScriptEditor::_filter_docs_text_changed));
+	scripts_vbox->add_child(filter_docs);
 
 	script_list = memnew(ItemList);
 	script_list->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);

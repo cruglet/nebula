@@ -607,7 +607,7 @@ protected:
 	void _notification(int p_what);
 
 public:
-	virtual String get_name() const override { return "2D"; }
+	virtual String get_name() const override { return "Editor"; }
 	bool has_main_screen() const override { return true; }
 	virtual void edit(Object *p_object) override;
 	virtual bool handles(Object *p_object) const override;

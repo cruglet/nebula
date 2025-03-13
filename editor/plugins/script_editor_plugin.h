@@ -291,7 +291,7 @@ class ScriptEditor : public PanelContainer {
 	ItemList *script_list = nullptr;
 	HSplitContainer *script_split = nullptr;
 	ItemList *members_overview = nullptr;
-	LineEdit *filter_scripts = nullptr;
+	LineEdit *filter_docs = nullptr;
 	LineEdit *filter_methods = nullptr;
 	VBoxContainer *scripts_vbox = nullptr;
 	VBoxContainer *overview_vbox = nullptr;
@@ -441,7 +441,7 @@ class ScriptEditor : public PanelContainer {
 	void _update_members_overview_visibility();
 	void _update_members_overview();
 	void _toggle_members_overview_alpha_sort(bool p_alphabetic_sort);
-	void _filter_scripts_text_changed(const String &p_newtext);
+	void _filter_docs_text_changed(const String &p_newtext);
 	void _filter_methods_text_changed(const String &p_newtext);
 	void _update_script_names();
 	bool _sort_list_on_update;
@@ -598,7 +598,7 @@ protected:
 	void _notification(int p_what);
 
 public:
-	virtual String get_name() const override { return "Script"; }
+	virtual String get_name() const override { return "Docs"; }
 	bool has_main_screen() const override { return true; }
 	virtual void edit(Object *p_object) override;
 	virtual bool handles(Object *p_object) const override;

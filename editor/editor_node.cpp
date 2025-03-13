@@ -3530,7 +3530,6 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 
 		singleton->main_editor_buttons.push_back(tb);
 		singleton->main_editor_button_hb->add_child(tb);
-		singleton->main_editor_button_hb->hide();
 		singleton->editor_table.push_back(p_editor);
 
 		singleton->distraction_free->move_to_front();
@@ -6478,11 +6477,7 @@ void EditorNode::_feature_profile_changed() {
 		bool fs_dock_disabled = profile->is_feature_disabled(EditorFeatureProfile::FEATURE_FILESYSTEM_DOCK);
 		editor_dock_manager->set_dock_enabled(FileSystemDock::get_singleton(), !fs_dock_disabled);
 
-		main_editor_buttons[EDITOR_3D]->set_visible(!profile->is_feature_disabled(EditorFeatureProfile::FEATURE_3D));
 		main_editor_buttons[EDITOR_SCRIPT]->set_visible(!profile->is_feature_disabled(EditorFeatureProfile::FEATURE_SCRIPT));
-		if (AssetLibraryEditorPlugin::is_available()) {
-			main_editor_buttons[EDITOR_ASSETLIB]->set_visible(!profile->is_feature_disabled(EditorFeatureProfile::FEATURE_ASSET_LIB));
-		}
 		if ((profile->is_feature_disabled(EditorFeatureProfile::FEATURE_3D) && singleton->main_editor_buttons[EDITOR_3D]->is_pressed()) ||
 				(profile->is_feature_disabled(EditorFeatureProfile::FEATURE_SCRIPT) && singleton->main_editor_buttons[EDITOR_SCRIPT]->is_pressed()) ||
 				(AssetLibraryEditorPlugin::is_available() && profile->is_feature_disabled(EditorFeatureProfile::FEATURE_ASSET_LIB) && singleton->main_editor_buttons[EDITOR_ASSETLIB]->is_pressed())) {
@@ -6490,12 +6485,10 @@ void EditorNode::_feature_profile_changed() {
 		}
 	} else {
 		editor_dock_manager->set_dock_enabled(FileSystemDock::get_singleton(), true);
-		main_editor_buttons[EDITOR_3D]->set_visible(true);
 		main_editor_buttons[EDITOR_SCRIPT]->set_visible(true);
-		if (AssetLibraryEditorPlugin::is_available()) {
-			main_editor_buttons[EDITOR_ASSETLIB]->set_visible(true);
-		}
 	}
+	main_editor_buttons[EDITOR_3D]->set_visible(false);
+	main_editor_buttons[EDITOR_ASSETLIB]->set_visible(false);
 }
 
 void EditorNode::_bind_methods() {
@@ -7857,6 +7850,9 @@ EditorNode::~EditorNode() {
 	editor_file_dialogs.clear();
 
 	singleton = nullptr;
+
+	main_editor_buttons[EDITOR_3D]->set_visible(false);
+	main_editor_buttons[EDITOR_ASSETLIB]->set_visible(false);
 }
 
 /*
