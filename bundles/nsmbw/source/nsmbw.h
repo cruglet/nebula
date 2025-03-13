@@ -31,11 +31,10 @@
 #ifndef NSMBW_H
 #define NSMBW_H
 
-#include "core/object/object.h"
-#include "core/object/class_db.h"
+#include "scene/main/node.h"
 
-class NSMBW : public Object {
-GDCLASS(NSMBW, Object);
+class NSMBW : public Node {
+GDCLASS(NSMBW, Node);
 
 public:
     enum RegionType {

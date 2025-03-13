@@ -4,32 +4,41 @@ import os
 import shutil
 import editor_icons_builders
 
+# Define custom builder for the editor icons
 env["BUILDERS"]["MakeEditorIconsBuilder"] = Builder(
     action=env.Run(editor_icons_builders.make_editor_icons_action),
     suffix=".h",
     src_suffix=".svg",
 )
 
+# Glob to get all SVG files from module paths
 icon_sources = Glob("*.svg")
 
+# Include all SVG files from specified module paths
 for path in env.module_icons_paths:
     if not os.path.isabs(path):
         icon_sources += Glob("#" + path + "/*.svg")
     else:
         icon_sources += Glob(path + "/*.svg")
 
+# Mapping original icon paths to unique names
 icon_name_map = {
-    "#bundles/nsmbw/meta/banner.svg": "NSMBWBanner",
+    "#bundles/nsmbw/icons/base_icon.svg": "NSMBW",
     "#bundles/nsmbw/icons/level_icon.svg": "NSMBWLevel",
+    "#bundles/nsmbw/meta/banner.svg": "NSMBWBanner",
 }
 
-temp_dir = os.path.join("editor", "themes", "temp_icons")
-if os.path.exists(temp_dir):
-    shutil.rmtree(temp_dir)
-os.makedirs(temp_dir)
+# Correct target directory where symbolic links should be created
+target_dir = os.path.join(".")  # Make sure this is correct
 
+# Ensure the target directory exists
+if not os.path.exists(target_dir):
+    os.makedirs(target_dir)
+
+# Project root to resolve relative paths
 project_root = env.Dir('#').abspath
 
+# Process each icon in the map and create symbolic links in the target directory
 for original_path, unique_name in icon_name_map.items():
     if original_path.startswith("#"):
         src_path = os.path.join(project_root, original_path[1:])
@@ -37,33 +46,36 @@ for original_path, unique_name in icon_name_map.items():
         src_path = original_path
     
     if os.path.exists(src_path):
-        dest_path = os.path.join(temp_dir, unique_name + ".svg")
-        shutil.copy2(src_path, dest_path)
+        dest_path = os.path.join(target_dir, unique_name + ".svg")
+        # Create a symbolic link if not already existing
+        if not os.path.exists(dest_path):
+            os.symlink(src_path, dest_path)
         icon_sources.append(env.File(dest_path))
     else:
         print(f"Warning: Custom icon file '{src_path}' does not exist.")
         alt_path = os.path.join(os.getcwd(), original_path.lstrip("#"))
         if os.path.exists(alt_path):
-            dest_path = os.path.join(temp_dir, unique_name + ".svg")
-            shutil.copy2(alt_path, dest_path)
+            dest_path = os.path.join(target_dir, unique_name + ".svg")
+            if not os.path.exists(dest_path):
+                os.symlink(alt_path, dest_path)
             icon_sources.append(env.File(dest_path))
 
+# Function to clean up any leftover links (if needed)
 def cleanup_temp_dir(target, source, env):
-    target_dir = os.path.join("editor", "icons", "editor")
-    temp_dir_path = os.path.join("editor", "themes", "temp_icons")
-    
     if os.path.exists(target_dir):
-        print(f"Cleaning up temporary icon directory: {target_dir}")
-        shutil.rmtree(target_dir)
-    
-    if os.path.exists(temp_dir_path):
-        print(f"Cleaning up temporary icons: {temp_dir_path}")
-        shutil.rmtree(temp_dir_path)
+        print(f"Cleaning up icon links in directory: {target_dir}")
+        for file_name in os.listdir(target_dir):
+            file_path = os.path.join(target_dir, file_name)
+            if os.path.islink(file_path):
+                os.remove(file_path)
     
     return 0
 
+# Create the builder result and add the cleanup action
 result = env.MakeEditorIconsBuilder("#editor/themes/editor_icons.gen.h", icon_sources)
 
+# Add post action to clean up symbolic links after the build
 env.AddPostAction(result, cleanup_temp_dir)
 
+# Define the alias for the build task
 env.Alias("editor_icons", result)

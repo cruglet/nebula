@@ -30,6 +30,8 @@
 
 #include "register_scene_types.h"
 
+#include "bundles/nsmbw/source/nsmbw.h"
+#include "bundles/nsmbw/source/nsmbw_level.h"
 #include "core/config/project_settings.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
@@ -438,7 +440,6 @@ void register_scene_types() {
 	GDREGISTER_CLASS(ItemList);
 
 	GDREGISTER_CLASS(LineEdit);
-	GDREGISTER_CLASS(VideoStreamPlayer);
 	GDREGISTER_VIRTUAL_CLASS(VideoStreamPlayback);
 	GDREGISTER_VIRTUAL_CLASS(VideoStream);
 
@@ -1012,6 +1013,10 @@ void register_scene_types() {
 
 	GDREGISTER_CLASS(SceneTree);
 	GDREGISTER_ABSTRACT_CLASS(SceneTreeTimer); // sorry, you can't create it
+
+// NSMBW
+	GDREGISTER_CLASS(NSMBW);
+	GDREGISTER_CLASS(NSMBWLevel);
 
 #ifndef DISABLE_DEPRECATED
 	// Dropped in 4.0, near approximation.

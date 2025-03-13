@@ -29,14 +29,14 @@
 /**************************************************************************/
 
 #include "register_types.h"
+#include "bundles/nsmbw/source/nsmbw_level.h"
 #include "source/nsmbw.h"
 
 void initialize_nsmbw_module(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
+		GDREGISTER_CLASS(NSMBW);
+		GDREGISTER_CLASS(NSMBWLevel);
 	}
-
-	GDREGISTER_CLASS(NSMBW);
 }
 
 void uninitialize_nsmbw_module(ModuleInitializationLevel p_level) {

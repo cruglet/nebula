@@ -30,6 +30,7 @@
 
 #include "scene_tree_dock.h"
 
+#include "bundles/nsmbw/source/nsmbw_level.h"
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
 #include "core/io/resource_saver.h"
@@ -1454,7 +1455,8 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			} else {
 				switch (p_tool) {
 					case TOOL_CREATE_NSMBW_LEVEL_SCENE:
-						new_node = memnew(Node);
+						new_node = memnew(NSMBWLevel);
+						new_node->set_name("New Level");
 						break;
 				}
 			}
@@ -4511,7 +4513,7 @@ SceneTreeDock::SceneTreeDock(Node *p_scene_root, EditorSelection *p_editor_selec
 	add_child(inspect_hovered_node_delay);
 
 	create_dialog = memnew(CreateDialog);
-	create_dialog->set_base_type("Node");
+	create_dialog->set_base_type("NSMBW");
 	add_child(create_dialog);
 	create_dialog->connect("create", callable_mp(this, &SceneTreeDock::_create));
 	create_dialog->connect("favorites_updated", callable_mp(this, &SceneTreeDock::_update_create_root_dialog));
