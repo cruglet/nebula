@@ -10,23 +10,23 @@
      id="defs1" />
   <g
      id="layer1"
-     transform="matrix(0.07455861,0,0,0.07455861,0.00111589,-2.789714e-4)">
+     transform="matrix(0.05961576,0,0,0.05961576,1.4955977,1.4941233)">
     <rect
-       style="fill:#ffffff;stroke-width:8.64607"
+       style="fill:#ffffff;stroke-width:8.42105"
        id="rect1"
        width="99.455284"
-       height="64.429733"
+       height="61.119743"
        x="-0.014966556"
        y="0.003741639"
-       ry="6.3755488" />
+       ry="6.0480137" />
     <rect
-       style="fill:#ffffff;stroke-width:8.46941"
+       style="fill:#ffffff;stroke-width:8.24899"
        id="rect1-5"
        width="95.432526"
-       height="64.429733"
+       height="61.119743"
        x="104.54504"
-       y="0.27943468"
-       ry="6.3755488" />
+       y="0.26527134"
+       ry="6.0480137" />
     <rect
        style="fill:#ffffff;stroke-width:8.62599"
        id="rect2"
@@ -36,21 +36,21 @@
        y="68.12397"
        ry="6.2113619" />
     <rect
-       style="fill:#ffffff;stroke-width:8.55188"
+       style="fill:#ffffff;stroke-width:8.30491"
        id="rect3"
        width="97.30011"
-       height="64.429733"
+       height="60.76215"
        x="-0.014966556"
-       y="135.12689"
-       ry="6.3755488" />
+       y="138.82039"
+       ry="6.0126286" />
     <rect
-       style="fill:#ffffff;stroke-width:8.58445"
+       style="fill:#ffffff;stroke-width:8.33654"
        id="rect4"
        width="98.042572"
-       height="64.429733"
+       height="60.76215"
        x="101.93501"
-       y="135.58218"
-       ry="6.3755488" />
+       y="139.24977"
+       ry="6.0126286" />
     <rect
        style="fill:#ffffff;stroke-width:5.56701"
        id="rect5"
