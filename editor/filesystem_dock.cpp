@@ -48,7 +48,6 @@
 #include "editor/gui/editor_dir_dialog.h"
 #include "editor/gui/editor_scene_tabs.h"
 #include "editor/import/3d/scene_import_settings.h"
-#include "editor/import_dock.h"
 #include "editor/plugins/editor_resource_tooltip_plugins.h"
 #include "editor/scene_create_dialog.h"
 #include "editor/scene_tree_dock.h"
@@ -636,10 +635,6 @@ void FileSystemDock::_notification(int p_what) {
 }
 
 void FileSystemDock::_tree_multi_selected(Object *p_item, int p_column, bool p_selected) {
-	// Update the import dock.
-	import_dock_needs_update = true;
-	callable_mp(this, &FileSystemDock::_update_import_dock).call_deferred();
-
 	// Return if we don't select something new.
 	if (!p_selected) {
 		return;
@@ -742,8 +737,6 @@ void FileSystemDock::navigate_to_path(const String &p_path) {
 
 	// Ensure that the FileSystem dock is visible.
 	EditorDockManager::get_singleton()->focus_dock(this);
-	import_dock_needs_update = true;
-	_update_import_dock();
 }
 
 void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
@@ -1273,8 +1266,6 @@ void FileSystemDock::_fs_changed() {
 	if (!select_after_scan.is_empty()) {
 		_navigate_to_path(select_after_scan);
 		select_after_scan.clear();
-		import_dock_needs_update = true;
-		_update_import_dock();
 	}
 
 	set_process(false);
@@ -2447,10 +2438,6 @@ void FileSystemDock::_file_option(int p_option, const Vector<String> &p_selected
 		case FILE_INFO: {
 		} break;
 
-		case FILE_REIMPORT: {
-			ImportDock::get_singleton()->reimport_resources(p_selected);
-		} break;
-
 		case FILE_NEW_FOLDER: {
 			String directory = current_path;
 			if (!directory.ends_with("/")) {
@@ -3401,8 +3388,6 @@ void FileSystemDock::_file_multi_selected(int p_index, bool p_selected) {
 	}
 
 	// Update the import dock.
-	import_dock_needs_update = true;
-	callable_mp(this, &FileSystemDock::_update_import_dock).call_deferred();
 }
 
 void FileSystemDock::_tree_mouse_exited() {
@@ -3606,78 +3591,6 @@ bool FileSystemDock::_get_imported_files(const String &p_path, String &r_extensi
 	}
 	da->list_dir_end();
 	return true;
-}
-
-void FileSystemDock::_update_import_dock() {
-	if (!import_dock_needs_update) {
-		return;
-	}
-
-	// List selected.
-	Vector<String> selected;
-	if (display_mode == DISPLAY_MODE_TREE_ONLY) {
-		// Use the tree
-		selected = _tree_get_selected();
-
-	} else {
-		// Use the file list.
-		for (int i = 0; i < files->get_item_count(); i++) {
-			if (!files->is_selected(i)) {
-				continue;
-			}
-
-			selected.push_back(files->get_item_metadata(i));
-		}
-	}
-
-	if (!selected.is_empty() && selected[0] == "res://") {
-		// Scanning res:// is costly and unlikely to yield any useful results.
-		return;
-	}
-
-	// Expand directory selection.
-	Vector<String> efiles;
-	String extension;
-	for (const String &fpath : selected) {
-		_get_imported_files(fpath, extension, efiles);
-	}
-
-	// Check import.
-	Vector<String> imports;
-	String import_type;
-	for (int i = 0; i < efiles.size(); i++) {
-		const String &fpath = efiles[i];
-		Ref<ConfigFile> cf;
-		cf.instantiate();
-		Error err = cf->load(fpath + ".import");
-		if (err != OK) {
-			imports.clear();
-			break;
-		}
-
-		String type;
-		if (cf->has_section_key("remap", "type")) {
-			type = cf->get_value("remap", "type");
-		}
-		if (import_type.is_empty()) {
-			import_type = type;
-		} else if (import_type != type) {
-			// All should be the same type.
-			imports.clear();
-			break;
-		}
-		imports.push_back(fpath);
-	}
-
-	if (imports.size() == 0) {
-		ImportDock::get_singleton()->clear();
-	} else if (imports.size() == 1) {
-		ImportDock::get_singleton()->set_edit_path(imports[0]);
-	} else {
-		ImportDock::get_singleton()->set_edit_multiple_paths(imports);
-	}
-
-	import_dock_needs_update = false;
 }
 
 void FileSystemDock::_feature_profile_changed() {
