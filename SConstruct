@@ -1053,7 +1053,6 @@ if env["tests"]:
     SConscript("tests/SCsub")
 SConscript("main/SCsub")
 SConscript("backend/SCsub")
-SConscript("bundles/SCsub")
 
 SConscript("platform/" + env["platform"] + "/SCsub")  # Build selected platform.
 

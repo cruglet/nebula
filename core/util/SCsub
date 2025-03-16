@@ -9,5 +9,3 @@ header_path = "#core/util/"
 env.Append(LIBPATH=[lib_path])
 env.Append(LIBS=[lib_name])
 env.Append(CPPPATH=[header_path])
-
-print(f"Linking with static library {lib_path}/lib{lib_name}.a")
