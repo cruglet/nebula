@@ -107,7 +107,6 @@
 #include "editor/filesystem_dock.h"
 #include "editor/gui/editor_bottom_panel.h"
 #include "editor/gui/editor_file_dialog.h"
-#include "editor/gui/editor_run_bar.h"
 #include "editor/gui/editor_scene_tabs.h"
 #include "editor/gui/editor_title_bar.h"
 #include "editor/gui/editor_toaster.h"
@@ -1941,7 +1940,6 @@ void EditorNode::_save_scene(String p_file, int idx) {
 }
 
 void EditorNode::save_all_scenes() {
-	project_run_bar->stop_playing();
 	_save_all_scenes();
 }
 
@@ -1963,7 +1961,7 @@ void EditorNode::save_scene_list(const HashSet<String> &p_scene_paths) {
 }
 
 void EditorNode::save_before_run() {
-	current_menu_option = FILE_SAVE_AND_RUN;
+	current_menu_option = FILE_SAVE_SCENE;
 	_menu_option_confirm(FILE_SAVE_AS_SCENE, true);
 	file->set_title(TTR("Save scene before running..."));
 }
@@ -1986,10 +1984,6 @@ void EditorNode::try_autosave() {
 
 void EditorNode::restart_editor() {
 	exiting = true;
-
-	if (project_run_bar->is_playing()) {
-		project_run_bar->stop_playing();
-	}
 
 	String to_reopen;
 	if (get_tree()->get_edited_scene_root()) {
@@ -2074,9 +2068,6 @@ void EditorNode::_dialog_action(String p_file) {
 		case SETTINGS_PICK_MAIN_SCENE: {
 			ProjectSettings::get_singleton()->set("application/run/main_scene", p_file);
 			ProjectSettings::get_singleton()->save();
-			// TODO: Would be nice to show the project manager opened with the highlighted field.
-
-			project_run_bar->play_main_scene((bool)pick_main_scene->get_meta("from_native", false));
 		} break;
 		case FILE_CLOSE:
 		case SCENE_TAB_CLOSE:
@@ -2110,25 +2101,6 @@ void EditorNode::_dialog_action(String p_file) {
 				}
 			}
 
-		} break;
-
-		case FILE_SAVE_AND_RUN: {
-			if (file->get_file_mode() == EditorFileDialog::FILE_MODE_SAVE_FILE) {
-				save_default_environment();
-				_save_scene_with_preview(p_file);
-				project_run_bar->play_custom_scene(p_file);
-			}
-		} break;
-
-		case FILE_SAVE_AND_RUN_MAIN_SCENE: {
-			ProjectSettings::get_singleton()->set("application/run/main_scene", p_file);
-			ProjectSettings::get_singleton()->save();
-
-			if (file->get_file_mode() == EditorFileDialog::FILE_MODE_SAVE_FILE) {
-				save_default_environment();
-				_save_scene_with_preview(p_file);
-				project_run_bar->play_main_scene((bool)pick_main_scene->get_meta("from_native", false));
-			}
 		} break;
 
 		case FILE_EXPORT_MESH_LIBRARY: {
@@ -2814,10 +2786,6 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			_save_all_scenes();
 		} break;
 
-		case FILE_RUN_SCENE: {
-			project_run_bar->play_current_scene();
-		} break;
-
 		case FILE_EXPORT_PROJECT: {
 			project_export->popup_export();
 		} break;
@@ -3404,12 +3372,10 @@ void EditorNode::_discard_changes(const String &p_str) {
 			_proceed_closing_scene_tabs();
 		} break;
 		case FILE_QUIT: {
-			project_run_bar->stop_playing();
 			_exit_editor(EXIT_SUCCESS);
 
 		} break;
 		case RUN_PROJECT_MANAGER: {
-			project_run_bar->stop_playing();
 			_exit_editor(EXIT_SUCCESS);
 			String exec = OS::get_singleton()->get_executable_path();
 
@@ -4664,10 +4630,6 @@ void EditorNode::_project_run_stopped() {
 	}
 }
 
-void EditorNode::notify_all_debug_sessions_exited() {
-	project_run_bar->stop_playing();
-}
-
 void EditorNode::add_io_error(const String &p_error) {
 	DEV_ASSERT(Thread::get_caller_id() == Thread::get_main_id());
 	singleton->load_errors->add_image(singleton->theme->get_icon(SNAME("Error"), EditorStringName(EditorIcons)));
@@ -4702,14 +4664,6 @@ bool EditorNode::is_scene_in_use(const String &p_path) {
 		return _find_scene_in_use(es, p_path);
 	}
 	return false;
-}
-
-OS::ProcessID EditorNode::has_child_process(OS::ProcessID p_pid) const {
-	return project_run_bar->has_child_process(p_pid);
-}
-
-void EditorNode::stop_child_process(OS::ProcessID p_pid) {
-	project_run_bar->stop_child_process(p_pid);
 }
 
 Ref<Script> EditorNode::get_object_custom_type_base(const Object *p_object) const {
@@ -4789,7 +4743,7 @@ void EditorNode::_pick_main_scene_custom_action(const String &p_custom_action_na
 		pick_main_scene->hide();
 
 		if (!FileAccess::exists(scene->get_scene_file_path())) {
-			current_menu_option = FILE_SAVE_AND_RUN_MAIN_SCENE;
+			current_menu_option = FILE_SAVE_SCENE;
 			_menu_option_confirm(FILE_SAVE_AS_SCENE, true);
 			file->set_title(TTR("Save scene before running..."));
 		} else {
@@ -6496,8 +6450,6 @@ void EditorNode::_bind_methods() {
 
 	ClassDB::bind_method("set_edited_scene", &EditorNode::set_edited_scene);
 
-	ClassDB::bind_method("stop_child_process", &EditorNode::stop_child_process);
-
 	ADD_SIGNAL(MethodInfo("request_help_search"));
 	ADD_SIGNAL(MethodInfo("script_add_function_request", PropertyInfo(Variant::OBJECT, "obj"), PropertyInfo(Variant::STRING, "function"), PropertyInfo(Variant::PACKED_STRING_ARRAY, "args")));
 	ADD_SIGNAL(MethodInfo("resource_saved", PropertyInfo(Variant::OBJECT, "obj")));
@@ -7326,11 +7278,6 @@ EditorNode::EditorNode() {
 	right_spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	title_bar->add_child(right_spacer);
 
-	project_run_bar = memnew(EditorRunBar);
-	title_bar->add_child(project_run_bar);
-	project_run_bar->connect("play_pressed", callable_mp(this, &EditorNode::_project_run_started));
-	project_run_bar->connect("stop_pressed", callable_mp(this, &EditorNode::_project_run_stopped));
-
 	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
 	title_bar->add_child(right_menu_hb);
 
@@ -7787,11 +7734,6 @@ EditorNode::EditorNode() {
 	screenshot_timer->connect("timeout", callable_mp(this, &EditorNode::_request_screenshot));
 	add_child(screenshot_timer);
 	screenshot_timer->set_owner(get_owner());
-
-	// Adjust spacers to center 2D / 3D / Script buttons.
-	int max_w = MAX(project_run_bar->get_minimum_size().x + right_menu_hb->get_minimum_size().x, main_menu->get_minimum_size().x);
-	left_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - main_menu->get_minimum_size().x), 0));
-	right_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - project_run_bar->get_minimum_size().x - right_menu_hb->get_minimum_size().x), 0));
 
 	// Extend menu bar to window title.
 	if (can_expand) {

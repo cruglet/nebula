@@ -158,18 +158,6 @@ public:
 	void mark_scene_as_unsaved();
 	void save_all_scenes();
 
-	// Scene playback.
-
-	void play_main_scene();
-	void play_current_scene();
-	void play_custom_scene(const String &scene_path);
-	void stop_playing_scene();
-	bool is_playing_scene() const;
-	String get_playing_scene() const;
-
-	void set_movie_maker_enabled(bool p_enabled);
-	bool is_movie_maker_enabled() const;
-
 #ifdef TOOLS_ENABLED
 	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif

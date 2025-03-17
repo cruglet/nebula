@@ -53,7 +53,6 @@
 #include "editor/find_in_files.h"
 #include "editor/gui/editor_bottom_panel.h"
 #include "editor/gui/editor_file_dialog.h"
-#include "editor/gui/editor_run_bar.h"
 #include "editor/gui/editor_toaster.h"
 #include "editor/inspector_dock.h"
 #include "editor/node_dock.h"
@@ -1707,7 +1706,6 @@ void ScriptEditor::_tab_changed(int p_which) {
 void ScriptEditor::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
-			EditorRunBar::get_singleton()->connect("stop_pressed", callable_mp(this, &ScriptEditor::_editor_stop));
 			_apply_editor_settings();
 			[[fallthrough]];
 		}
@@ -1764,10 +1762,6 @@ void ScriptEditor::_notification(int p_what) {
 
 			EditorSettings::get_singleton()->connect("settings_changed", callable_mp(this, &ScriptEditor::_editor_settings_changed));
 			EditorFileSystem::get_singleton()->connect("filesystem_changed", callable_mp(this, &ScriptEditor::_filesystem_changed));
-		} break;
-
-		case NOTIFICATION_EXIT_TREE: {
-			EditorRunBar::get_singleton()->disconnect("stop_pressed", callable_mp(this, &ScriptEditor::_editor_stop));
 		} break;
 
 		case NOTIFICATION_APPLICATION_FOCUS_IN: {
@@ -2215,7 +2209,7 @@ void ScriptEditor::_update_script_names() {
 		EditorHelp *eh = Object::cast_to<EditorHelp>(tab_container->get_tab_control(i));
 		if (eh) {
 			String name = eh->get_class();
-			Ref<Texture2D> icon = get_editor_theme_icon(SNAME("Help"));
+			Ref<Texture2D> icon = get_editor_theme_icon(name);
 			String tooltip = vformat(TTR("%s Class Reference"), name);
 
 			_ScriptEditorItemData sd;

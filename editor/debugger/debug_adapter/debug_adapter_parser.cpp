@@ -33,7 +33,6 @@
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/debugger/script_editor_debugger.h"
 #include "editor/export/editor_export_platform.h"
-#include "editor/gui/editor_run_bar.h"
 #include "editor/plugins/script_editor_plugin.h"
 
 void DebugAdapterParser::_bind_methods() {
@@ -161,7 +160,6 @@ Dictionary DebugAdapterParser::req_initialize(const Dictionary &p_params) const 
 
 Dictionary DebugAdapterParser::req_disconnect(const Dictionary &p_params) const {
 	if (!DebugAdapterProtocol::get_singleton()->get_current_peer()->attached) {
-		EditorRunBar::get_singleton()->stop_playing();
 	}
 
 	return prepare_success_response(p_params);
@@ -194,39 +192,6 @@ Dictionary DebugAdapterParser::_launch_process(const Dictionary &p_params) const
 
 	String platform_string = args.get("platform", "host");
 	if (platform_string == "host") {
-		EditorRunBar::get_singleton()->play_main_scene();
-	} else {
-		int device = args.get("device", -1);
-		int idx = -1;
-		if (platform_string == "android") {
-			for (int i = 0; i < EditorExport::get_singleton()->get_export_platform_count(); i++) {
-				if (EditorExport::get_singleton()->get_export_platform(i)->get_name() == "Android") {
-					idx = i;
-					break;
-				}
-			}
-		} else if (platform_string == "web") {
-			for (int i = 0; i < EditorExport::get_singleton()->get_export_platform_count(); i++) {
-				if (EditorExport::get_singleton()->get_export_platform(i)->get_name() == "Web") {
-					idx = i;
-					break;
-				}
-			}
-		}
-
-		if (idx == -1) {
-			return prepare_error_response(p_params, DAP::ErrorType::UNKNOWN_PLATFORM);
-		}
-
-		EditorRunBar *run_bar = EditorRunBar::get_singleton();
-		Error err = platform_string == "android" ? run_bar->start_native_device(device * 10000 + idx) : run_bar->start_native_device(idx);
-		if (err) {
-			if (err == ERR_INVALID_PARAMETER && platform_string == "android") {
-				return prepare_error_response(p_params, DAP::ErrorType::MISSING_DEVICE);
-			} else {
-				return prepare_error_response(p_params, DAP::ErrorType::UNKNOWN);
-			}
-		}
 	}
 
 	DebugAdapterProtocol::get_singleton()->get_current_peer()->attached = false;
@@ -263,8 +228,6 @@ Dictionary DebugAdapterParser::req_restart(const Dictionary &p_params) const {
 }
 
 Dictionary DebugAdapterParser::req_terminate(const Dictionary &p_params) const {
-	EditorRunBar::get_singleton()->stop_playing();
-
 	return prepare_success_response(p_params);
 }
 
@@ -279,17 +242,12 @@ Dictionary DebugAdapterParser::req_configurationDone(const Dictionary &p_params)
 }
 
 Dictionary DebugAdapterParser::req_pause(const Dictionary &p_params) const {
-	EditorRunBar::get_singleton()->get_pause_button()->set_pressed(true);
-	EditorDebuggerNode::get_singleton()->_paused();
-
 	DebugAdapterProtocol::get_singleton()->notify_stopped_paused();
 
 	return prepare_success_response(p_params);
 }
 
 Dictionary DebugAdapterParser::req_continue(const Dictionary &p_params) const {
-	EditorRunBar::get_singleton()->get_pause_button()->set_pressed(false);
-	EditorDebuggerNode::get_singleton()->_paused();
 
 	DebugAdapterProtocol::get_singleton()->notify_continued();
 

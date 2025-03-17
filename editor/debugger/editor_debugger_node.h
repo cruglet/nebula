@@ -151,7 +151,6 @@ protected:
 	void _stack_frame_selected(int p_debugger);
 	void _error_selected(const String &p_file, int p_line, int p_debugger);
 	void _breaked(bool p_breaked, bool p_can_debug, const String &p_message, bool p_has_stackdump, int p_debugger);
-	void _paused();
 	void _break_state_changed();
 	void _menu_option(int p_id);
 	void _update_debug_options();

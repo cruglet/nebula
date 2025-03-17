@@ -111,10 +111,6 @@ class SceneTreeDock : public VBoxContainer {
 #endif // MODULE_REGEX_ENABLED
 
 	Button *button_add = nullptr;
-	Button *button_instance = nullptr;
-	Button *button_create_script = nullptr;
-	Button *button_detach_script = nullptr;
-	MenuButton *button_tree_menu = nullptr;
 
 	Button *node_shortcuts_toggle = nullptr;
 	VBoxContainer *beginner_node_shortcuts = nullptr;
@@ -153,8 +149,10 @@ class SceneTreeDock : public VBoxContainer {
 	ConfirmationDialog *placeholder_editable_instance_remove_dialog = nullptr;
 
 	ReparentDialog *reparent_dialog = nullptr;
-	EditorQuickOpen *quick_open = nullptr;
 	EditorFileDialog *new_scene_from_dialog = nullptr;
+
+	EditorFileDialog *open_level_dialog = nullptr;
+
 
 	enum FilterMenuItems {
 		FILTER_BY_TYPE = 64, // Used in the same menus as the Tool enum.
@@ -250,7 +248,6 @@ class SceneTreeDock : public VBoxContainer {
 	bool _validate_no_foreign();
 	bool _validate_no_instance();
 	void _selection_changed();
-	void _update_script_button();
 
 	void _fill_path_renames(Vector<StringName> base_path, Vector<StringName> new_base_path, Node *p_node, HashMap<Node *, NodePath> *p_renames);
 	bool _has_tracks_to_delete(Node *p_node, List<Node *> &p_to_delete) const;
@@ -260,10 +257,11 @@ class SceneTreeDock : public VBoxContainer {
 	void _nodes_dragged(const Array &p_nodes, NodePath p_to, int p_type);
 	void _files_dropped(const Vector<String> &p_files, NodePath p_to, int p_type);
 	void _script_dropped(const String &p_file, NodePath p_to);
-	void _quick_open();
+
+	void _open_level_dialog();
+	void _open_level();
 
 	void _tree_rmb(const Vector2 &p_menu_pos);
-	void _update_tree_menu();
 
 	void _filter_changed(const String &p_filter);
 	void _filter_gui_input(const Ref<InputEvent> &p_event);

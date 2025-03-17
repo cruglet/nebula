@@ -181,9 +181,6 @@ private:
 		FILE_SAVE_SCENE_SILENTLY,
 		FILE_SAVE_AS_SCENE,
 		FILE_SAVE_ALL_SCENES,
-		FILE_SAVE_AND_RUN,
-		FILE_SAVE_AND_RUN_MAIN_SCENE,
-		FILE_RUN_SCENE,
 		FILE_SHOW_IN_FILESYSTEM,
 		FILE_EXPORT_PROJECT,
 		FILE_EXPORT_MESH_LIBRARY,
@@ -873,11 +870,6 @@ public:
 	void request_instantiate_scenes(const Vector<String> &p_files);
 
 	void set_convert_old_scene(bool p_old) { convert_old = p_old; }
-
-	void notify_all_debug_sessions_exited();
-
-	OS::ProcessID has_child_process(OS::ProcessID p_pid) const;
-	void stop_child_process(OS::ProcessID p_pid);
 
 	Ref<Theme> get_editor_theme() const { return theme; }
 	void update_preview_themes(int p_mode);

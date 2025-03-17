@@ -181,8 +181,6 @@ void EditorSceneTabs::_update_context_menu() {
 		scene_tabs_context_menu->add_separator();
 		scene_tabs_context_menu->add_item(TTR("Show in FileSystem"), EditorNode::FILE_SHOW_IN_FILESYSTEM);
 		_disable_menu_option_if(EditorNode::FILE_SHOW_IN_FILESYSTEM, !ResourceLoader::exists(EditorNode::get_editor_data().get_scene_path(tab_id)));
-		scene_tabs_context_menu->add_item(TTR("Play This Scene"), EditorNode::FILE_RUN_SCENE);
-		_disable_menu_option_if(EditorNode::FILE_RUN_SCENE, no_root_node);
 
 		scene_tabs_context_menu->add_separator();
 		scene_tabs_context_menu->add_shortcut(ED_GET_SHORTCUT("editor/close_scene"), EditorNode::FILE_CLOSE);

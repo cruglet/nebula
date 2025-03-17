@@ -41,7 +41,6 @@
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
-#include "editor/gui/editor_run_bar.h"
 #include "editor/gui/editor_spin_slider.h"
 #include "editor/plugins/animation_player_editor_plugin.h"
 #include "editor/plugins/gizmos/audio_listener_3d_gizmo_plugin.h"
@@ -7903,9 +7902,6 @@ void Node3DEditor::_notification(int p_what) {
 			get_tree()->connect("node_added", callable_mp(this, &Node3DEditor::_node_added));
 			SceneTreeDock::get_singleton()->get_tree_editor()->connect("node_changed", callable_mp(this, &Node3DEditor::_refresh_menu_icons));
 			editor_selection->connect("selection_changed", callable_mp(this, &Node3DEditor::_selection_changed));
-
-			EditorRunBar::get_singleton()->connect("stop_pressed", callable_mp(this, &Node3DEditor::_update_camera_override_button).bind(false));
-			EditorRunBar::get_singleton()->connect("play_pressed", callable_mp(this, &Node3DEditor::_update_camera_override_button).bind(true));
 
 			_update_preview_environment();
 

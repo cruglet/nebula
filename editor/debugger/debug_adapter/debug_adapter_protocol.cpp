@@ -38,7 +38,6 @@
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
-#include "editor/gui/editor_run_bar.h"
 
 DebugAdapterProtocol *DebugAdapterProtocol::singleton = nullptr;
 
@@ -837,14 +836,6 @@ Array DebugAdapterProtocol::update_breakpoints(const String &p_path, const Array
 	return updated_breakpoints;
 }
 
-void DebugAdapterProtocol::on_debug_paused() {
-	if (EditorRunBar::get_singleton()->get_pause_button()->is_pressed()) {
-		notify_stopped_paused();
-	} else {
-		notify_continued();
-	}
-}
-
 void DebugAdapterProtocol::on_debug_stopped() {
 	notify_exited();
 	notify_terminated();
@@ -1042,8 +1033,6 @@ DebugAdapterProtocol::DebugAdapterProtocol() {
 	parser = memnew(DebugAdapterParser);
 
 	reset_ids();
-
-	EditorRunBar::get_singleton()->get_pause_button()->connect(SceneStringName(pressed), callable_mp(this, &DebugAdapterProtocol::on_debug_paused));
 
 	EditorDebuggerNode *debugger_node = EditorDebuggerNode::get_singleton();
 	debugger_node->connect("breakpoint_toggled", callable_mp(this, &DebugAdapterProtocol::on_debug_breakpoint_toggled));

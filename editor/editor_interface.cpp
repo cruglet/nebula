@@ -38,7 +38,6 @@
 #include "editor/editor_settings.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/filesystem_dock.h"
-#include "editor/gui/editor_run_bar.h"
 #include "editor/gui/editor_scene_tabs.h"
 #include "editor/gui/scene_tree_editor.h"
 #include "editor/inspector_dock.h"
@@ -49,6 +48,7 @@
 #include "scene/gui/box_container.h"
 #include "scene/gui/control.h"
 #include "scene/main/window.h"
+#include "scene/resources/image_texture.h"
 #include "scene/resources/theme.h"
 
 EditorInterface *EditorInterface::singleton = nullptr;
@@ -461,39 +461,6 @@ void EditorInterface::save_all_scenes() {
 }
 
 // Scene playback.
-
-void EditorInterface::play_main_scene() {
-	EditorRunBar::get_singleton()->play_main_scene();
-}
-
-void EditorInterface::play_current_scene() {
-	EditorRunBar::get_singleton()->play_current_scene();
-}
-
-void EditorInterface::play_custom_scene(const String &scene_path) {
-	EditorRunBar::get_singleton()->play_custom_scene(scene_path);
-}
-
-void EditorInterface::stop_playing_scene() {
-	EditorRunBar::get_singleton()->stop_playing();
-}
-
-bool EditorInterface::is_playing_scene() const {
-	return EditorRunBar::get_singleton()->is_playing();
-}
-
-String EditorInterface::get_playing_scene() const {
-	return EditorRunBar::get_singleton()->get_playing_scene();
-}
-
-void EditorInterface::set_movie_maker_enabled(bool p_enabled) {
-	EditorRunBar::get_singleton()->set_movie_maker_enabled(p_enabled);
-}
-
-bool EditorInterface::is_movie_maker_enabled() const {
-	return EditorRunBar::get_singleton()->is_movie_maker_enabled();
-}
-
 #ifdef TOOLS_ENABLED
 void EditorInterface::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
@@ -590,20 +557,6 @@ void EditorInterface::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("save_all_scenes"), &EditorInterface::save_all_scenes);
 
 	ClassDB::bind_method(D_METHOD("mark_scene_as_unsaved"), &EditorInterface::mark_scene_as_unsaved);
-
-	// Scene playback.
-
-	ClassDB::bind_method(D_METHOD("play_main_scene"), &EditorInterface::play_main_scene);
-	ClassDB::bind_method(D_METHOD("play_current_scene"), &EditorInterface::play_current_scene);
-	ClassDB::bind_method(D_METHOD("play_custom_scene", "scene_filepath"), &EditorInterface::play_custom_scene);
-	ClassDB::bind_method(D_METHOD("stop_playing_scene"), &EditorInterface::stop_playing_scene);
-	ClassDB::bind_method(D_METHOD("is_playing_scene"), &EditorInterface::is_playing_scene);
-	ClassDB::bind_method(D_METHOD("get_playing_scene"), &EditorInterface::get_playing_scene);
-
-	ClassDB::bind_method(D_METHOD("set_movie_maker_enabled", "enabled"), &EditorInterface::set_movie_maker_enabled);
-	ClassDB::bind_method(D_METHOD("is_movie_maker_enabled"), &EditorInterface::is_movie_maker_enabled);
-
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "movie_maker_enabled"), "set_movie_maker_enabled", "is_movie_maker_enabled");
 }
 
 void EditorInterface::create() {

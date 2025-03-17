@@ -84,7 +84,6 @@ private:
 
 	Error on_client_connected();
 	void on_client_disconnected(const Ref<DAPeer> &p_peer);
-	void on_debug_paused();
 	void on_debug_stopped();
 	void on_debug_output(const String &p_message, int p_type);
 	void on_debug_breaked(const bool &p_reallydid, const bool &p_can_debug, const String &p_reason, const bool &p_has_stackdump);
