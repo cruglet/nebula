@@ -1,0 +1,247 @@
+[gd_scene load_steps=9 format=3 uid="uid://cjwbubtayvgy4"]
+
+[ext_resource type="Script" uid="uid://dy0glm7l31g8v" path="res://scenes/editor/startup/startup.gd" id="1_xyr3v"]
+[ext_resource type="Texture2D" uid="uid://q1ttkq5m0nx5" path="res://meta/images/boot_logo.svg" id="2_kh41c"]
+[ext_resource type="Theme" uid="uid://c4pym03mn38io" path="res://themes/editor_main.theme" id="2_upu3d"]
+[ext_resource type="Script" uid="uid://b2o7ebq2k43qi" path="res://util/ui/panel.gd" id="3_pfjf6"]
+
+[sub_resource type="Animation" id="Animation_precm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon:anchor_top")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.5]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon:anchor_bottom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.5]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("InfoLabel:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Icon:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ettu2"]
+resource_name = "startup"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon:anchor_top")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 0,
+"values": [0.5, 0.45]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon:anchor_bottom")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 0,
+"values": [0.5, 0.45]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("InfoLabel:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0.152941)]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"load_config"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_jhsmq"]
+resource_name = "startup_finished"
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.266667),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"change_to_project_list"
+}]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("InfoLabel:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0333333, 0.533333),
+"transitions": PackedFloat32Array(0.1, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 0.152941), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Icon:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.1, 0.2),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Icon:anchor_top")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.525),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [0.45, 0.3]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Icon:anchor_bottom")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.525),
+"transitions": PackedFloat32Array(0.2, 1),
+"update": 0,
+"values": [0.45, 0.3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jhsmq"]
+_data = {
+&"RESET": SubResource("Animation_precm"),
+&"startup": SubResource("Animation_ettu2"),
+&"startup_finished": SubResource("Animation_jhsmq")
+}
+
+[node name="Startup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xyr3v")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_upu3d")
+theme_type_variation = &"nPanelPrimary"
+script = ExtResource("3_pfjf6")
+_name = "Background"
+metadata/_custom_type_script = "uid://b2o7ebq2k43qi"
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -282.0
+offset_top = -102.0
+offset_right = 279.0
+offset_bottom = 105.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(280, 103)
+texture = ExtResource("2_kh41c")
+expand_mode = 1
+
+[node name="InfoLabel" type="Label" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -127.0
+offset_top = -53.0
+offset_right = 128.0
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("2_upu3d")
+theme_override_font_sizes/font_size = 18
+text = "Getting things ready..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_jhsmq")
+}

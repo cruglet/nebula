@@ -1,0 +1,194 @@
+[gd_scene load_steps=14 format=3 uid="uid://c14cenqcdq6h4"]
+
+[ext_resource type="Theme" uid="uid://c4pym03mn38io" path="res://themes/editor_main.theme" id="1_p0qwp"]
+[ext_resource type="Script" uid="uid://720g3divrweh" path="res://scenes/editor/project_manager/project_manager.gd" id="2_em34d"]
+[ext_resource type="Script" uid="uid://b2o7ebq2k43qi" path="res://util/ui/panel.gd" id="2_frpwp"]
+[ext_resource type="Texture2D" uid="uid://b1l8alx48r1po" path="res://meta/icons/tilte_bar_logo.svg" id="3_7jy5a"]
+[ext_resource type="Script" uid="uid://csa2e60glpxds" path="res://scenes/editor/project_manager/settings_process.gd" id="3_gev70"]
+[ext_resource type="Texture2D" uid="uid://ci6t3eu2xjv5m" path="res://meta/icons/home.svg" id="4_equ8h"]
+[ext_resource type="Texture2D" uid="uid://dip3j4w5jl5nv" path="res://meta/icons/settings.svg" id="5_b2tky"]
+[ext_resource type="PackedScene" uid="uid://c4jihm0qrufq8" path="res://scenes/editor/project_manager/home/home.scn" id="6_3v8xp"]
+[ext_resource type="Script" uid="uid://6csax5x5f1lm" path="res://util/ui/button/button.gd" id="6_hbt1l"]
+[ext_resource type="Script" uid="uid://dl4pucm00ris7" path="res://util/ui/label.gd" id="8_podeq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gev70"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbt1l"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 6.0
+expand_margin_top = 4.0
+expand_margin_right = 6.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_podeq"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 5.0
+expand_margin_top = 4.0
+expand_margin_right = 5.0
+expand_margin_bottom = 4.0
+
+[node name="ProjectManager" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nPanelPrimary"
+script = ExtResource("2_frpwp")
+_name = "ProjectManager"
+metadata/_custom_type_script = "uid://b2o7ebq2k43qi"
+
+[node name="Processes" type="Node" parent="."]
+
+[node name="SettingsProcess" type="Node" parent="Processes"]
+script = ExtResource("3_gev70")
+
+[node name="ProjectManager" type="Node" parent="Processes" node_paths=PackedStringArray("version_label", "file_dialog")]
+script = ExtResource("2_em34d")
+version_label = NodePath("../../InfoContainer/VersionLabel")
+file_dialog = NodePath("../../FileDialog")
+
+[node name="Content" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_top = 48.0
+offset_right = -12.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Home" parent="Content" instance=ExtResource("6_3v8xp")]
+layout_mode = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="InfoContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 14.0
+offset_top = 8.0
+offset_right = 187.0
+offset_bottom = 40.0
+theme_override_constants/separation = 10
+
+[node name="InfoButton" type="Button" parent="InfoContainer"]
+custom_minimum_size = Vector2(107, 0)
+layout_mode = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nButtonFlatIcon"
+theme_override_styles/focus = SubResource("StyleBoxFlat_gev70")
+icon = ExtResource("3_7jy5a")
+script = ExtResource("6_hbt1l")
+type = 2
+mod_color = Color(0, 1, 1, 1)
+focus_width = 2
+metadata/_custom_type_script = "uid://6csax5x5f1lm"
+
+[node name="VersionLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nLabelSecondary"
+text = "v0.0.0dev"
+script = ExtResource("8_podeq")
+type = 1
+metadata/_custom_type_script = "uid://dl4pucm00ris7"
+
+[node name="TabButtonContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -35.0
+offset_top = 9.0
+offset_right = 37.0
+offset_bottom = 40.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="HomeTabButton" type="Button" parent="TabButtonContainer"]
+self_modulate = Color(0, 1, 1, 1)
+layout_mode = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nButtonFlatIconTab"
+theme_override_styles/focus = SubResource("StyleBoxFlat_hbt1l")
+text = "Home"
+icon = ExtResource("4_equ8h")
+script = ExtResource("6_hbt1l")
+type = 3
+mod_color = Color(0, 1, 1, 1)
+focus_width = 2
+focus_margin = Vector2(6, 4)
+hover_background = false
+force_active = true
+metadata/_custom_type_script = "uid://6csax5x5f1lm"
+
+[node name="QuickActionsContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -83.0
+offset_top = 9.0
+offset_right = -11.0
+offset_bottom = 39.0
+grow_horizontal = 2
+alignment = 2
+
+[node name="EngineSettingsButton" type="Button" parent="QuickActionsContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nButtonFlatIcon"
+theme_override_styles/focus = SubResource("StyleBoxFlat_podeq")
+icon = ExtResource("5_b2tky")
+expand_icon = true
+script = ExtResource("6_hbt1l")
+type = 2
+mod_color = Color(0, 1, 1, 1)
+focus_width = 2
+focus_margin = Vector2(5, 4)
+hover_background = false
+metadata/_custom_type_script = "uid://6csax5x5f1lm"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+force_native = true
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("")
+use_native_dialog = true
+
+[connection signal="pressed" from="QuickActionsContainer/EngineSettingsButton" to="Processes/SettingsProcess" method="_on_engine_settings_button_pressed"]

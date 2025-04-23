@@ -1,0 +1,3 @@
+extends Node
+
+signal create_project_button_pressed

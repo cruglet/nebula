@@ -1,0 +1,59 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Nebula"
+run/main_scene="uid://cjwbubtayvgy4"
+run/print_header=false
+config/use_custom_user_dir=true
+config/custom_user_dir_name="nebula"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+boot_splash/bg_color=Color(0.117647, 0.121569, 0.137255, 1)
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+boot_splash/image="uid://dwiplk54h3dxp"
+config/icon="uid://d1ylps8bpuv1s"
+
+[autoload]
+
+Singleton="*res://globals/singleton.gd"
+EventBus="*res://globals/event_bus.gd"
+
+[debug]
+
+file_logging/enable_file_logging=true
+file_logging/log_path="user://logs/nebula.log"
+gdscript/warnings/untyped_declaration=2
+gdscript/warnings/inferred_declaration=2
+gdscript/warnings/integer_division=0
+gdscript/warnings/narrowing_conversion=0
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
+[file_customization]
+
+folder_colors={
+"res://globals/": "teal",
+"res://meta/": "orange",
+"res://modules/": "red",
+"res://resources/": "green",
+"res://scenes/": "blue",
+"res://themes/": "pink",
+"res://util/": "purple"
+}
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

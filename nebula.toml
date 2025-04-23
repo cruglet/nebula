@@ -1,0 +1,3 @@
+[engine]
+version = "v0.0.0d"
+projects = ["/home/user/share/.local/nebula/my-project"]
