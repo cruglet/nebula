@@ -18,4 +18,9 @@ func _create_project() -> void:
 	file_dialog.visible = true
 
 func _validate_file(path: String) -> void:
-	WiiDisc.open(path)
+	var disc: WiiDisc = WiiDisc.open(path)
+	
+	if disc.game_info.get("id") in Singleton.game_list:
+		print("W")
+	else:
+		Singleton.error.emit("[color=yellow]Unrecognized game file.\n[/color]This game is either invalid or is not\ncompatible with this version of Nebula.")

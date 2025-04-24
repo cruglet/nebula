@@ -2,6 +2,8 @@ class_name WiiDisc extends Object
 
 var type: Variant
 
+var game_info: Dictionary
+
 const SECTOR_SIZE: int = 0x8000;
 const SECTOR_COUNT: int = 143432 * 2;
 const DISC_HEADER_SIZE: int = 256;
@@ -13,9 +15,7 @@ static func open(path: String) -> WiiDisc:
 	
 	match disc_file.get_error():
 		OK:
-			WBFS.dump(disc_file)
-			disc_file.close()
-			return
+			new_disc.game_info = WBFS.dump(disc_file)
 		_:
 			printerr(FileAccess.get_open_error())
 	disc_file.close()
