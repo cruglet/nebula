@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c14cenqcdq6h4"]
+[gd_scene load_steps=24 format=3 uid="uid://c14cenqcdq6h4"]
 
 [ext_resource type="Theme" uid="uid://c4pym03mn38io" path="res://themes/editor_main.theme" id="1_p0qwp"]
 [ext_resource type="Script" uid="uid://720g3divrweh" path="res://scenes/editor/project_manager/project_manager.gd" id="2_em34d"]
@@ -7,11 +7,14 @@
 [ext_resource type="Script" uid="uid://csa2e60glpxds" path="res://scenes/editor/project_manager/settings_process.gd" id="3_gev70"]
 [ext_resource type="Texture2D" uid="uid://ci6t3eu2xjv5m" path="res://meta/icons/home.svg" id="4_equ8h"]
 [ext_resource type="Texture2D" uid="uid://dip3j4w5jl5nv" path="res://meta/icons/settings.svg" id="5_b2tky"]
+[ext_resource type="Script" uid="uid://dmq1of76ia3od" path="res://scenes/editor/project_manager/project_create_process.gd" id="5_uq71d"]
 [ext_resource type="PackedScene" uid="uid://c4jihm0qrufq8" path="res://scenes/editor/project_manager/home/home.scn" id="6_3v8xp"]
 [ext_resource type="Script" uid="uid://6csax5x5f1lm" path="res://util/ui/button/button.gd" id="6_hbt1l"]
 [ext_resource type="Script" uid="uid://dl4pucm00ris7" path="res://util/ui/label.gd" id="8_podeq"]
+[ext_resource type="Shader" uid="uid://bph4xokwjcv0h" path="res://meta/shaders/blur.gdshader" id="11_hbt1l"]
+[ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/primary.ttf" id="12_podeq"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gev70"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uq71d"]
 draw_center = false
 border_width_left = 2
 border_width_top = 2
@@ -23,7 +26,7 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbt1l"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3sfgk"]
 draw_center = false
 border_width_left = 2
 border_width_top = 2
@@ -39,7 +42,7 @@ expand_margin_top = 4.0
 expand_margin_right = 6.0
 expand_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_podeq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ejvkx"]
 draw_center = false
 border_width_left = 2
 border_width_top = 2
@@ -54,6 +57,237 @@ expand_margin_left = 5.0
 expand_margin_top = 4.0
 expand_margin_right = 5.0
 expand_margin_bottom = 4.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_podeq"]
+shader = ExtResource("11_hbt1l")
+shader_parameter/amount = 2.0
+
+[sub_resource type="GDScript" id="GDScript_podeq"]
+script/source = "extends Control
+
+
+func _on_resized() -> void:
+	pivot_offset = size / 2
+"
+
+[sub_resource type="FontVariation" id="FontVariation_uq71d"]
+base_font = ExtResource("12_podeq")
+variation_opentype = {
+1869640570: 14,
+2003265652: 800
+}
+variation_transform = Transform2D(1.05, 0, 0, 1, 0, 0)
+
+[sub_resource type="Animation" id="Animation_hbt1l"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Content:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Content:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LoadingScreen:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("LoadingScreen/BlurFX:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LoadingScreen/LoadingContent:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LoadingScreen/LoadingContent:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LoadingScreen/LoadingContent/LoadingPanelBG/LoadingPanel:anchor_left")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.5]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("LoadingScreen/LoadingContent/LoadingPanelBG/LoadingPanel:anchor_right")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-0.385]
+}
+
+[sub_resource type="Animation" id="Animation_podeq"]
+resource_name = "loading_loop"
+length = 1.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LoadingScreen/LoadingContent/LoadingPanelBG/LoadingPanel:anchor_left")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(0.3, 0.3),
+"update": 0,
+"values": [-0.806, 0.951229]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LoadingScreen/LoadingContent/LoadingPanelBG/LoadingPanel:anchor_right")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(0.3, 0.3),
+"update": 0,
+"values": [0.036, 1.79323]
+}
+
+[sub_resource type="Animation" id="Animation_gev70"]
+resource_name = "start_to_load"
+length = 0.37
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Content:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.366667),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Content:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(3.72529e-09, 0.366667),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LoadingScreen:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(3.72529e-09, 0.0666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("LoadingScreen/BlurFX:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.0666667, 0.2),
+"transitions": PackedFloat32Array(0.6, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LoadingScreen/LoadingContent:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0666667, 0.2),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.5, 0.5), Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LoadingScreen/LoadingContent:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0666667, 0.2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hbt1l"]
+_data = {
+&"RESET": SubResource("Animation_hbt1l"),
+&"loading_loop": SubResource("Animation_podeq"),
+&"start_to_load": SubResource("Animation_gev70")
+}
 
 [node name="ProjectManager" type="Panel"]
 anchors_preset = 15
@@ -72,10 +306,16 @@ metadata/_custom_type_script = "uid://b2o7ebq2k43qi"
 [node name="SettingsProcess" type="Node" parent="Processes"]
 script = ExtResource("3_gev70")
 
-[node name="ProjectManager" type="Node" parent="Processes" node_paths=PackedStringArray("version_label", "file_dialog")]
+[node name="ProjectManager" type="Node" parent="Processes" node_paths=PackedStringArray("animation_player", "version_label", "file_dialog", "content", "project_create_process")]
 script = ExtResource("2_em34d")
+animation_player = NodePath("../../AnimationPlayer")
 version_label = NodePath("../../InfoContainer/VersionLabel")
 file_dialog = NodePath("../../FileDialog")
+content = NodePath("../../Content")
+project_create_process = NodePath("../ProjectCreateProcess")
+
+[node name="ProjectCreateProcess" type="Node" parent="Processes"]
+script = ExtResource("5_uq71d")
 
 [node name="Content" type="Control" parent="."]
 layout_mode = 1
@@ -108,7 +348,7 @@ custom_minimum_size = Vector2(107, 0)
 layout_mode = 2
 theme = ExtResource("1_p0qwp")
 theme_type_variation = &"nButtonFlatIcon"
-theme_override_styles/focus = SubResource("StyleBoxFlat_gev70")
+theme_override_styles/focus = SubResource("StyleBoxFlat_uq71d")
 icon = ExtResource("3_7jy5a")
 script = ExtResource("6_hbt1l")
 type = 2
@@ -142,7 +382,7 @@ self_modulate = Color(0, 1, 1, 1)
 layout_mode = 2
 theme = ExtResource("1_p0qwp")
 theme_type_variation = &"nButtonFlatIconTab"
-theme_override_styles/focus = SubResource("StyleBoxFlat_hbt1l")
+theme_override_styles/focus = SubResource("StyleBoxFlat_3sfgk")
 text = "Home"
 icon = ExtResource("4_equ8h")
 script = ExtResource("6_hbt1l")
@@ -167,11 +407,11 @@ grow_horizontal = 2
 alignment = 2
 
 [node name="EngineSettingsButton" type="Button" parent="QuickActionsContainer"]
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(18, 0)
 layout_mode = 2
 theme = ExtResource("1_p0qwp")
 theme_type_variation = &"nButtonFlatIcon"
-theme_override_styles/focus = SubResource("StyleBoxFlat_podeq")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ejvkx")
 icon = ExtResource("5_b2tky")
 expand_icon = true
 script = ExtResource("6_hbt1l")
@@ -182,6 +422,90 @@ focus_margin = Vector2(5, 4)
 hover_background = false
 metadata/_custom_type_script = "uid://6csax5x5f1lm"
 
+[node name="LoadingScreen" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BlurFX" type="ColorRect" parent="LoadingScreen"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_podeq")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadingContent" type="Control" parent="LoadingScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+script = SubResource("GDScript_podeq")
+
+[node name="LoadingLabel" type="Label" parent="LoadingScreen/LoadingContent"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -121.0
+offset_top = -29.5
+offset_right = 121.0
+offset_bottom = 29.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nLabelPrimary"
+theme_override_fonts/font = SubResource("FontVariation_uq71d")
+theme_override_font_sizes/font_size = 48
+text = "Loading..."
+script = ExtResource("8_podeq")
+metadata/_custom_type_script = "uid://dl4pucm00ris7"
+
+[node name="LoadingPanelBG" type="Panel" parent="LoadingScreen/LoadingContent"]
+clip_children = 2
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.259
+anchor_top = 0.5
+anchor_right = 0.741
+anchor_bottom = 0.5
+offset_left = -0.279999
+offset_top = 53.0
+offset_right = 0.279907
+offset_bottom = 93.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nPanelPrimaryDark"
+
+[node name="LoadingPanel" type="Panel" parent="LoadingScreen/LoadingContent/LoadingPanelBG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.385
+anchor_top = 0.5
+anchor_right = -0.385
+anchor_bottom = 0.5
+offset_left = 0.161987
+offset_top = -20.0
+offset_right = -0.161957
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_p0qwp")
+theme_type_variation = &"nPanelLoadingBar"
+metadata/_edit_use_anchors_ = true
+
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open a File"
 force_native = true
@@ -191,4 +515,10 @@ access = 2
 filters = PackedStringArray("")
 use_native_dialog = true
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_hbt1l")
+}
+
 [connection signal="pressed" from="QuickActionsContainer/EngineSettingsButton" to="Processes/SettingsProcess" method="_on_engine_settings_button_pressed"]
+[connection signal="resized" from="LoadingScreen/LoadingContent" to="LoadingScreen/LoadingContent" method="_on_resized"]

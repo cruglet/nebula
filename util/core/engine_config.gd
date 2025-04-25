@@ -10,7 +10,8 @@ static var log_dir_path: String:
 static var config: Dictionary = {
 	"engine": {
 		"scale": 1.0,
-		"projects": []
+		"projects": [],
+		"default_project_path": ""
 	},
 	"debug": {
 		"max_logs": 20
@@ -28,6 +29,16 @@ static var projects: Array:
 static var max_logs: int:
 	get(): return config.debug.max_logs
 	set(val): config.debug.max_logs = val
+static var default_project_path: String: 
+	get():
+		if !config.engine.get("default_project_path"):
+			return config_path.path_join("projects/")
+		else:
+			return config.engine.default_project_path
+	set(new_path):
+		config.engine.default_project_path = new_path
+
+
 
 static func exists() -> bool:
 	return FileAccess.file_exists(save_file_path)

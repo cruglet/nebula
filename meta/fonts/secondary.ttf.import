@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://c4h3yueirncqh"
-path="res://.godot/imported/primary.ttf-432447a2300340e9ba795d40166c3db6.fontdata"
+uid="uid://g3iia37ktbw7"
+path="res://.godot/imported/secondary.ttf-127aea9ef9904b0ee02048d049317a80.fontdata"
 
 [deps]
 
-source_file="res://meta/fonts/primary.ttf"
-dest_files=["res://.godot/imported/primary.ttf-432447a2300340e9ba795d40166c3db6.fontdata"]
+source_file="res://meta/fonts/secondary.ttf"
+dest_files=["res://.godot/imported/secondary.ttf-127aea9ef9904b0ee02048d049317a80.fontdata"]
 
 [params]
 
@@ -24,7 +24,7 @@ force_autohinter=false
 hinting=1
 subpixel_positioning=4
 keep_rounding_remainders=true
-oversampling=1.0
+oversampling=0.0
 Fallbacks=null
 fallbacks=[]
 Compress=null

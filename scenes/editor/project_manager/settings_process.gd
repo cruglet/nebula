@@ -3,7 +3,8 @@ extends Node
 @export var engine_settings_window: Window
 @export var engine_settings: PanelContainer
 
-const ENGINE_SETTINGS: PackedScene = preload("res://scenes/editor/settings/engine_settings.scn")
+const ENGINE_SETTINGS: PackedScene = preload("res://scenes/editor/project_manager/window/settings/engine_settings.scn")
+
 
 func _on_engine_settings_button_pressed() -> void:
 	Singleton.popup.emit(ENGINE_SETTINGS.instantiate())
