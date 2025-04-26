@@ -42,5 +42,12 @@ static func decode_float_be(array: PackedByteArray, offset: int = 0) -> int:
 	
 	return be_arr.decode_float(0)
 
-#static func unpack(key: String) -> PackedByteArray:
-	#pass
+static func search(array: PackedByteArray, sequence: PackedByteArray) -> int:
+	var len_array: int = array.size()
+	var len_sequence: int = sequence.size()
+
+	for i: int in range(len_array - len_sequence + 1):
+		if array.slice(i, i + len_sequence) == sequence:
+			return i
+	
+	return -1
