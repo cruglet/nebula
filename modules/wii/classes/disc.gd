@@ -7,7 +7,8 @@ var disc_path: String
 const SECTOR_SIZE: int = 0x8000;
 const SECTOR_COUNT: int = 0x46090;
 const DISC_HEADER_SIZE: int = 256;
-const COMMON_KEY: String = "ebe42a2248629bd8566e7fedf22ef7c5"
+const COMMON_KEY: String = "ebe42a225e8593e448d9c5457381aaf7"
+
 
 static func open(path: String) -> WiiDisc:
 	var new_disc: WiiDisc = WiiDisc.new()
