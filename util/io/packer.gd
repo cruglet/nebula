@@ -51,3 +51,30 @@ static func search(array: PackedByteArray, sequence: PackedByteArray) -> int:
 			return i
 	
 	return -1
+
+static func search_file(file: FileAccess, sequence: PackedByteArray, offset: int = 0) -> int:
+	var original_position: int = file.get_position()
+	file.seek(offset)
+	while file.get_position() < file.get_length():
+		var check_sequence: PackedByteArray = file.get_buffer(sequence.size())
+		if check_sequence == sequence:
+			return file.get_position() - sequence.size()
+	file.seek(original_position)
+	return -1
+
+static func hex_string_to_bytes(hex: String) -> PackedByteArray:
+	var result: PackedByteArray = []
+	for i: int in range(0, hex.length(), 2):
+		result.append(int("0x" + hex.substr(i, 2)))
+	return result
+
+static func aes_cbc_decrypt(encrypted_data: PackedByteArray, key: PackedByteArray, iv: PackedByteArray = []) -> PackedByteArray:
+	assert(encrypted_data.size() % 16 == 0)
+	var aes: AESContext = AESContext.new()
+	var _iv: PackedByteArray = iv.duplicate()
+	if _iv.size() != 16:
+		_iv.resize(16)
+		_iv.fill(0)
+	aes.start(AESContext.MODE_CBC_DECRYPT, key, _iv)
+	var result: PackedByteArray = aes.update(encrypted_data)
+	return result

@@ -1,13 +1,13 @@
 class_name WiiDisc extends Object
 
 var type: Variant
-
 var game_info: Dictionary
 var disc_path: String
 
 const SECTOR_SIZE: int = 0x8000;
-const SECTOR_COUNT: int = 143432 * 2;
+const SECTOR_COUNT: int = 0x46090;
 const DISC_HEADER_SIZE: int = 256;
+const COMMON_KEY: String = "ebe42a2248629bd8566e7fedf22ef7c5"
 
 static func open(path: String) -> WiiDisc:
 	var new_disc: WiiDisc = WiiDisc.new()
@@ -17,12 +17,27 @@ static func open(path: String) -> WiiDisc:
 	
 	match disc_file.get_error():
 		OK:
-			new_disc.game_info = WBFS.dump(disc_file)
+			#new_disc.game_info = 
+			var wbfs: WBFS = WBFS.open(disc_file)
+			var iso: ISO = ISO.new()
+			iso.parse_wbfs(wbfs)
 		_:
 			printerr(FileAccess.get_open_error())
 	disc_file.close()
 	return new_disc
-	
+
+
+static func decrypt(title_key: PackedByteArray, game_id: String) -> PackedByteArray:
+	var aes: AESContext = AESContext.new()
+	var key: PackedByteArray = Packer.hex_string_to_bytes(COMMON_KEY)
+	var iv: PackedByteArray = []
+	var game_id_bytes: PackedByteArray = game_id.substr(0,4).to_ascii_buffer()
+	iv.append_array(game_id_bytes)
+	iv.append_array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+	aes.start(AESContext.MODE_CBC_DECRYPT, key, iv)
+	return aes.update(title_key)
+
+
 func is_valid() -> bool:
 	if type:
 		return true
