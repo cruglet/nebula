@@ -28,15 +28,15 @@ static func open(path: String) -> WiiDisc:
 	return new_disc
 
 
-static func decrypt(title_key: PackedByteArray, game_id: String) -> PackedByteArray:
-	var aes: AESContext = AESContext.new()
-	var key: PackedByteArray = Packer.hex_string_to_bytes(COMMON_KEY)
-	var iv: PackedByteArray = []
-	var game_id_bytes: PackedByteArray = game_id.substr(0,4).to_ascii_buffer()
-	iv.append_array(game_id_bytes)
-	iv.append_array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-	aes.start(AESContext.MODE_CBC_DECRYPT, key, iv)
-	return aes.update(title_key)
+#static func decrypt(title_key: PackedByteArray, game_id: String) -> PackedByteArray:
+	#var aes: AESContext = AESContext.new()
+	#var key: PackedByteArray = COMMON_KEY.hex_decode()
+	#var iv: PackedByteArray = []
+	#var game_id_bytes: PackedByteArray = game_id.substr(0,4).to_ascii_buffer()
+	#iv.append_array(game_id_bytes)
+	#iv.append_array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+	#aes.start(AESContext.MODE_CBC_DECRYPT, key, iv)
+	#return aes.update(title_key)
 
 
 func is_valid() -> bool:

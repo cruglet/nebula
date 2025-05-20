@@ -62,12 +62,6 @@ static func search_file(file: FileAccess, sequence: PackedByteArray, offset: int
 	file.seek(original_position)
 	return -1
 
-static func hex_string_to_bytes(hex: String) -> PackedByteArray:
-	var result: PackedByteArray = []
-	for i: int in range(0, hex.length(), 2):
-		result.append(int("0x" + hex.substr(i, 2)))
-	return result
-
 static func aes_cbc_decrypt(encrypted_data: PackedByteArray, key: PackedByteArray, iv: PackedByteArray = []) -> PackedByteArray:
 	assert(encrypted_data.size() % 16 == 0)
 	var aes: AESContext = AESContext.new()

@@ -62,6 +62,10 @@ static func open(wbfs_file: FileAccess) -> WBFS:
 	var encryption_disabled: bool = bool(wbfs_file.get_8())
 	#endregion
 	
+	if hashing_disabled or encryption_disabled:
+		Singleton.error.emit("Modified disc found")
+	
+	
 	#region WLBA Table parsing
 	wbfs_file.seek(hd_sector_size + 256)
 	
