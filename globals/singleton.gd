@@ -1,19 +1,12 @@
 @tool
 extends Node
 
-var time: String:
-	get():
-		return Time.get_datetime_string_from_system().replace(":", "-").replace("T", "-")
-
 static var theme: Theme = load("uid://c4pym03mn38io")
 
-var game_list: Array[String] = ["SMNE01"]
-
-
-
-
-
-
+var game_list: Array[String] = ["SMN*01"]
+var time: String:
+	get:
+		return Time.get_datetime_string_from_system().replace(":", "-").replace("T", "-")
 
 #region Debug
 const VERSION: String = "v0.0.0"
@@ -48,11 +41,7 @@ signal popup(content: Control)
 signal close_popup()
 #endregion
 
-
-
 signal scale_changed
-
-
 
 func _ready() -> void:
 	print_rich(DEBUG_HEADER)

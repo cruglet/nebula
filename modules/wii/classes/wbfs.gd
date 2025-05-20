@@ -1,4 +1,6 @@
 class_name WBFS extends Object
+## Refer to nebula-md/documentation for more documentation and extra sources:
+## https://github.com/cruglet/nebula-md/tree/documentation
 
 const ERROR_HEADER: String = "[color=red]Error parsing WBFS file.\n[/color]"
 const BLOCK_SIZE: int = 256 * 1024
