@@ -54,6 +54,10 @@ folder_colors={
 "res://util/": "purple"
 }
 
+[gui]
+
+theme/custom="uid://c4pym03mn38io"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
