@@ -7,11 +7,11 @@ func _ready() -> void:
 	get_window().min_size = Vector2i(500, 300)
 
 func load_config() -> void:
-	if EngineConfig.exists():
-		EngineConfig.load()
+	if NebulaConfig.exists():
+		NebulaConfig.load()
 		Singleton._apply_config()
 	else:
-		EngineConfig.save()
+		NebulaConfig.save()
 	
 	animation_player.play("startup_finished")
 	

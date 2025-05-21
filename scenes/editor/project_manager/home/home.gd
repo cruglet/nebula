@@ -8,7 +8,7 @@ signal file_selected(path: String)
 
 func _ready() -> void:
 	var content: Node
-	if EngineConfig.projects.size() > 0:
+	if NebulaConfig.projects.size() > 0:
 		pass
 	else:
 		content = NO_PROJECTS.instantiate()

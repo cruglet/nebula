@@ -5,11 +5,12 @@ enum ARC_TYPE {
 	U8,
 }
 
+const U8_HEADER: PackedByteArray = [85, 170, 56, 45] # "U\xAA8-"
+
 var filesystem: Dictionary = {}
 var type: ARC_TYPE
 var path: String
 
-const U8_HEADER: PackedByteArray = [85, 170, 56, 45]  # "U\xAA8-"
 
 static func open(file_path: String) -> ARC:
 	var data: Dictionary = {}
@@ -83,12 +84,13 @@ static func open(file_path: String) -> ARC:
 			count_stack.pop_back()
 			if path_stack.size() > 0:
 				path_stack.pop_back()
-				
+
 	var new_arc: ARC = ARC.new()
 	new_arc.filesystem = data
 	new_arc.type = ARC_TYPE.U8
 	new_arc.path = file_path
 	return new_arc
+
 
 func print_files(filesize: bool = false, indent: int = 0, data: Dictionary = {}) -> void:
 	if !data:
@@ -108,8 +110,9 @@ func print_files(filesize: bool = false, indent: int = 0, data: Dictionary = {})
 	if data == filesystem and filesize:
 		print("FULL SIZE: " + String.humanize_size(Dict.get_total_size(filesystem)))
 
+
 func is_valid() -> bool:
 	if [ARC_TYPE.U8].has(type):
 		return true
-	
+
 	return false

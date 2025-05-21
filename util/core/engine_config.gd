@@ -1,4 +1,4 @@
-class_name EngineConfig extends Object
+class_name NebulaConfig extends Object
 
 static var config_path: String = OS.get_user_data_dir()
 
@@ -11,21 +11,21 @@ static var config: Dictionary = {
 	"engine": {
 		"scale": 1.0,
 		"projects": [],
-		"default_project_path": ""
+		"default_project_path": "",
+		"default_game_path": "",
 	},
 	"debug": {
 		"max_logs": 20
 	}
 }
 
+
 static var scale: float:
 	get(): return config.engine.scale
 	set(val): 
 		config.engine.scale = val
 		Singleton.scale_changed.emit()
-static var projects: Array:
-	get(): return config.engine.projects
-	set(val): config.engine.projects = val
+static var projects: Dictionary = {}
 static var max_logs: int:
 	get(): return config.debug.max_logs
 	set(val): config.debug.max_logs = val
@@ -37,7 +37,14 @@ static var default_project_path: String:
 			return config.engine.default_project_path
 	set(new_path):
 		config.engine.default_project_path = new_path
-
+static var default_game_path: String:
+	get():
+		if !config.engine.get("default_game_path"):
+			return config_path.path_join("extracted_games/")
+		else:
+			return config.engine.default_game_path
+	set(new_path):
+		config.engine.default_game_path = new_path
 
 
 static func exists() -> bool:

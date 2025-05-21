@@ -1,4 +1,5 @@
 class_name WBFS extends Object
+
 ## Refer to nebula-md/documentation for more documentation and extra sources:
 ## https://github.com/cruglet/nebula-md/tree/documentation
 
@@ -6,7 +7,7 @@ const ERROR_HEADER: String = "[color=red]Error parsing WBFS file.\n[/color]"
 const BLOCK_SIZE: int = 256 * 1024
 
 var sector_size: int = -1
-# this could be an array technically but I'm not 100% sure if all WBFS
+# technically this could be an array but I'm not 100% sure if all WBFS
 # files have their wlba table in ascending numerical order so just in
 # case ima do it like this
 var wlba_map: Dictionary[int, int] = {}
@@ -14,12 +15,32 @@ var disc_file: FileAccess
 var total_blocks: int
 var game_id: String
 
+
+static func is_valid(file: FileAccess) -> bool:
+	file.seek(0)
+	return file.get_buffer(4).get_string_from_ascii() == "WBFS"
+
+
+static func get_game_id(wbfs_file: FileAccess) -> String:
+	var wbfs_game_id: String = ""
+	var original_position: int = wbfs_file.get_position()
+	
+	wbfs_file.seek(0x9)
+	var disc_header_offset: int = 1 << wbfs_file.get_8() #0x9
+	wbfs_file.seek(disc_header_offset)
+	wbfs_game_id = wbfs_file.get_buffer(0x6).get_string_from_ascii()
+	
+	wbfs_file.seek(original_position)
+	return wbfs_game_id
+
+
 static func open(wbfs_file: FileAccess) -> WBFS:
 	var wbfs: WBFS = WBFS.new()
 	
 	wbfs.disc_file = wbfs_file
 	
 	#region WBFS Header Parsing
+	wbfs_file.seek(0)
 	#0x0-0x4
 	if !wbfs_file.get_buffer(4).get_string_from_ascii() == "WBFS":
 		Singleton.error.emit(ERROR_HEADER + "WBFS magic could not be found, please make sure\n you are opening a valid *.wbfs file.", "Ok", false)
@@ -107,6 +128,7 @@ func get_data(address: int, size: int) -> PackedByteArray:
 	disc_file.seek(wbfs_address)
 	var buf: PackedByteArray = disc_file.get_buffer(size)
 	return buf
+	
 
 
 func reconstruct(path: String) -> void:
