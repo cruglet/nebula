@@ -16,7 +16,7 @@ run/main_scene="uid://cjwbubtayvgy4"
 run/print_header=false
 config/use_custom_user_dir=true
 config/custom_user_dir_name="nebula"
-config/features=PackedStringArray("4.4", "GL Compatibility")
+config/features=PackedStringArray("4.5", "GL Compatibility")
 boot_splash/bg_color=Color(0.117647, 0.121569, 0.137255, 1)
 boot_splash/fullsize=false
 boot_splash/use_filter=false
@@ -25,7 +25,7 @@ config/icon="uid://d1ylps8bpuv1s"
 
 [autoload]
 
-Singleton="*res://globals/singleton.gd"
+Singleton="*res://globals/singleton/singleton.tscn"
 EventBus="*res://globals/event_bus.gd"
 
 [debug]
@@ -41,6 +41,7 @@ gdscript/warnings/narrowing_conversion=0
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/subwindows/embed_subwindows=false
 display_server/driver.linuxbsd="wayland"
 
 [file_customization]

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="14.915915"
+   height="14.912332"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="matrix(0.05961576,0,0,0.05961576,1.4955977,1.4941233)">
+    <rect
+       style="fill:#ffffff;stroke-width:8.42105"
+       id="rect1"
+       width="99.455284"
+       height="61.119743"
+       x="-0.014966556"
+       y="0.003741639"
+       ry="6.0480137" />
+    <rect
+       style="fill:#ffffff;stroke-width:8.24899"
+       id="rect1-5"
+       width="95.432526"
+       height="61.119743"
+       x="104.54504"
+       y="0.26527134"
+       ry="6.0480137" />
+    <rect
+       style="fill:#ffffff;stroke-width:8.62599"
+       id="rect2"
+       width="101.61048"
+       height="62.7705"
+       x="51.279156"
+       y="68.12397"
+       ry="6.2113619" />
+    <rect
+       style="fill:#ffffff;stroke-width:8.30491"
+       id="rect3"
+       width="97.30011"
+       height="60.76215"
+       x="-0.014966556"
+       y="138.82039"
+       ry="6.0126286" />
+    <rect
+       style="fill:#ffffff;stroke-width:8.33654"
+       id="rect4"
+       width="98.042572"
+       height="60.76215"
+       x="101.93501"
+       y="139.24977"
+       ry="6.0126286" />
+    <rect
+       style="fill:#ffffff;stroke-width:5.56701"
+       id="rect5"
+       width="42.321873"
+       height="62.7705"
+       x="157.71939"
+       y="68.12397"
+       ry="6.2113619" />
+    <rect
+       style="fill:#ffffff;stroke-width:5.80589"
+       id="rect6"
+       width="46.385727"
+       height="62.291569"
+       x="0.15436499"
+       y="68.363434"
+       ry="6.16397" />
+  </g>
+</svg>

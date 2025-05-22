@@ -1,0 +1,260 @@
+[gd_scene load_steps=8 format=3 uid="uid://bcbgbl22p46fl"]
+
+[ext_resource type="Script" uid="uid://bcmxro3cqkrlh" path="res://scenes/editor/toast_notification/toast_notification.gd" id="1_drxwk"]
+[ext_resource type="Script" uid="uid://c7pif0vn5pkyb" path="res://scenes/editor/toast_notification/toast_timer.gd" id="2_sdcn1"]
+[ext_resource type="Script" uid="uid://12yei1wficup" path="res://scenes/editor/toast_notification/toast_interaction.gd" id="3_s8s36"]
+
+[sub_resource type="Animation" id="Animation_s8s36"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:anchor_left")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(0.3),
+"update": 0,
+"values": [1.115]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:anchor_right")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(0.3),
+"update": 0,
+"values": [1.515]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:anchor_top")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0650741]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:anchor_bottom")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.066]
+}
+
+[sub_resource type="Animation" id="Animation_sdcn1"]
+resource_name = "enter"
+length = 0.3
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:anchor_left")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 0,
+"values": [1.115, 0.715]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:anchor_right")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(0.3, 1),
+"update": 0,
+"values": [1.515, 0.979]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:anchor_top")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0650741]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:anchor_bottom")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.066]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.296667),
+"transitions": PackedFloat32Array(0.6, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Logic/ToastTimer")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_begin"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_s206b"]
+resource_name = "exit"
+length = 0.25
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:anchor_top")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.233333),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [0.0650741, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:anchor_bottom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.233333),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [0.066, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.233333),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s8s36"]
+_data = {
+&"RESET": SubResource("Animation_s8s36"),
+&"enter": SubResource("Animation_sdcn1"),
+&"exit": SubResource("Animation_s206b")
+}
+
+[node name="ToastNotification" type="PanelContainer"]
+clip_children = 2
+anchors_preset = -1
+anchor_left = 1.115
+anchor_top = 0.0650741
+anchor_right = 1.515
+anchor_bottom = 0.066
+offset_left = -0.800049
+offset_top = -44.28
+offset_right = -0.680176
+offset_bottom = 45.72
+grow_horizontal = 0
+grow_vertical = 2
+theme_type_variation = &"nPanelToast"
+script = ExtResource("1_drxwk")
+
+[node name="Logic" type="Node" parent="."]
+
+[node name="ToastTimer" type="Node" parent="Logic" node_paths=PackedStringArray("toast_progress", "toast_header_label", "toast_description_label", "animation_player")]
+script = ExtResource("2_sdcn1")
+toast_progress = NodePath("../../ToastProgress")
+toast_header_label = NodePath("../../MarginContainer/VBoxContainer/HeaderLabel")
+toast_description_label = NodePath("../../MarginContainer/VBoxContainer/DescriptionLabel")
+animation_player = NodePath("../../AnimationPlayer")
+
+[node name="ToastInteraction" type="Node" parent="Logic" node_paths=PackedStringArray("toast_timer")]
+script = ExtResource("3_s8s36")
+toast_timer = NodePath("../ToastTimer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_s8s36")
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="HeaderLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Notification"
+
+[node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "This is a toast!"
+
+[node name="ToastProgress" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+theme_type_variation = &"nProgressBarFlat"
+show_percentage = false
+
+[connection signal="gui_input" from="." to="Logic/ToastInteraction" method="_on_toast_notification_gui_input"]

@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://oiawe7xv0wv4"]
+
+[ext_resource type="Theme" uid="uid://c4pym03mn38io" path="res://themes/editor_main.theme" id="1_5q37d"]
+[ext_resource type="Script" uid="uid://dl4pucm00ris7" path="res://util/ui/label.gd" id="2_vhnk4"]
+[ext_resource type="Script" uid="uid://6csax5x5f1lm" path="res://util/ui/button/button.gd" id="3_vhnk4"]
+[ext_resource type="Texture2D" uid="uid://b7k2jj1jlcxuc" path="res://modules/nsmbw/icons/level_icon.svg" id="3_ywy70"]
+
+[node name="PanelContainer" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"nPanelSecondary"
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="OpenGameLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("1_5q37d")
+theme_type_variation = &"nLabelSecondary"
+theme_override_font_sizes/font_size = 16
+text = "Open a game file:"
+horizontal_alignment = 1
+script = ExtResource("2_vhnk4")
+type = 1
+metadata/_custom_type_script = "uid://dl4pucm00ris7"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="OpenLevelButton" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 35)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_5q37d")
+theme_type_variation = &"nButtonSecondary"
+theme_override_constants/icon_max_width = 15
+text = "Open Level"
+icon = ExtResource("3_ywy70")
+script = ExtResource("3_vhnk4")
+type = 1
+mod_color = Color(0.67, 0.67, 0.67, 1)
+metadata/_custom_type_script = "uid://6csax5x5f1lm"

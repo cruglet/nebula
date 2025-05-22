@@ -28,7 +28,7 @@ static func open(path: String) -> WiiDisc:
 		DiscType.DISC_TYPE_ISO:
 			game_id = ISO.get_game_id(disc_file)
 		_:
-			Singleton.error.emit("Invalid disc file!\nPlease make sure you are opening a valid .wbfs file.")
+			Singleton.toast_notification("WBFS Error", "Invalid disc file! Please make sure you are opening a valid .wbfs file.")
 			return WiiDisc.new()
 	
 	new_disc.game_id = game_id
@@ -66,10 +66,10 @@ func extract(to: String) -> void:
 			var wbfs: WBFS = WBFS.open(disc_file)
 			iso.parse_wbfs(wbfs)
 		DiscType.DISC_TYPE_ISO:
-			Singleton.error.emit("ISO files are not supported yet!")
+			Singleton.toast_notification("Under construction!", "ISO files are not supported yet.")
 			return
 		DiscType.DISC_TYPE_NONE:
-			Singleton.error.emit("Invalid file detected.")
+			Singleton.toast_notification("File error", "Invalid/incompatible file detected.")
 			return
 	
 	for filename: String in iso.filesystem:
@@ -78,7 +78,7 @@ func extract(to: String) -> void:
 		if not DirAccess.dir_exists_absolute(new_file_location.get_base_dir()):
 			var error: Error = DirAccess.make_dir_recursive_absolute(new_file_location.get_base_dir())
 			if error != OK:
-				Singleton.error.emit("Could not create directory\n to extract the game content.")
+				Singleton.toast_notification("Error code %s" % error, "Could not create directory to extract the game content.")
 				return
 		
 		var new_file: FileAccess = FileAccess.open(new_file_location, FileAccess.WRITE)

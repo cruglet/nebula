@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlu6wocn2l6ll"]
+
+[ext_resource type="Script" uid="uid://bpji2k2l1q6og" path="res://globals/singleton/singleton.gd" id="1_f2yaf"]
+[ext_resource type="PackedScene" uid="uid://b4y6qmmkut260" path="res://scenes/editor/settings/editor_settings.scn" id="2_3rgwm"]
+[ext_resource type="Script" uid="uid://ohgheuqysyv7" path="res://globals/singleton/editor_settings.gd" id="2_l2p7v"]
+
+[node name="Singleton" type="Node" node_paths=PackedStringArray("editor_settings_window", "canvas_layer")]
+script = ExtResource("1_f2yaf")
+editor_settings_window = NodePath("EditorSettingsWindow")
+canvas_layer = NodePath("CanvasLayer")
+
+[node name="Logic" type="Node" parent="."]
+
+[node name="EditorSettingsWindow" type="Node" parent="Logic" node_paths=PackedStringArray("settings_window")]
+script = ExtResource("2_l2p7v")
+settings_window = NodePath("../../EditorSettingsWindow")
+
+[node name="EditorSettingsWindow" type="Window" parent="."]
+oversampling_override = 1.0
+initial_position = 2
+size = Vector2i(600, 395)
+visible = false
+wrap_controls = true
+unresizable = true
+force_native = true
+
+[node name="EditorSettings" parent="EditorSettingsWindow" instance=ExtResource("2_3rgwm")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[connection signal="close_requested" from="EditorSettingsWindow" to="Logic/EditorSettingsWindow" method="_on_settings_window_close_requested"]

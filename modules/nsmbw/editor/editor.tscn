@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ljkmme41v22c"]
 
-[ext_resource type="StyleBox" uid="uid://bprjp4178cqv5" path="res://resources/ui/panel/n_panel_secondary.stylebox" id="1_vmtcp"]
+[ext_resource type="PackedScene" uid="uid://oiawe7xv0wv4" path="res://modules/nsmbw/editor/empty_viewport/empty_viewport.tscn" id="2_tcmru"]
 
 [node name="Editor" type="Control"]
 layout_mode = 3
@@ -49,7 +49,7 @@ drag_to_rearrange_enabled = true
 
 [node name="Filesystem" type="Tree" parent="PanelContainer/MarginContainer/HSplitContainer/RightDock/TabContainer"]
 layout_mode = 2
-theme_override_styles/panel = ExtResource("1_vmtcp")
+theme_type_variation = &"nPanelSecondary"
 metadata/_tab_index = 0
 
 [node name="Properties" type="Control" parent="PanelContainer/MarginContainer/HSplitContainer/RightDock/TabContainer"]
@@ -72,38 +72,6 @@ grow_vertical = 2
 current_tab = 0
 drag_to_rearrange_enabled = true
 
-[node name="01-02,arc" type="SubViewportContainer" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer"]
+[node name="<empty>" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer" instance=ExtResource("2_tcmru")]
 layout_mode = 2
-stretch = true
 metadata/_tab_index = 0
-
-[node name="SubViewport" type="SubViewport" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer/01-02,arc"]
-handle_input_locally = false
-size = Vector2i(1688, 1008)
-render_target_update_mode = 4
-
-[node name="Pa0_kinopyo,arc" type="SubViewportContainer" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer"]
-visible = false
-layout_mode = 2
-stretch = true
-metadata/_tab_index = 1
-
-[node name="SubViewport" type="SubViewport" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer/Pa0_kinopyo,arc"]
-handle_input_locally = false
-size = Vector2i(2, 2)
-render_target_update_mode = 0
-
-[node name="Node2D" type="Node2D" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer/Pa0_kinopyo,arc/SubViewport"]
-
-[node name="mario,brres" type="SubViewportContainer" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer"]
-visible = false
-layout_mode = 2
-stretch = true
-metadata/_tab_index = 2
-
-[node name="SubViewport" type="SubViewport" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer/mario,brres"]
-handle_input_locally = false
-size = Vector2i(2, 2)
-render_target_update_mode = 0
-
-[node name="Node2D" type="Node2D" parent="PanelContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer/mario,brres/SubViewport"]

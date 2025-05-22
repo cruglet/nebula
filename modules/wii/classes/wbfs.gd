@@ -3,7 +3,7 @@ class_name WBFS extends Object
 ## Refer to nebula-md/documentation for more documentation and extra sources:
 ## https://github.com/cruglet/nebula-md/tree/documentation
 
-const ERROR_HEADER: String = "[color=red]Error parsing WBFS file.\n[/color]"
+const ERROR_HEADER: String = "Error parsing WBFS file."
 const BLOCK_SIZE: int = 256 * 1024
 
 var sector_size: int = -1
@@ -43,7 +43,7 @@ static func open(wbfs_file: FileAccess) -> WBFS:
 	wbfs_file.seek(0)
 	#0x0-0x4
 	if !wbfs_file.get_buffer(4).get_string_from_ascii() == "WBFS":
-		Singleton.error.emit(ERROR_HEADER + "WBFS magic could not be found, please make sure\n you are opening a valid *.wbfs file.", "Ok", false)
+		Singleton.toast_notification(ERROR_HEADER, "WBFS magic could not be found, please make sure\n you are opening a valid *.wbfs file.")
 		return wbfs
 	
 	var sectors: int = wbfs_file.get_32() #0x5-0x8
@@ -58,7 +58,7 @@ static func open(wbfs_file: FileAccess) -> WBFS:
 	# whether a WBFS slot is occupied, but realistically the first 
 	# one should be the only one that is parsed.
 	if wbfs_file.get_8() != 1:
-		Singleton.error.emit(ERROR_HEADER + "Could not find a game within the WBFS file.")
+		Singleton.toast_notification(ERROR_HEADER, "Could not find a game within the WBFS file.")
 	#endregion
 	
 	#region Disc Header
@@ -78,7 +78,7 @@ static func open(wbfs_file: FileAccess) -> WBFS:
 	var game_name: String = wbfs_file.get_buffer(64).get_string_from_ascii()
 	
 	if !(game_name and wbfs.game_id):
-		Singleton.error.emit(ERROR_HEADER + "Invalid/corrupted game file.")
+		Singleton.toast_notification(ERROR_HEADER, "Invalid/corrupted game file.")
 		return WBFS.new()
 	
 	var hashing_disabled: bool = bool(wbfs_file.get_8())
@@ -86,8 +86,7 @@ static func open(wbfs_file: FileAccess) -> WBFS:
 	#endregion
 	
 	if hashing_disabled or encryption_disabled:
-		Singleton.error.emit("Modified disc found")
-	
+		Singleton.toast_notification(ERROR_HEADER, "Modified disc found, aborting.")
 	
 	#region WLBA Table parsing
 	wbfs_file.seek(hd_sector_size + 256)
