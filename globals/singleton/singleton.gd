@@ -16,6 +16,7 @@ var COMMIT: String:
 	get:
 		return ""
 var formatted_version: String = Nebula.VERSION + "-" + Nebula.BRANCH
+var current_project: Nebula.Project
 var DEBUG_HEADER: String = \
 """\
 <=== Nebula Editor ===>
@@ -52,12 +53,12 @@ func toast_notification(header: String, description: String, timer: float = 4.0)
 
 func apply_scale(window: Window) -> void:
 	window.reset_size()
-	window.content_scale_factor = NebulaConfig.scale
+	window.content_scale_factor = Nebula.Config.Editor.scale
 
 
 func _apply_config() -> void:
-	get_window().content_scale_factor = NebulaConfig.scale
-	ProjectSettings.set("debug/file_logging/max_log_files", NebulaConfig.max_logs)
+	get_window().content_scale_factor = Nebula.Config.Editor.scale
+	ProjectSettings.set("debug/file_logging/max_log_files", Nebula.Config.Debug.max_logs)
 
 
 func _print_err(error_message: String, _t: String = "") -> void:

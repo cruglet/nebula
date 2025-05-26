@@ -3,10 +3,10 @@ extends Node
 @export var animation_player: AnimationPlayer
 
 func load_config() -> void:
-	if NebulaConfig.exists():
-		NebulaConfig.load()
+	if Nebula.Config.exists():
+		Nebula.Config.load()
 	else:
-		NebulaConfig.save()
+		Nebula.Config.save()
 	
 	animation_player.play("startup_finished")
 

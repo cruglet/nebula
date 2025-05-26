@@ -60,6 +60,11 @@ folder_colors={
 
 theme/custom="uid://c4pym03mn38io"
 
+[physics]
+
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
