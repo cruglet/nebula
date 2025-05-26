@@ -27,5 +27,6 @@ force_native = true
 [node name="EditorSettings" parent="EditorSettingsWindow" instance=ExtResource("2_3rgwm")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 99
 
 [connection signal="close_requested" from="EditorSettingsWindow" to="Logic/EditorSettingsWindow" method="_on_settings_window_close_requested"]

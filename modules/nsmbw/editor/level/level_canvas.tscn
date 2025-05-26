@@ -1,0 +1,93 @@
+[gd_scene load_steps=5 format=3 uid="uid://dc2ti7s0l6qia"]
+
+[ext_resource type="Script" uid="uid://cdypobp1qprci" path="res://modules/nsmbw/editor/level/load_level.gd" id="1_srqwu"]
+
+[sub_resource type="GDScript" id="GDScript_srqwu"]
+script/source = "extends Control
+
+@export var level: NSMBWLevel
+
+
+func _ready() -> void:
+	pass
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dykqn"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 5.0
+bg_color = Color(0.0383972, 0.0383972, 0.0383971, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_6uk7c"]
+blend_mode = 1
+
+[node name="LevelCanvas" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = SubResource("GDScript_srqwu")
+
+[node name="Logic" type="Node" parent="."]
+
+[node name="LoadLevel" type="Node" parent="Logic" node_paths=PackedStringArray("canvas")]
+script = ExtResource("1_srqwu")
+canvas = NodePath("../../GraphEdit")
+
+[node name="GraphEdit" type="GraphEdit" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/grid_major = Color(0.158472, 0.158472, 0.158472, 1)
+theme_override_colors/grid_minor = Color(0.0885599, 0.0885599, 0.0885599, 1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_dykqn")
+snapping_distance = 16
+zoom_min = 0.1
+zoom_max = 10.0
+zoom_step = 0.5
+show_zoom_label = true
+show_zoom_buttons = false
+show_grid_buttons = false
+show_arrange_button = false
+
+[node name="GridBox" type="Node2D" parent="GraphEdit" groups=["editor_immune"]]
+
+[node name="ColorRect" type="ColorRect" parent="GraphEdit/GridBox"]
+material = SubResource("CanvasItemMaterial_6uk7c")
+custom_minimum_size = Vector2(16384, 8192)
+offset_right = 16384.0
+offset_bottom = 8192.0
+mouse_filter = 2
+mouse_behavior_recursive = 1
+color = Color(0.0795586, 0.0846867, 0.0975096, 1)
+
+[node name="GridBoxTransform" type="GraphElement" parent="GraphEdit" groups=["editor_immune"]]
+layout_mode = 0
+mouse_behavior_recursive = 1
+draggable = false
+selectable = false
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="GraphEdit/GridBoxTransform"]
+remote_path = NodePath("../../GridBox")
+
+[node name="RemoteTransform2D2" type="RemoteTransform2D" parent="GraphEdit/GridBoxTransform"]
+
+[node name="BottomRight" type="GraphElement" parent="GraphEdit" groups=["editor_immune"]]
+layout_mode = 1
+offset_left = 16384.0
+offset_top = 8192.0
+offset_right = 16384.0
+offset_bottom = 8192.0
+position_offset = Vector2(16384, 8192)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="NSMBWSprite" load_steps=3 format=3 uid="uid://dng7q0mv0wshv"]
+
+[ext_resource type="Script" uid="uid://dfbncqcm4chpy" path="res://modules/nsmbw/classes/course/nsmbw_sprite.gd" id="1_uvw03"]
+[ext_resource type="Texture2D" uid="uid://bbuma4t651lnp" path="res://modules/nsmbw/textures/unknown_sprite/unknown_sprite.svg" id="2_p03uy"]
+
+[resource]
+script = ExtResource("1_uvw03")
+position = Vector2i(0, 0)
+type = 0
+data = 0
+texture = ExtResource("2_p03uy")
+size = Vector2i(16, 16)
+sprite_category = 2
+metadata/_custom_type_script = "uid://dfbncqcm4chpy"

@@ -36,6 +36,11 @@ enum ZONE_LIGHTING {
 	LAVA
 }
 
+
+static var stage_folder: String:
+	get():
+		return Nebula.Config.Editor.default_game_path.path_join("SMN#01").path_join("Stage")
+
 #region LEVELS
 ## Levels are seperated by a vector of hashmaps generated in rust. [br]
 ## Each index represents an area/subarea, where 0 is the primary area and each

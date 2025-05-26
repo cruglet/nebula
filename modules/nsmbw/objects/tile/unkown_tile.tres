@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="NSMBWTile" load_steps=3 format=3 uid="uid://b4cludkl2agxj"]
+
+[ext_resource type="Script" uid="uid://dqdgtpmcy5acm" path="res://modules/nsmbw/classes/course/nsmbw_tile.gd" id="1_1rwqg"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_1rwqg"]
+size = Vector2(16, 16)
+
+[resource]
+script = ExtResource("1_1rwqg")
+position = Vector2i(0, 0)
+size = Vector2i(0, 0)
+tileset = 0
+object_id = 0
+texture = SubResource("PlaceholderTexture2D_1rwqg")
+metadata/_custom_type_script = "uid://dqdgtpmcy5acm"

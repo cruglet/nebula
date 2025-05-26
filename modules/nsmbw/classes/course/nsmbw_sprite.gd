@@ -1,10 +1,24 @@
-class_name NSMBWSprite extends Object
-
-var position: Vector2i
-var type: int
-var data: int
+class_name NSMBWSprite extends Resource
 
 const OFFSET: int = 16
+
+enum SpriteCategory {
+	PLAYER,
+	ENEMY,
+	SPECIAL,
+}
+
+static var sprite_list: Array = []
+
+@export_group("Base Sprite Properties")
+@export var position: Vector2i
+@export var type: int
+@export var data: int
+@export_group("Editor Properties")
+@export var texture: Texture2D
+@export var size: Vector2i = Vector2i(16, 16)
+@export var sprite_category: SpriteCategory
+
 
 static func from_blocks(block_data: PackedByteArray) -> Array[NSMBWSprite]:
 	var sprites: Array[NSMBWSprite]

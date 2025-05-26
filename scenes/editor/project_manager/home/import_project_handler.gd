@@ -21,7 +21,7 @@ func _on_project_file_selected(path: String) -> void:
 		project = data
 		
 		if project.path.path_join("project.nebula") in Nebula.Config.Editor.projects:
-			Singleton.toast_notification("Project already exists", "You already have this project imported.")
+			Singleton.toast_notification("Import skipped", "This project has already been imported!")
 			return
 		
 		Nebula.Config.Editor.projects.insert(0, project.path.path_join("project.nebula"))
