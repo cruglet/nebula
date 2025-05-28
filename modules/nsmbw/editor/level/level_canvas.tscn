@@ -1,15 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://dc2ti7s0l6qia"]
+[gd_scene load_steps=7 format=4 uid="uid://dc2ti7s0l6qia"]
 
 [ext_resource type="Script" uid="uid://cdypobp1qprci" path="res://modules/nsmbw/editor/level/load_level.gd" id="1_srqwu"]
+[ext_resource type="Script" uid="uid://r1xlwiitnurn" path="res://modules/nsmbw/editor/level/load_tiles.gd" id="2_4xjtn"]
 
 [sub_resource type="GDScript" id="GDScript_srqwu"]
 script/source = "extends Control
 
 @export var level: NSMBWLevel
-
-
-func _ready() -> void:
-	pass
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dykqn"]
@@ -23,6 +20,9 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
+
+[sub_resource type="TileSet" id="TileSet_4xjtn"]
+tile_size = Vector2i(1, 1)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_6uk7c"]
 blend_mode = 1
@@ -39,9 +39,15 @@ script = SubResource("GDScript_srqwu")
 
 [node name="Logic" type="Node" parent="."]
 
-[node name="LoadLevel" type="Node" parent="Logic" node_paths=PackedStringArray("canvas")]
+[node name="LoadLevel" type="Node" parent="Logic" node_paths=PackedStringArray("canvas", "tile_loader")]
 script = ExtResource("1_srqwu")
 canvas = NodePath("../../GraphEdit")
+tile_loader = NodePath("LoadTiles")
+
+[node name="LoadTiles" type="Node" parent="Logic/LoadLevel" node_paths=PackedStringArray("canvas", "layers")]
+script = ExtResource("2_4xjtn")
+canvas = NodePath("../../../GraphEdit")
+layers = [NodePath("../../../GraphEdit/GridBox/Tiles/Layer 0"), NodePath("../../../GraphEdit/GridBox/Tiles/Layer 1"), NodePath("../../../GraphEdit/GridBox/Tiles/Layer 2")]
 
 [node name="GraphEdit" type="GraphEdit" parent="."]
 layout_mode = 1
@@ -53,7 +59,7 @@ grow_vertical = 2
 theme_override_colors/grid_major = Color(0.158472, 0.158472, 0.158472, 1)
 theme_override_colors/grid_minor = Color(0.0885599, 0.0885599, 0.0885599, 1)
 theme_override_styles/panel = SubResource("StyleBoxFlat_dykqn")
-snapping_distance = 16
+snapping_distance = 32
 zoom_min = 0.1
 zoom_max = 10.0
 zoom_step = 0.5
@@ -63,6 +69,18 @@ show_grid_buttons = false
 show_arrange_button = false
 
 [node name="GridBox" type="Node2D" parent="GraphEdit" groups=["editor_immune"]]
+
+[node name="Tiles" type="Node2D" parent="GraphEdit/GridBox"]
+
+[node name="Layer 0" type="TileMapLayer" parent="GraphEdit/GridBox/Tiles"]
+tile_map_data = PackedByteArray("AAASAAsAAAAAAAAAAAASAAwAAAAAAAEAAAATAAsAAAABAAAAAAATAAwAAAABAAEAAAASAA0AAAAAAAAAAAASAA4AAAAAAAEAAAATAA0AAAABAAAAAAATAA4AAAABAAEAAAASAA8AAAAAAAAAAAASABAAAAAAAAEAAAATAA8AAAABAAAAAAATABAAAAABAAEAAAAUAA8AAAAAAAAAAAAUABAAAAAAAAEAAAAVAA8AAAABAAAAAAAVABAAAAABAAEAAAAUABEAAAAAAAAAAAAUABIAAAAAAAEAAAAVABEAAAABAAAAAAAVABIAAAABAAEAAAAWABEAAAAAAAAAAAAWABIAAAAAAAEAAAAXABEAAAABAAAAAAAXABIAAAABAAEAAAAYABEAAAAAAAAAAAAYABIAAAAAAAEAAAAZABEAAAABAAAAAAAZABIAAAABAAEAAAAaABEAAAAAAAAAAAAaABIAAAAAAAEAAAAbABEAAAABAAAAAAAbABIAAAABAAEAAAAcAA8AAAAAAAAAAAAcABAAAAAAAAEAAAAdAA8AAAABAAAAAAAdABAAAAABAAEAAAAeAA8AAAAAAAAAAAAeABAAAAAAAAEAAAAfAA8AAAABAAAAAAAfABAAAAABAAEAAAAgAA8AAAAAAAAAAAAgABAAAAAAAAEAAAAhAA8AAAABAAAAAAAhABAAAAABAAEAAAAgAA0AAAAAAAAAAAAgAA4AAAAAAAEAAAAhAA0AAAABAAAAAAAhAA4AAAABAAEAAAAiAA0AAAAAAAAAAAAiAA4AAAAAAAEAAAAjAA0AAAABAAAAAAAjAA4AAAABAAEAAAAkAA0AAAAAAAAAAAAkAA4AAAAAAAEAAAAlAA0AAAABAAAAAAAlAA4AAAABAAEAAAAmAA0AAAAAAAAAAAAmAA4AAAAAAAEAAAAnAA0AAAABAAAAAAAnAA4AAAABAAEAAAAoAA0AAAAAAAAAAAAoAA4AAAAAAAEAAAApAA0AAAABAAAAAAApAA4AAAABAAEAAAAqAA0AAAAAAAAAAAAqAA4AAAAAAAEAAAArAA0AAAABAAAAAAArAA4AAAABAAEAAAA=")
+
+[node name="Layer 1" type="TileMapLayer" parent="GraphEdit/GridBox/Tiles"]
+
+[node name="Layer 2" type="TileMapLayer" parent="GraphEdit/GridBox/Tiles"]
+
+[node name="Sprites" type="TileMapLayer" parent="GraphEdit/GridBox"]
+tile_set = SubResource("TileSet_4xjtn")
 
 [node name="ColorRect" type="ColorRect" parent="GraphEdit/GridBox"]
 material = SubResource("CanvasItemMaterial_6uk7c")

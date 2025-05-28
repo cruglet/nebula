@@ -19,22 +19,22 @@ var tile_layers: Array[NSMBWTileLayer]
 const BLOCK_SIZE: int = 14
 const BLOCK_METADATA_SIZE: int = 8;
 
-static func parse(area: Dictionary) -> NSMBWArea:
+static func parse(area: Dictionary, level: NSMBWLevel) -> NSMBWArea:
 	
 	var blocks: Array[PackedByteArray] = _parse_blocks(area.data)
 	var new_area: NSMBWArea = NSMBWArea.new()
 	
 	new_area._read_area_settings(blocks[1])
-	new_area.tilesets = NSMBWTileset.from_blocks(blocks[0])
+	new_area.tilesets = NSMBWTileset.from_blocks(blocks[0], level)
 	new_area.sprites = NSMBWSprite.from_blocks(blocks[7])
 	new_area.entrances = NSMBWEntrance.from_blocks(blocks[6])
 	new_area.zones = NSMBWZone.from_blocks(blocks[9], blocks[2], blocks[4], blocks[5])
 	new_area.paths = NSMBWPath.from_blocks(blocks[12], blocks[13])
 	new_area.regions = NSMBWRegion.from_blocks(blocks[10])
 	new_area.tile_layers = NSMBWTileLayer.from_blocks(
-		area.get(&"layer0", PackedByteArray()), 
-		area.get(&"layer1", PackedByteArray()), 
-		area.get(&"layer2", PackedByteArray())
+		area.get(&"layer0", []), 
+		area.get(&"layer1", []), 
+		area.get(&"layer2", [])
 	)
 
 	return new_area

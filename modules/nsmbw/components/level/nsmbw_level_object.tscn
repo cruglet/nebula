@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhdvgco642i14"]
+
+[ext_resource type="Script" uid="uid://bkctl7xcyug4y" path="res://modules/nsmbw/components/level/nsmbw_level_object.gd" id="1_8s6c4"]
+
+[node name="NSMBWLevelObject" type="GraphElement"]
+offset_right = 32.0
+offset_bottom = 32.0
+script = ExtResource("1_8s6c4")
+
+[node name="Image" type="TextureRect" parent="."]
+layout_mode = 2

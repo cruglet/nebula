@@ -19,8 +19,7 @@ static func process_layer(data: PackedByteArray) -> NSMBWTileLayer:
 		var chunk: PackedByteArray = data.slice(tile_idx, tile_idx + OFFSET)
 		var tile: NSMBWTile = NSMBWTile.new()
 		
-		var tileset: int = int(chunk[0]) / 16
-		tile.tileset = tileset
+		tile.tileset = int(chunk[0]) / 16
 		tile.object_id = chunk[1]
 		tile.position.x = Packer.decode_u16_be(chunk, 2)
 		tile.position.y = Packer.decode_u16_be(chunk, 4)

@@ -121,7 +121,7 @@ func get_data(address: int, size: int) -> PackedByteArray:
 
 	if wbfs_block == -1:
 		push_error("Invalid WBFS block index for ISO block %d" % iso_block_index)
-		return PackedByteArray()
+		return []
 
 	var wbfs_address: int = wbfs_block * sector_size + sector_offset
 	disc_file.seek(wbfs_address)

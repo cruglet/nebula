@@ -1,8 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://dlu6wocn2l6ll"]
+[gd_scene load_steps=5 format=3 uid="uid://dlu6wocn2l6ll"]
 
 [ext_resource type="Script" uid="uid://bpji2k2l1q6og" path="res://globals/singleton/singleton.gd" id="1_f2yaf"]
 [ext_resource type="PackedScene" uid="uid://b4y6qmmkut260" path="res://scenes/editor/settings/editor_settings.scn" id="2_3rgwm"]
 [ext_resource type="Script" uid="uid://ohgheuqysyv7" path="res://globals/singleton/editor_settings.gd" id="2_l2p7v"]
+
+[sub_resource type="GDScript" id="GDScript_l2p7v"]
+script/source = "extends Node
+
+@onready var canvas_layer: CanvasLayer = $\"../../CanvasLayer\"
+
+
+
+#func _ready() -> void:
+	#await owner.ready
+	#var tr: TextureRect = TextureRect.new()
+	#var tileset_arc: ARC = ARC.open(\"/home/user/Downloads/Pa1_chika.arc\")
+	#var d: PackedByteArray = tileset_arc.filesystem.get(\"BG_tex\").get(\"Pa1_chika_tex.bin.LZ\")
+	#
+	#
+	#d = LZSS.decompress(d)
+	#
+	#tr.texture = Packer.rgb4a3_decode(d, Vector2i(1024, 256))
+	#
+	#canvas_layer.add_child(tr)
+	#get_tree().paused = true
+"
 
 [node name="Singleton" type="Node" node_paths=PackedStringArray("editor_settings_window", "canvas_layer")]
 script = ExtResource("1_f2yaf")
@@ -14,6 +36,9 @@ canvas_layer = NodePath("CanvasLayer")
 [node name="EditorSettingsWindow" type="Node" parent="Logic" node_paths=PackedStringArray("settings_window")]
 script = ExtResource("2_l2p7v")
 settings_window = NodePath("../../EditorSettingsWindow")
+
+[node name="dummy" type="Node" parent="Logic"]
+script = SubResource("GDScript_l2p7v")
 
 [node name="EditorSettingsWindow" type="Window" parent="."]
 oversampling_override = 1.0

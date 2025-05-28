@@ -8,7 +8,7 @@ var new_project_thread: Thread = Thread.new()
 func _enter_tree() -> void:
 	if not get_tree().root.has_user_signal(&"create_project"):
 		get_tree().root.add_user_signal(&"create_project")
-		get_tree().root.connect(&"create_project", create_project)
+	get_tree().root.connect(&"create_project", create_project)
 
 
 func create_project(project_name: String, project_path: String) -> void:

@@ -73,7 +73,7 @@ func extract_title_key_from_wbfs(wbfs: WBFS) -> void:
 ## [param size]: The size of data to retrieve, in bytes. [br]
 ## [param wbfs]: A WBFS instance
 func get_decrypted_data(offset: int, size: int, wbfs: WBFS = wbfs_data) -> PackedByteArray:
-	var decrypted_data: PackedByteArray = PackedByteArray()
+	var decrypted_data: PackedByteArray = []
 	
 	# Calculate which cluster contains our offset
 	var current_cluster: int = offset / DATA_BLOCK_SIZE

@@ -3,6 +3,8 @@ class_name NSMBWLevel extends Node
 @export var areas: Array[NSMBWArea]
 var archive_path: String
 
+
+## OPTIMIZE
 static func open(level_archive: ARC) -> NSMBWLevel:
 	var base_regex: RegEx = RegEx.new()
 	var layer_regex: RegEx = RegEx.new()
@@ -40,6 +42,6 @@ static func open(level_archive: ARC) -> NSMBWLevel:
 	level.archive_path = level_archive.path
 	
 	for area: String in level_data:
-		level.areas.append(NSMBWArea.parse(level_data[area]))
+		level.areas.append(NSMBWArea.parse(level_data[area], level))
 	
 	return level
