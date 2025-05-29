@@ -95,23 +95,46 @@ func _load_tiles(area_num: int) -> void:
 			
 			if not object_patterns.has(tile.tileset):
 				continue
-				
-			var patterns_array: Array = object_patterns[tile.tileset]
 			
-			if tile.object_id >= patterns_array.size():
-				continue
-				
-			var tilemap_pattern: TileMapPattern = patterns_array[tile.object_id]
-			
+			_place_tile(current_tile_layer, tile)
+			#
+			#if not object_patterns.has(tile.tileset):
+				#continue
+				#
+			#var patterns_array: Array = object_patterns[tile.tileset]
+			#
+			#if tile.object_id >= patterns_array.size():
+				#continue
+				#
+			#var tilemap_pattern: TileMapPattern = patterns_array[tile.object_id]
+			#
 			# Only set pattern if it's not null
-			if tilemap_pattern != null:
+			#if tilemap_pattern != null:
+				
 				
 				# Set individual cells from the pattern
-				for pattern_y: int in range(tilemap_pattern.get_size().y):
-					for pattern_x: int in range(tilemap_pattern.get_size().x):
-						var cell_pos: Vector2i = tile.position + Vector2i(pattern_x, pattern_y)
-						var source_id: int = tilemap_pattern.get_cell_source_id(Vector2i(pattern_x, pattern_y))
-						var atlas_coords: Vector2i = tilemap_pattern.get_cell_atlas_coords(Vector2i(pattern_x, pattern_y))
-						
-						if source_id != -1:
-							layers[current_tile_layer].set_cell(cell_pos, source_id, atlas_coords)
+				#for pattern_y: int in range(tilemap_pattern.get_size().y):
+					#for pattern_x: int in range(tilemap_pattern.get_size().x):
+						#var cell_pos: Vector2i = tile.position + Vector2i(pattern_x, pattern_y)
+						#var source_id: int = tilemap_pattern.get_cell_source_id(Vector2i(pattern_x, pattern_y))
+						#var atlas_coords: Vector2i = tilemap_pattern.get_cell_atlas_coords(Vector2i(pattern_x, pattern_y))
+						#
+						#if source_id != -1:
+							#layers[current_tile_layer].set_cell(cell_pos, source_id, atlas_coords)
+
+
+func _place_tile(layer: int, tile: NSMBWTile) -> void:
+	var pattern: TileMapPattern = TileMapPattern.new()
+	
+	if object_patterns.has(tile.tileset) and object_patterns.get(tile.tileset) and tile.object_id < object_patterns.get(tile.tileset).size():
+		pattern = object_patterns.get(tile.tileset)[tile.object_id]
+	else:
+		return
+	
+	if !pattern:
+		return
+	
+	var pos_offset: Vector2i = tile.position
+	for cell_x: int in range(tile.size.x):
+		for cell_y: int in range(tile.size.y):
+			layers[layer].set_cell(pos_offset + Vector2i(cell_x, cell_y), tile.tileset, pattern.get_cell_atlas_coords(Vector2i(cell_x, cell_y) % pattern.get_size()))
