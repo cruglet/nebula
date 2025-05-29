@@ -83,9 +83,9 @@ tile_set = SubResource("TileSet_4xjtn")
 
 [node name="ColorRect" type="ColorRect" parent="GraphEdit/GridBox"]
 material = SubResource("CanvasItemMaterial_6uk7c")
-custom_minimum_size = Vector2(16384, 8192)
-offset_right = 16384.0
-offset_bottom = 8192.0
+custom_minimum_size = Vector2(24576, 12288)
+offset_right = 24576.0
+offset_bottom = 12288.0
 mouse_filter = 2
 mouse_behavior_recursive = 1
 color = Color(0.0795586, 0.0846867, 0.0975096, 1)
@@ -103,8 +103,10 @@ remote_path = NodePath("../../GridBox")
 
 [node name="BottomRight" type="GraphElement" parent="GraphEdit" groups=["editor_immune"]]
 layout_mode = 1
-offset_left = 16384.0
-offset_top = 8192.0
-offset_right = 16384.0
-offset_bottom = 8192.0
-position_offset = Vector2(16384, 8192)
+offset_left = 24576.0
+offset_top = 12288.0
+offset_right = 24576.0
+offset_bottom = 12288.0
+position_offset = Vector2(24576, 12288)
+draggable = false
+selectable = false
