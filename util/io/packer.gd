@@ -122,58 +122,48 @@ static func prepare_rgb4a3_luts() -> Array[PackedInt32Array]:
 	var result: Array[PackedInt32Array] = [rgb4a3lut, rgb4a3lut_no_alpha]
 	return result
 
-static func rgb4a3_decode(tex: PackedByteArray, dimensions: Vector2i, use_alpha: bool = true) -> ImageTexture:
+static func rgb4a3_decode(tex: PackedByteArray, use_alpha: bool) -> ImageTexture:
 	var luts: Array[PackedInt32Array] = prepare_rgb4a3_luts()
 	var rgb4a3lut: PackedInt32Array = luts[0]
 	var rgb4a3lut_no_alpha: PackedInt32Array = luts[1]
 	var lut: PackedInt32Array = rgb4a3lut if use_alpha else rgb4a3lut_no_alpha
-	
-	var width: int = dimensions.x
-	var height: int = dimensions.y
-	var total_pixels: int = width * height
-	
-	var dest: PackedInt32Array = []
-	dest.resize(total_pixels)
-	
-	for i: int in range(total_pixels):
-		dest[i] = 0x00000000
-	
+
+	var tx: int = 0
+	var ty: int = 0
 	var tex_index: int = 0
-	var blocks_x: int = width / 4
-	var blocks_y: int = height / 4
-	
-	for block_y: int in range(blocks_y):
-		for block_x: int in range(blocks_x):
-			var base_x: int = block_x * 4
-			var base_y: int = block_y * 4
-			
-			for local_y: int in range(4):
-				for local_x: int in range(4):
-					if tex_index < tex.size() - 1:
-						var val1: int = tex[tex_index]
-						tex_index += 1
-						var val2: int = tex[tex_index]
-						tex_index += 1
-						
-						var pixel_value: int = (val1 << 8) | val2
-						
-						if pixel_value < lut.size():
-							var pixel_x: int = base_x + local_x
-							var pixel_y: int = base_y + local_y
-							
-							if pixel_x < width and pixel_y < height:
-								var dest_index: int = pixel_x + pixel_y * width
-								dest[dest_index] = lut[pixel_value]
-						else:
-							print("Warning: Invalid LUT index: ", pixel_value)
-					else:
-						print("Warning: Not enough texture data")
-						break
-	
-	var img_data: PackedByteArray = []
-	img_data.resize(total_pixels * 4)
-	
-	for i: int in range(total_pixels):
+	var dest: PackedInt32Array = PackedInt32Array()
+	dest.resize(262144)
+
+	for i: int in range(16384):
+		var temp1: int = (i / 256) % 8
+		if temp1 == 0 or temp1 == 7:
+			for skip: int in range(32):
+				tex_index += 1
+		else:
+			var temp2: int = i % 8
+			if temp2 == 0 or temp2 == 7:
+				for skip: int in range(32):
+					tex_index += 1
+			else:
+				for y: int in range(ty, ty + 4):
+					for x: int in range(tx, tx + 4):
+						if tex_index < tex.size() and tex_index + 1 < tex.size():
+							var val1: int = tex[tex_index]
+							tex_index += 1
+							var val2: int = tex[tex_index]
+							tex_index += 1
+							var pixel_value: int = (val1 << 8) | val2
+							if pixel_value < lut.size():
+								dest[x + y * 1024] = lut[pixel_value]
+		tx += 4
+		if tx >= 1024:
+			tx = 0
+			ty += 4
+
+	var img_data: PackedByteArray = PackedByteArray()
+	img_data.resize(1024 * 256 * 4)
+
+	for i: int in range(dest.size()):
 		var pixel: int = dest[i]
 		var a: int = (pixel >> 24) & 0xFF
 		var r: int = (pixel >> 16) & 0xFF
@@ -185,8 +175,8 @@ static func rgb4a3_decode(tex: PackedByteArray, dimensions: Vector2i, use_alpha:
 		img_data[byte_index + 1] = g
 		img_data[byte_index + 2] = b
 		img_data[byte_index + 3] = a
-	
-	var image: Image = Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, img_data)
+
+	var image: Image = Image.create_from_data(1024, 256, false, Image.FORMAT_RGBA8, img_data)
 	var texture: ImageTexture = ImageTexture.new()
 	texture.set_image(image)
 	return texture

@@ -26,7 +26,7 @@ func load_tiles(area_num: int) -> void:
 
 
 func _load_tilesets(area_num: int) -> void:
-	tileset.tile_size = Vector2i(32, 32)
+	tileset.tile_size = Vector2i(24, 24)
 	var current_tileset: int = 0
 	for nsmbw_tileset: NSMBWTileset in level.areas[area_num].tilesets:
 		var patterns: Array[TileMapPattern] = []
@@ -35,7 +35,7 @@ func _load_tilesets(area_num: int) -> void:
 		patterns.resize(nsmbw_tileset.objects.size())
 		
 		tileset_atlas.texture = nsmbw_tileset.texture
-		tileset_atlas.texture_region_size = Vector2i(32, 32)
+		tileset_atlas.texture_region_size = Vector2i(24, 24)
 		
 		# Create tiles in the atlas source first
 		if nsmbw_tileset.texture:
@@ -49,8 +49,8 @@ func _load_tilesets(area_num: int) -> void:
 					tileset_atlas.create_tile(atlas_coords)
 			
 			# Set the margins and separation if needed
-			tileset_atlas.margins = Vector2i(0, 0)
-			tileset_atlas.separation = Vector2i(0, 0)
+			tileset_atlas.margins = Vector2i(4, 4)
+			tileset_atlas.separation = Vector2i(8, 8)
 		
 		# Parse objects as TileMapPatterns
 		for object_index: int in range(nsmbw_tileset.objects.size()):
@@ -68,11 +68,10 @@ func _load_tilesets(area_num: int) -> void:
 				for x: int in range(object[y].size()):
 					var atlas_index: int = object[y][x].atlas_index
 					var texture_size: Vector2i = nsmbw_tileset.texture.get_size()
-					var tiles_per_row: int = texture_size.x / 32
 					
 					var atlas_pos: Vector2i = Vector2i(
-						atlas_index % tiles_per_row,
-						atlas_index / tiles_per_row
+						atlas_index % 32,
+						atlas_index / 32
 					)
 					
 					# Verify the atlas position exists

@@ -96,6 +96,7 @@ theme_override_constants/separation = 0
 split_offset = 200
 
 [node name="RightDock" type="Control" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer"]
+visible = false
 layout_mode = 2
 theme_type_variation = &"nPanelSecondary"
 

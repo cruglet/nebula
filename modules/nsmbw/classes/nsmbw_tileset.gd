@@ -36,7 +36,7 @@ static func from_blocks(block_data: PackedByteArray, level: NSMBWLevel) -> Array
 					if key.ends_with(".LZ"):
 						texture_data = LZSS.decompress(texture_data)
 					
-					tileset.texture = Packer.rgb4a3_decode(texture_data, Vector2i(1024, 256))
+					tileset.texture = Packer.rgb4a3_decode(texture_data, true)
 		
 		tilesets.set(i, tileset)
 	return tilesets
