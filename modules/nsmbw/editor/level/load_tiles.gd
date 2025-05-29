@@ -37,7 +37,6 @@ func _load_tilesets(area_num: int) -> void:
 		tileset_atlas.texture = nsmbw_tileset.texture
 		tileset_atlas.texture_region_size = Vector2i(24, 24)
 		
-		# Create tiles in the atlas source first
 		if nsmbw_tileset.texture:
 			var texture_size: Vector2i = nsmbw_tileset.texture.get_size()
 			var tiles_x: int = texture_size.x / 32
@@ -48,11 +47,9 @@ func _load_tilesets(area_num: int) -> void:
 					var atlas_coords: Vector2i = Vector2i(x, y)
 					tileset_atlas.create_tile(atlas_coords)
 			
-			# Set the margins and separation if needed
 			tileset_atlas.margins = Vector2i(4, 4)
 			tileset_atlas.separation = Vector2i(8, 8)
 		
-		# Parse objects as TileMapPatterns
 		for object_index: int in range(nsmbw_tileset.objects.size()):
 			var object: Array = nsmbw_tileset.objects[object_index]
 			
@@ -74,7 +71,6 @@ func _load_tilesets(area_num: int) -> void:
 						atlas_index / 32
 					)
 					
-					# Verify the atlas position exists
 					if tileset_atlas.has_tile(atlas_pos):
 						pattern.set_cell(Vector2i(x, y), current_tileset, atlas_pos)
 			
@@ -97,30 +93,6 @@ func _load_tiles(area_num: int) -> void:
 				continue
 			
 			_place_tile(current_tile_layer, tile)
-			#
-			#if not object_patterns.has(tile.tileset):
-				#continue
-				#
-			#var patterns_array: Array = object_patterns[tile.tileset]
-			#
-			#if tile.object_id >= patterns_array.size():
-				#continue
-				#
-			#var tilemap_pattern: TileMapPattern = patterns_array[tile.object_id]
-			#
-			# Only set pattern if it's not null
-			#if tilemap_pattern != null:
-				
-				
-				# Set individual cells from the pattern
-				#for pattern_y: int in range(tilemap_pattern.get_size().y):
-					#for pattern_x: int in range(tilemap_pattern.get_size().x):
-						#var cell_pos: Vector2i = tile.position + Vector2i(pattern_x, pattern_y)
-						#var source_id: int = tilemap_pattern.get_cell_source_id(Vector2i(pattern_x, pattern_y))
-						#var atlas_coords: Vector2i = tilemap_pattern.get_cell_atlas_coords(Vector2i(pattern_x, pattern_y))
-						#
-						#if source_id != -1:
-							#layers[current_tile_layer].set_cell(cell_pos, source_id, atlas_coords)
 
 
 func _place_tile(layer: int, tile: NSMBWTile) -> void:

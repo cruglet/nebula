@@ -85,8 +85,8 @@ func _parse_objects(data: PackedByteArray) -> Array:
 		if object_data.get("scale_behavior") >= 144:
 			is_slope = true
 		
-		if is_slope:
-			offset += 1
+		#if is_slope:
+			#offset += 1
 		
 		object_data.set("atlas_index", data.get(offset))
 		offset += 1
