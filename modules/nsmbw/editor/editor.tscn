@@ -13,26 +13,26 @@ layer = 5
 
 [node name="Dropdowns" type="Node" parent="Logic"]
 
-[node name="ProjectDropdown" type="Node" parent="Logic/Dropdowns" node_paths=PackedStringArray("project_dropdown")]
+[node name="ProjectPopup" type="Node" parent="Logic/Dropdowns" node_paths=PackedStringArray("project_popup")]
 script = ExtResource("1_m82o6")
-project_dropdown = NodePath("../../../PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/ProjectMenuButton")
+project_popup = NodePath("../../../PanelContainer/VBoxContainer/TopMarginContainer/MenuBar/Project")
 
-[node name="EditorDropdown" type="Node" parent="Logic/Dropdowns" node_paths=PackedStringArray("editor_dropdown")]
+[node name="EditorPopup" type="Node" parent="Logic/Dropdowns" node_paths=PackedStringArray("editor_popup")]
 script = ExtResource("2_m82o6")
-editor_dropdown = NodePath("../../../PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/EditorMenuButton")
+editor_popup = NodePath("../../../PanelContainer/VBoxContainer/TopMarginContainer/MenuBar/Editor")
 
 [node name="Editor" type="Node" parent="Logic"]
 
 [node name="ViewportTabHandler" type="Node" parent="Logic/Editor" node_paths=PackedStringArray("viewport_container")]
 script = ExtResource("3_022ac")
-viewport_container = NodePath("../../../PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer")
+viewport_container = NodePath("../../../PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/PrimaryDock/TabContainer")
 
 [node name="Open" type="Node" parent="Logic"]
 
 [node name="OpenLevel" type="Node" parent="Logic/Open" node_paths=PackedStringArray("open_level_dialog", "viewport_tab_container")]
 script = ExtResource("4_022ac")
 open_level_dialog = NodePath("../../../OpenLevelDialog")
-viewport_tab_container = NodePath("../../../PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer")
+viewport_tab_container = NodePath("../../../PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/PrimaryDock/TabContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 15
@@ -45,42 +45,34 @@ theme_type_variation = &"nPanelPrimaryDarkFlat"
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
 
-[node name="MarginContainer2" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+[node name="TopMarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 5
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer2"]
+[node name="MenuBar" type="MenuBar" parent="PanelContainer/VBoxContainer/TopMarginContainer"]
 layout_mode = 2
+theme_override_constants/h_separation = 10
 
-[node name="ProjectMenuButton" type="MenuButton" parent="PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-size_flags_vertical = 4
-text = "Project"
-flat = false
-switch_on_hover = true
+[node name="Project" type="PopupMenu" parent="PanelContainer/VBoxContainer/TopMarginContainer/MenuBar"]
+oversampling_override = 1.0
+size = Vector2i(127, 100)
 item_count = 3
-popup/item_0/text = "Open Level"
-popup/item_0/id = 1
-popup/item_1/id = 0
-popup/item_1/separator = true
-popup/item_2/text = "Close Project"
-popup/item_2/id = 2
+item_0/text = "Open Level"
+item_0/id = 1
+item_1/id = 0
+item_1/separator = true
+item_2/text = "Close Project"
+item_2/id = 2
 
-[node name="EditorMenuButton" type="MenuButton" parent="PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-size_flags_vertical = 4
-text = "Editor"
-flat = false
-switch_on_hover = true
+[node name="Editor" type="PopupMenu" parent="PanelContainer/VBoxContainer/TopMarginContainer/MenuBar"]
+auto_translate_mode = 1
 item_count = 1
-popup/item_0/text = "Settings"
-popup/item_0/id = 1
+item_0/text = "Open Settings"
+item_0/id = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+[node name="PrimaryMarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 12
@@ -88,19 +80,19 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="HSplitContainer" type="HSplitContainer" parent="PanelContainer/VBoxContainer/MarginContainer"]
+[node name="HSplitContainer" type="HSplitContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer"]
 layout_direction = 3
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 split_offset = 200
 
-[node name="RightDock" type="Control" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer"]
+[node name="RightDock" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer"]
 visible = false
 layout_mode = 2
 theme_type_variation = &"nPanelSecondary"
 
-[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/RightDock"]
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock"]
 layout_direction = 2
 layout_mode = 1
 anchors_preset = 15
@@ -111,21 +103,21 @@ grow_vertical = 2
 current_tab = 0
 drag_to_rearrange_enabled = true
 
-[node name="Filesystem" type="Tree" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/RightDock/TabContainer"]
+[node name="Filesystem" type="Tree" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock/TabContainer"]
 layout_mode = 2
 theme_type_variation = &"nPanelSecondary"
 metadata/_tab_index = 0
 
-[node name="Properties" type="Control" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/RightDock/TabContainer"]
+[node name="Properties" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock/TabContainer"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="PrimaryDock" type="Control" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer"]
+[node name="PrimaryDock" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer"]
 custom_minimum_size = Vector2(700, 0)
 layout_mode = 2
 
-[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/PrimaryDock"]
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/PrimaryDock"]
 layout_direction = 2
 layout_mode = 1
 anchors_preset = 15
@@ -133,10 +125,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/icon_max_width = 16
 current_tab = 0
 drag_to_rearrange_enabled = true
 
-[node name="<empty>" parent="PanelContainer/VBoxContainer/MarginContainer/HSplitContainer/PrimaryDock/TabContainer" instance=ExtResource("2_tcmru")]
+[node name="<empty>" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/PrimaryDock/TabContainer" instance=ExtResource("2_tcmru")]
 layout_mode = 2
 metadata/_tab_index = 0
 

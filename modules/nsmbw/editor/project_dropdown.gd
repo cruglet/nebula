@@ -5,12 +5,12 @@ enum {
 	CLOSE_PROJECT = 2,
 }
 
-@export var project_dropdown: MenuButton
+@export var project_popup: PopupMenu
 
 
 
 func _ready() -> void:
-	project_dropdown.get_popup().id_pressed.connect(_pressed)
+	project_popup.id_pressed.connect(_pressed)
 
 
 func _pressed(i: int) -> void:

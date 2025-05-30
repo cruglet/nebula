@@ -4,12 +4,12 @@ enum {
 	SETTINGS = 1,
 }
 
-@export var editor_dropdown: MenuButton
+@export var editor_popup: PopupMenu
 
 
 
 func _ready() -> void:
-	editor_dropdown.get_popup().id_pressed.connect(_pressed)
+	editor_popup.id_pressed.connect(_pressed)
 
 
 func _pressed(i: int) -> void:
