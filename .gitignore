@@ -18,6 +18,8 @@ godot/*.godot
 godot/*.tmp
 godot/*.temp
 
+!godot/project.godot
+
 *.DS_Store
 *.swp
 *.swo
