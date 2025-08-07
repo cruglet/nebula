@@ -1,0 +1,46 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Nebula"
+run/main_scene="uid://ddi8gbxaol4ek"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Nebula"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+boot_splash/bg_color=Color(0.14901961, 0.16078432, 0.18039216, 1)
+boot_splash/image="uid://dwiplk54h3dxp"
+config/icon="uid://b4u8watb4m277"
+
+[debug]
+
+file_logging/enable_file_logging=true
+file_logging/log_path="user://logs/nebula.log"
+gdscript/warnings/untyped_declaration=2
+gdscript/warnings/inferred_declaration=2
+gdscript/warnings/integer_division=0
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/energy_saving/keep_screen_on=false
+window/subwindows/embed_subwindows=false
+
+[file_customization]
+
+folder_colors={
+"res://meta/": "yellow"
+}
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
