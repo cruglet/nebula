@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://dm0udoa17mh36"]
+
+[ext_resource type="Texture2D" uid="uid://bav0pfaiv4uks" path="res://meta/icons/projects.svg" id="1_4nll5"]
+[ext_resource type="Script" uid="uid://i0qf7w1buvuc" path="res://components/ui/icon_sidebar_button/icon_sidebar_button.gd" id="2_wojcx"]
+
+[node name="IconSidebarButton" type="Button" node_paths=PackedStringArray("button_label", "panel_container", "button_label_size")]
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+theme_type_variation = &"nButtonIconSidebar"
+toggle_mode = true
+icon = ExtResource("1_4nll5")
+icon_alignment = 1
+script = ExtResource("2_wojcx")
+button_label = NodePath("PanelContainer/MarginContainer/ButtonLabel")
+panel_container = NodePath("PanelContainer")
+button_label_size = NodePath("ButtonLabelSize")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 2.0
+offset_top = -15.0
+offset_right = 101.0
+offset_bottom = 18.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_type_variation = &"nPanelSecondary"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+clip_children = 2
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
+
+[node name="ButtonLabel" type="Label" parent="PanelContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Project List"
+clip_text = true
+
+[node name="ButtonLabelSize" type="Label" parent="."]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 1.0
+offset_bottom = 10.0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="toggled" from="." to="." method="_on_toggled"]

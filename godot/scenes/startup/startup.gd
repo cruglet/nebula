@@ -39,4 +39,5 @@ func _after_startup_animation() -> void:
 
 
 func _after_startup_finished_animation() -> void:
-	pass
+	get_window().content_scale_factor = DisplayServer.screen_get_scale(DisplayServer.window_get_current_screen())
+	get_tree().change_scene_to_file("uid://b0vmxnd68vv2l")

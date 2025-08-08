@@ -39,6 +39,7 @@ window/subwindows/embed_subwindows=false
 [file_customization]
 
 folder_colors={
+"res://components/": "orange",
 "res://meta/": "yellow",
 "res://scenes/": "blue",
 "res://themes/": "pink"
