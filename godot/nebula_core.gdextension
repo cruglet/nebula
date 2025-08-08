@@ -3,6 +3,9 @@ entry_symbol = "gdext_rust_init"
 compatibility_minimum = 4.1
 reloadable = true
 
+[icons]
+Module = "uid://ksbs0rl6gsvh"
+
 [libraries]
 linux.debug.x86_64 =     "res://../rust/target/debug/libnebula_core.so"
 linux.release.x86_64 =   "res://../rust/target/release/libnebula_core.so"
