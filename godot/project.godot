@@ -11,11 +11,13 @@ config_version=5
 [application]
 
 config/name="Nebula"
-run/main_scene="uid://ddi8gbxaol4ek"
+run/main_scene="uid://byov0dkgv84xy"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Nebula"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 boot_splash/bg_color=Color(0.14901961, 0.16078432, 0.18039216, 1)
+boot_splash/fullsize=false
+boot_splash/use_filter=false
 boot_splash/image="uid://dwiplk54h3dxp"
 config/icon="uid://b4u8watb4m277"
 
@@ -29,16 +31,23 @@ gdscript/warnings/integer_division=0
 
 [display]
 
-window/size/viewport_width=1280
-window/size/viewport_height=720
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/energy_saving/keep_screen_on=false
 window/subwindows/embed_subwindows=false
 
 [file_customization]
 
 folder_colors={
-"res://meta/": "yellow"
+"res://meta/": "yellow",
+"res://scenes/": "blue",
+"res://themes/": "pink"
 }
+
+[gui]
+
+theme/custom="uid://c88dtor8rotnt"
+theme/custom_font="uid://c4h3yueirncqh"
 
 [rendering]
 
