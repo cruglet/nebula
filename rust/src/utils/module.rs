@@ -7,14 +7,17 @@ use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource
 #[class(base=Resource, tool)]
 struct Module {
     #[export] name: GString,
-    #[export] group: GString,
+    #[export(multiline)] description: GString,
     #[export] authors: Array<GString>,
-    #[export] major_version: u32,
-    #[export] minor_version: u32,
-    #[export] patch_number: u32,
+    #[export] group: GString,
+    #[export] major_version: u8,
+    #[export] minor_version: u8,
+    #[export] patch_number: u8,
     #[export(file="*.tscn,*.scn*,*.res")] entry_scene: GString,
     #[export(dir)] module_folder: GString,
-    
+    #[export(file="*.png,*.jpg,*.jpeg,*.svg")] module_image: GString,
+    #[export(file="*.png,*.jpg,*.jpeg,*.svg")] project_image: GString,
+
     export_folder: GString,
     
     #[var(
@@ -32,6 +35,7 @@ impl IResource for Module {
     fn init(base: Base<Resource>) -> Self {
         Self {
             name: GString::new(),
+            description: GString::new(),
             group: GString::new(),
             authors: Array::new(),
             major_version: 0,
@@ -39,6 +43,8 @@ impl IResource for Module {
             patch_number: 0,
             entry_scene: GString::new(),
             module_folder: GString::new(),
+            module_image: GString::new(),
+            project_image: GString::new(),
             export_folder: GString::from("res://build/modules"),
             _generate_mod_fn: Callable::invalid(),
             base,
@@ -66,6 +72,13 @@ impl IResource for Module {
                 return true;
             }
         }
+
+        if property == StringName::from("project_image") {
+            if FileAccess::file_exists(&value.to_string()) {
+                self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+                return true;
+            }
+        }
         
         false
     }
@@ -78,13 +91,16 @@ impl Module {
         Gd::from_init_fn(|base| {
             Module {
                 name: GString::new(),
+                description: GString::new(),
                 group: GString::new(),
                 authors: Array::new(),
                 major_version: 0,
                 minor_version: 0,
                 patch_number: 0,
                 entry_scene: GString::new(),
+                module_image: GString::new(),
                 module_folder: GString::new(),
+                project_image: GString::new(),
                 export_folder: GString::new(),
                 _generate_mod_fn: Callable::invalid(),
                 base,
@@ -138,19 +154,33 @@ impl Module {
             }
             
             if let Some(major_ver_variant) = pck_meta.get("major_version") {
-                if let Ok(major_ver) = major_ver_variant.try_to::<u32>() {
+                if let Ok(major_ver) = major_ver_variant.try_to::<u8>() {
                     module_data.set_major_version(major_ver);
                 }
             }
             
             if let Some(minor_ver_variant) = pck_meta.get("minor_version") {
-                if let Ok(minor_ver) = minor_ver_variant.try_to::<u32>() {
+                if let Ok(minor_ver) = minor_ver_variant.try_to::<u8>() {
                     module_data.set_minor_version(minor_ver);
+                }
+            }
+
+            if let Some(patch_num_variant) = pck_meta.get("patch_number") {
+                if let Ok(patch_num) = patch_num_variant.try_to::<u8>() {
+                    module_data.set_patch_number(patch_num);
                 }
             }
             
             if let Some(entry_scene) = pck_meta.get("entry_scene") {
                 module_data.set_entry_scene(entry_scene.to_string().into());
+            }
+
+            if let Some(project_image) = pck_meta.get("project_image") {
+                module_data.set_project_image(project_image.to_string().into());
+            }
+
+            if let Some(module_image) = pck_meta.get("module_image") {
+                module_data.set_module_image(module_image.to_string().into());
             }
         }
 
