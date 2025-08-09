@@ -1,8 +1,14 @@
+@tool
 extends Panel
 
 @export var content_container: Control
 @export var screen_label: Label
 @export var tab_button_container: TabButtonContainer
+@export var animation_player: AnimationPlayer
+
+
+func _ready() -> void:
+	animation_player.play(&"reveal_dashboard")
 
 
 func _on_tab_button_container_selection_changed(index: int, _from: int) -> void:

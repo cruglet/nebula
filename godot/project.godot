@@ -19,7 +19,7 @@ boot_splash/bg_color=Color(0.14901961, 0.16078432, 0.18039216, 1)
 boot_splash/fullsize=false
 boot_splash/use_filter=false
 boot_splash/image="uid://dwiplk54h3dxp"
-config/icon="uid://b4u8watb4m277"
+config/icon="uid://blv0vi1d3fpju"
 
 [debug]
 
@@ -34,7 +34,7 @@ gdscript/warnings/integer_division=0
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/energy_saving/keep_screen_on=false
-window/subwindows/embed_subwindows=false
+display_server/driver.linuxbsd="wayland"
 
 [file_customization]
 

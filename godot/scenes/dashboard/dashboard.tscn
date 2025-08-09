@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b0vmxnd68vv2l"]
+[gd_scene load_steps=12 format=3 uid="uid://b0vmxnd68vv2l"]
 
 [ext_resource type="PackedScene" uid="uid://ct15sak82m0y0" path="res://scenes/dashboard/project_list/project_list.tscn" id="1_3km4k"]
 [ext_resource type="Script" uid="uid://dyoau4rnapqbw" path="res://scenes/dashboard/dashboard.gd" id="1_ha5bl"]
@@ -9,7 +9,71 @@
 [ext_resource type="Texture2D" uid="uid://bhkx7k5emcmjl" path="res://meta/icons/theme.svg" id="6_4jrbh"]
 [ext_resource type="Texture2D" uid="uid://dip3j4w5jl5nv" path="res://meta/icons/settings.svg" id="7_yxfa0"]
 
-[node name="Dashboard" type="Panel" node_paths=PackedStringArray("content_container", "screen_label", "tab_button_container")]
+[sub_resource type="Animation" id="Animation_7agwo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CoverPanel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CoverPanel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ha5bl"]
+resource_name = "reveal_dashboard"
+length = 0.3
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CoverPanel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.23333333),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CoverPanel")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.26666668),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qmip6"]
+_data = {
+&"RESET": SubResource("Animation_7agwo"),
+&"reveal_dashboard": SubResource("Animation_ha5bl")
+}
+
+[node name="Dashboard" type="Panel" node_paths=PackedStringArray("content_container", "screen_label", "tab_button_container", "animation_player")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -20,6 +84,7 @@ script = ExtResource("1_ha5bl")
 content_container = NodePath("Content")
 screen_label = NodePath("ScreenLabel")
 tab_button_container = NodePath("TabButtonContainer")
+animation_player = NodePath("AnimationPlayer")
 
 [node name="Content" type="Control" parent="."]
 layout_mode = 1
@@ -35,14 +100,23 @@ grow_vertical = 2
 [node name="Project List" parent="Content" instance=ExtResource("1_3km4k")]
 layout_mode = 1
 
-[node name="Modules" parent="Content" instance=ExtResource("1_3km4k")]
+[node name="Modules" type="Panel" parent="Content"]
+visible = false
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Themes" parent="Content" instance=ExtResource("1_3km4k")]
+[node name="Themes" type="Panel" parent="Content"]
+visible = false
 layout_mode = 1
-
-[node name="Settings" parent="Content" instance=ExtResource("1_3km4k")]
-layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="InfoContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -102,6 +176,7 @@ grow_vertical = 2
 theme_override_constants/separation = 10
 vertical = true
 script = ExtResource("3_eb81t")
+selected_index = 0
 metadata/_custom_type_script = "uid://4foqtuiobeyl"
 
 [node name="HSeparator" type="HSeparator" parent="TabButtonContainer"]
@@ -112,6 +187,7 @@ layout_mode = 2
 
 [node name="ProjectListButton" parent="TabButtonContainer" instance=ExtResource("4_5ihmn")]
 layout_mode = 2
+button_pressed = true
 button_label_text = "Project List"
 
 [node name="ModulesButton" parent="TabButtonContainer" instance=ExtResource("4_5ihmn")]
@@ -129,8 +205,22 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="SettingsButton" parent="TabButtonContainer" instance=ExtResource("4_5ihmn")]
+visible = false
 layout_mode = 2
 icon = ExtResource("7_yxfa0")
 button_label_text = "Settings"
+
+[node name="CoverPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_qmip6")
+}
 
 [connection signal="selection_changed" from="TabButtonContainer" to="." method="_on_tab_button_container_selection_changed"]

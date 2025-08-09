@@ -1,8 +1,194 @@
-[gd_scene format=3 uid="uid://ct15sak82m0y0"]
+[gd_scene load_steps=6 format=3 uid="uid://ct15sak82m0y0"]
 
-[node name="ProjectList" type="Panel"]
+[ext_resource type="Script" uid="uid://8wyhklto22ik" path="res://scenes/dashboard/project_list/project_list.gd" id="1_j7fao"]
+[ext_resource type="Texture2D" uid="uid://b8jqckm12c1eb" path="res://meta/icons/add.svg" id="2_j7fao"]
+[ext_resource type="Texture2D" uid="uid://bqfagmo47lo4o" path="res://meta/icons/dir.svg" id="3_e6idx"]
+[ext_resource type="Shader" uid="uid://c8srm6epgj1mo" path="res://components/shader/blur.gdshader" id="5_e6idx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i1b5s"]
+shader = ExtResource("5_e6idx")
+shader_parameter/blur_amount = 2.50000011875
+shader_parameter/blur_quality = 4
+shader_parameter/dither_strength = 0.1
+
+[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_list_vbox", "blur_overlay")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_j7fao")
+no_projects = NodePath("NoProjects")
+projects = NodePath("ProjectList")
+project_list_vbox = NodePath("ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
+blur_overlay = NodePath("BlurOverlay")
+
+[node name="NoProjects" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NoProjectsLabel" type="Label" parent="NoProjects"]
+modulate = Color(1, 1, 1, 0.18431373)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -218.0
+offset_top = -60.0
+offset_right = 219.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"nLabelPrimary"
+theme_override_font_sizes/font_size = 22
+text = "Looks like you don't have any projects set up.
+Either CREATE or IMPORT a project."
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NoProjects"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -182.0
+offset_top = 21.0
+offset_right = 184.0
+offset_bottom = 61.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="CreateButton" type="Button" parent="NoProjects/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"nButtonPrimary"
+theme_override_constants/icon_max_width = 18
+text = "Create"
+icon = ExtResource("2_j7fao")
+
+[node name="ImportButton" type="Button" parent="NoProjects/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"nButtonSecondary"
+theme_override_constants/icon_max_width = 18
+text = "Import"
+icon = ExtResource("3_e6idx")
+
+[node name="ProjectList" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="ProjectList"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ProjectList/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ProjectList/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="ProjectNumLabel" type="Label" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Projects - 0"
+
+[node name="Control" type="Control" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="CreateButton" type="Button" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme_type_variation = &"nButtonPrimary"
+text = "Create"
+
+[node name="ImportButton" type="Button" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme_type_variation = &"nButtonSecondary"
+text = "Import"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ProjectList/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="ProjectList/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_right = 8
+
+[node name="ProjectListVBox" type="VBoxContainer" parent="ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="BlurOverlay" type="ColorRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_i1b5s")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OpenGameDialog" type="FileDialog" parent="."]
+auto_translate_mode = 2
+title = "Open a File"
+size = Vector2i(726, 360)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.wbfs;Wii Backup Filesystem")
+show_hidden_files = true
+use_native_dialog = true
+
+[node name="OpenProjectDialog" type="FileDialog" parent="."]
+auto_translate_mode = 2
+title = "Open a File"
+initial_position = 2
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("project.nebula;Nebula Project File")
+use_native_dialog = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[connection signal="pressed" from="NoProjects/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
