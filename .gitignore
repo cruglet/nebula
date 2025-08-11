@@ -1,24 +1,24 @@
-rust/target/
-rust/Cargo.lock
-rust/**/*.rs.bk
+core/target/
+core/Cargo.lock
+core/**/*.rs.bk
 
-godot/.import/
-godot/.godot/
-godot/android/
-godot/*.import
-godot/*.log
+engine/.import/
+engine/.godot/
+engine/android/
+engine/*.import
+engine/*.log
 
-godot/.mono/
-godot/.mono_cache/
-godot/.godot/
-godot/.mono/metadata/
-godot/*.mono
+engine/.mono/
+engine/.mono_cache/
+engine/.godot/
+engine/.mono/metadata/
+engine/*.mono
 
-godot/*.godot
-godot/*.tmp
-godot/*.temp
+engine/*.godot
+engine/*.tmp
+engine/*.temp
 
-!godot/project.godot
+!engine/project.godot
 
 *.DS_Store
 *.swp
