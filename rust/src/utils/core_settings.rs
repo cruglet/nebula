@@ -4,7 +4,7 @@ use crate::utils::singleton::Singleton;
 
 #[derive(GodotClass)]
 #[class(base=Object)]
-struct CoreSettings {
+pub struct CoreSettings {
     base: Base<Object>
 }
 
@@ -19,8 +19,8 @@ impl IObject for CoreSettings {
 
 #[godot_api]
 impl CoreSettings {
-    #[constant] const SETTING_UI_SCALE: i32 = 0;
-    #[constant] const SETTING_PROJECT_LIST: i32 = 1;
+    #[constant] pub const SETTING_UI_SCALE: i32 = 0;
+    #[constant] pub const SETTING_PROJECT_LIST: i32 = 1;
     const MAX: i32 = 2;
 
     #[func]
@@ -78,7 +78,7 @@ impl CoreSettings {
     }
 
     #[func]
-    fn get(key: i32) -> Variant {
+    pub fn get(key: i32) -> Variant {
         let mut val: Variant = CoreSettings::get_defaults().get_or_nil(key.to_godot());
 
         let data: Dictionary = CoreSettings::_get_data();
@@ -90,12 +90,11 @@ impl CoreSettings {
     }
 
     #[func]
-    fn set(key: i32, value: Variant) -> bool {
+    pub fn set(key: i32, value: Variant) -> bool {
         let mut data: Dictionary = Dictionary::new();
 
         data.set(key, value);
 
-        // Create dir if it does not exist
         if !FileAccess::file_exists(&CoreSettings::get_path()) {
             DirAccess::make_dir_recursive_absolute(&CoreSettings::get_path().get_base_dir());
         }

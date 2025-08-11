@@ -2,6 +2,7 @@ use godot::prelude::*;
 use crate::utils::singleton::Singleton;
 
 mod utils;
+mod nodes;
 
 struct NebulaCore;
 

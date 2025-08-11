@@ -1,7 +1,20 @@
 class_name ProjectItem
 extends Button
 
+@export var is_preview: bool = false:
+	set(ip):
+		if ip:
+			gui_block.show()
+			focus_mode = Control.FOCUS_NONE
+			delete_button.focus_mode = Control.FOCUS_NONE
+		else:
+			gui_block.hide()
+			focus_mode = Control.FOCUS_ALL
+			delete_button.focus_mode = Control.FOCUS_ALL
+		is_preview = ip
+@export_group("Internal")
 @export var delete_button: Button
+@export var gui_block: Control
 
 
 var delete_button_hovering: bool = false:
@@ -23,6 +36,8 @@ func _play_hover_animation() -> void:
 
 
 func _on_delete_button_mouse_entered() -> void:
+	if is_preview:
+		return
 	delete_button_hovering = true
 
 

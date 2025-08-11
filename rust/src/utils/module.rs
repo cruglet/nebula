@@ -10,6 +10,7 @@ struct Module {
     #[export(multiline)] description: GString,
     #[export] authors: Array<GString>,
     #[export] group: GString,
+    #[export] id: GString,
     #[export] major_version: u8,
     #[export] minor_version: u8,
     #[export] patch_number: u8,
@@ -17,6 +18,7 @@ struct Module {
     #[export(dir)] module_folder: GString,
     #[export(file="*.png,*.jpg,*.jpeg,*.svg")] module_image: GString,
     #[export(file="*.png,*.jpg,*.jpeg,*.svg")] project_image: GString,
+    #[export] compatible_files: Array<GString>,
 
     export_folder: GString,
     
@@ -38,6 +40,7 @@ impl IResource for Module {
             description: GString::new(),
             group: GString::new(),
             authors: Array::new(),
+            id: GString::new(),
             major_version: 0,
             minor_version: 0,
             patch_number: 0,
@@ -45,6 +48,7 @@ impl IResource for Module {
             module_folder: GString::new(),
             module_image: GString::new(),
             project_image: GString::new(),
+            compatible_files: Array::new(),
             export_folder: GString::from("res://build/modules"),
             _generate_mod_fn: Callable::invalid(),
             base,
@@ -56,8 +60,8 @@ impl IResource for Module {
             self._generate_mod_fn = self.base().callable("_generate_module");
         }
 
-        if property == StringName::from("name") {
-            self.name = value.to_string().to_lowercase().replace(" ", "_").into();
+        if property == StringName::from("id") {
+            self.id = value.to_string().to_lowercase().replace(" ", "_").into();
             return true;
         }
 
@@ -66,18 +70,14 @@ impl IResource for Module {
             return true;
         }
 
-        if property == StringName::from("entry_scene") {
-            if FileAccess::file_exists(&value.to_string()) {
-                self.entry_scene = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
-                return true;
-            }
+        if property == StringName::from("entry_scene") && FileAccess::file_exists(&value.to_string()) {
+            self.entry_scene = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            return true;
         }
 
-        if property == StringName::from("project_image") {
-            if FileAccess::file_exists(&value.to_string()) {
-                self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
-                return true;
-            }
+        if property == StringName::from("project_image") && FileAccess::file_exists(&value.to_string()) {
+            self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            return true;
         }
         
         false
@@ -93,6 +93,7 @@ impl Module {
                 name: GString::new(),
                 description: GString::new(),
                 group: GString::new(),
+                id: GString::new(),
                 authors: Array::new(),
                 major_version: 0,
                 minor_version: 0,
@@ -101,6 +102,7 @@ impl Module {
                 module_image: GString::new(),
                 module_folder: GString::new(),
                 project_image: GString::new(),
+                compatible_files: Array::new(),
                 export_folder: GString::new(),
                 _generate_mod_fn: Callable::invalid(),
                 base,
@@ -138,53 +140,14 @@ impl Module {
 
         if success {
             let mut module_data = m.bind_mut();
-            
-            if let Some(name) = pck_meta.get("name") {
-                module_data.set_name(name.to_string().into());
-            }
-            
-            if let Some(group) = pck_meta.get("group") {
-                module_data.set_group(group.to_string().into());
-            }
-            
-            if let Some(authors_variant) = pck_meta.get("authors") {
-                if let Ok(authors) = authors_variant.try_to::<Array<GString>>() {
-                    module_data.set_authors(authors);
-                }
-            }
-            
-            if let Some(major_ver_variant) = pck_meta.get("major_version") {
-                if let Ok(major_ver) = major_ver_variant.try_to::<u8>() {
-                    module_data.set_major_version(major_ver);
-                }
-            }
-            
-            if let Some(minor_ver_variant) = pck_meta.get("minor_version") {
-                if let Ok(minor_ver) = minor_ver_variant.try_to::<u8>() {
-                    module_data.set_minor_version(minor_ver);
-                }
-            }
+            let mut mod_base = module_data.base_mut();
 
-            if let Some(patch_num_variant) = pck_meta.get("patch_number") {
-                if let Ok(patch_num) = patch_num_variant.try_to::<u8>() {
-                    module_data.set_patch_number(patch_num);
-                }
-            }
-            
-            if let Some(entry_scene) = pck_meta.get("entry_scene") {
-                module_data.set_entry_scene(entry_scene.to_string().into());
-            }
-
-            if let Some(project_image) = pck_meta.get("project_image") {
-                module_data.set_project_image(project_image.to_string().into());
-            }
-
-            if let Some(module_image) = pck_meta.get("module_image") {
-                module_data.set_module_image(module_image.to_string().into());
+            for item in pck_meta.keys_shared() {
+                mod_base.set(&item.to_string(), &pck_meta.get(item).unwrap_or(Variant::nil()));
             }
         }
 
-        return m;
+        m
     }
 
 
@@ -194,8 +157,16 @@ impl Module {
             godot_error!("[Module Packer] No ID provided!");
             return;
         }
+        if self.description.is_empty() {
+            godot_error!("[Module Packer] No Description provided!");
+            return;
+        }
         if self.group.is_empty() {
             godot_error!("[Module Packer] No Group provided!");
+            return;
+        }
+        if self.id.is_empty() {
+            godot_error!("[Module Packer] No ID provided!");
             return;
         }
         if self.authors.is_empty() {
@@ -240,8 +211,8 @@ impl Module {
             return;
         }
 
-        let raw_mod_path = format!("{}{}.raw.mod", export_folder, self.name);
-        let final_nmod_path = format!("{}{}.nmod", export_folder, self.name);
+        let raw_mod_path = format!("{}{}.raw.mod", export_folder, self.id);
+        let final_nmod_path = format!("{}{}.nmod", export_folder, self.id);
 
         let mut packer = PckPacker::new_gd();
         if packer.pck_start(&raw_mod_path) != godot::global::Error::OK {
@@ -250,7 +221,7 @@ impl Module {
         }
 
         for file_path in all_files.iter() {
-            let full_path = format!("{}{}", base, file_path.to_string());
+            let full_path = format!("{}{}", base, file_path);
             
             godot_print!("[Module Packer] Packing {}...", full_path);
 
@@ -267,11 +238,18 @@ impl Module {
 
         let mut metadata = Dictionary::new();
         metadata.set("name", Variant::from(self.name.to_string()));
-        metadata.set("group", Variant::from(self.group.to_string()));
+        metadata.set("description", Variant::from(self.description.to_string()));
         metadata.set("authors", Variant::from(self.authors.clone()));
+        metadata.set("group", Variant::from(self.group.to_string()));
+        metadata.set("id", Variant::from(self.id.to_string()));
         metadata.set("major_version", Variant::from(self.major_version));
         metadata.set("minor_version", Variant::from(self.minor_version));
+        metadata.set("patch_number", Variant::from(self.patch_number));
         metadata.set("entry_scene", Variant::from(self.entry_scene.to_string()));
+        metadata.set("module_folder", Variant::from(self.module_folder.to_string()));
+        metadata.set("module_image", Variant::from(self.module_image.to_string()));
+        metadata.set("project_image", Variant::from(self.project_image.to_string()));
+        metadata.set("compatible_files", Variant::from(self.compatible_files.clone()));
         metadata.set("file_count", Variant::from(all_files.len() as i64));
 
         let meta_bytes =  var_to_bytes_with_objects(&Variant::from(metadata));
@@ -307,7 +285,7 @@ impl Module {
 
         let _ = DirAccess::remove_absolute(&raw_mod_path);
 
-        godot_print_rich!("[color=green][Module Packer] Module .nmod created at: {}", final_nmod_path);
+        godot_print_rich!("[color=green][Module Packer] Module (.nmod) created at: {}", final_nmod_path);
     }
 
     fn get_all_files_in_module_folder(&self) -> Vec<GString> {

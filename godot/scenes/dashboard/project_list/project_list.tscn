@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://ct15sak82m0y0"]
+[gd_scene load_steps=7 format=3 uid="uid://ct15sak82m0y0"]
 
 [ext_resource type="Script" uid="uid://8wyhklto22ik" path="res://scenes/dashboard/project_list/project_list.gd" id="1_j7fao"]
 [ext_resource type="Texture2D" uid="uid://b8jqckm12c1eb" path="res://meta/icons/add.svg" id="2_j7fao"]
 [ext_resource type="Texture2D" uid="uid://bqfagmo47lo4o" path="res://meta/icons/dir.svg" id="3_e6idx"]
 [ext_resource type="Shader" uid="uid://c8srm6epgj1mo" path="res://components/shader/blur.gdshader" id="5_e6idx"]
+[ext_resource type="PackedScene" uid="uid://dsj577bhb635s" path="res://scenes/dashboard/new_project/new_project.tscn" id="5_i1b5s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i1b5s"]
 shader = ExtResource("5_e6idx")
@@ -22,6 +23,7 @@ no_projects = NodePath("NoProjects")
 projects = NodePath("ProjectList")
 project_list_vbox = NodePath("ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
 blur_overlay = NodePath("BlurOverlay")
+metadata/_edit_lock_ = true
 
 [node name="NoProjects" type="Control" parent="."]
 layout_mode = 1
@@ -30,6 +32,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_lock_ = true
 
 [node name="NoProjectsLabel" type="Label" parent="NoProjects"]
 modulate = Color(1, 1, 1, 0.18431373)
@@ -159,6 +162,7 @@ theme_override_constants/separation = 12
 
 [node name="BlurOverlay" type="ColorRect" parent="."]
 visible = false
+top_level = true
 material = SubResource("ShaderMaterial_i1b5s")
 layout_mode = 1
 anchors_preset = 15
@@ -169,14 +173,19 @@ grow_vertical = 2
 
 [node name="OpenGameDialog" type="FileDialog" parent="."]
 auto_translate_mode = 2
+transparent_bg = true
+oversampling_override = 1.0
 title = "Open a File"
-size = Vector2i(726, 360)
+initial_position = 2
+size = Vector2i(1001, 450)
+transparent = true
 ok_button_text = "Open"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.wbfs;Wii Backup Filesystem")
-show_hidden_files = true
-use_native_dialog = true
+file_filter_toggle_enabled = false
+favorites_enabled = false
+layout_toggle_enabled = false
 
 [node name="OpenProjectDialog" type="FileDialog" parent="."]
 auto_translate_mode = 2
@@ -190,5 +199,18 @@ use_native_dialog = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
+[node name="NebulaWindow" type="NebulaWindow" parent="."]
+title_text = "Create a New Project"
+title_margin = 8
+visible = false
+layout_mode = 0
+offset_right = 550.0
+offset_bottom = 452.0
+
+[node name="NewProject" parent="NebulaWindow" instance=ExtResource("5_i1b5s")]
+layout_mode = 2
+
 [connection signal="pressed" from="NoProjects/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
 [connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="hide_request" from="NebulaWindow" to="." method="_on_nebula_window_hide_request"]
+[connection signal="cancel_pressed" from="NebulaWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]
