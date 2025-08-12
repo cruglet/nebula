@@ -12,10 +12,24 @@ extends Button
 			focus_mode = Control.FOCUS_ALL
 			delete_button.focus_mode = Control.FOCUS_ALL
 		is_preview = ip
+@export var project_name: String:
+	get():
+		if project_name.is_empty():
+			return "My Project"
+		else:
+			return project_name
+	set(pn):
+		project_name_label.text = pn
+		project_name = pn
+@export var project_path: String:
+	set(pp):
+		project_path_label.text = pp
+		project_path = pp
 @export_group("Internal")
+@export var project_name_label: Label
+@export var project_path_label: Label
 @export var delete_button: Button
 @export var gui_block: Control
-
 
 var delete_button_hovering: bool = false:
 	set(f):
@@ -63,8 +77,7 @@ func _show_button() -> void:
 	tween.tween_property(delete_button, ^"anchor_top", 0.0, 0.1)
 	tween.tween_property(delete_button, ^"anchor_bottom", 0.0, 0.1)
 	tween.tween_property(delete_button, ^"self_modulate", Color(1, 1, 1, 1), 0.1)
-
-
+	
 
 func _hide_button() -> void:
 	if delete_button_hovering or not is_inside_tree():
@@ -80,6 +93,7 @@ func _hide_button() -> void:
 	tween.tween_property(delete_button, ^"self_modulate", Color.TRANSPARENT, 0.1)
 	
 	delete_button.release_focus()
+
 
 func _on_mouse_entered() -> void:
 	_show_button()

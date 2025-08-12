@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b8jqckm12c1eb" path="res://meta/icons/add.svg" id="2_j7fao"]
 [ext_resource type="Texture2D" uid="uid://bqfagmo47lo4o" path="res://meta/icons/dir.svg" id="3_e6idx"]
 [ext_resource type="Shader" uid="uid://c8srm6epgj1mo" path="res://components/shader/blur.gdshader" id="5_e6idx"]
-[ext_resource type="PackedScene" uid="uid://dsj577bhb635s" path="res://scenes/dashboard/new_project/new_project.tscn" id="5_i1b5s"]
+[ext_resource type="PackedScene" uid="uid://dsj577bhb635s" path="res://scenes/dashboard/project_list/new_project/new_project.tscn" id="5_i1b5s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i1b5s"]
 shader = ExtResource("5_e6idx")
@@ -74,7 +74,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 theme_type_variation = &"nButtonPrimary"
-theme_override_constants/icon_max_width = 18
 text = "Create"
 icon = ExtResource("2_j7fao")
 
@@ -214,3 +213,4 @@ layout_mode = 2
 [connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
 [connection signal="hide_request" from="NebulaWindow" to="." method="_on_nebula_window_hide_request"]
 [connection signal="cancel_pressed" from="NebulaWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]
+[connection signal="switch_to_module_request" from="NebulaWindow/NewProject" to="." method="_on_new_project_switch_to_module_request"]

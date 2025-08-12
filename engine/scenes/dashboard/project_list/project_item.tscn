@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://4xxbc7xne4f3" path="res://meta/images/project_placeholder.png" id="3_sy1hl"]
 [ext_resource type="Texture2D" uid="uid://d3t5rvdtv5rf3" path="res://meta/icons/delete.svg" id="3_yvc6r"]
 
-[node name="ProjectItem" type="Button" node_paths=PackedStringArray("delete_button", "gui_block")]
+[node name="ProjectItem" type="Button" node_paths=PackedStringArray("project_name_label", "project_path_label", "delete_button", "gui_block")]
 clip_children = 2
 custom_minimum_size = Vector2(500, 65)
 anchors_preset = -1
@@ -13,6 +13,8 @@ offset_bottom = 65.0
 grow_horizontal = 2
 theme_type_variation = &"nPanelProjectItem"
 script = ExtResource("2_sy1hl")
+project_name_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectName")
+project_path_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectPath")
 delete_button = NodePath("DeleteButton")
 gui_block = NodePath("GUIBlock")
 

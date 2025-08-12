@@ -1,0 +1,112 @@
+[gd_scene load_steps=5 format=3 uid="uid://cyjfqss5ytw51"]
+
+[ext_resource type="Script" uid="uid://c03pnbe0altuu" path="res://scenes/dashboard/module_list/module_list.gd" id="1_5v4q3"]
+[ext_resource type="PackedScene" uid="uid://dm0udoa17mh36" path="res://components/ui/icon_sidebar_button/icon_sidebar_button.tscn" id="1_14qnd"]
+[ext_resource type="Texture2D" uid="uid://ksbs0rl6gsvh" path="res://meta/icons/module.svg" id="1_emutn"]
+[ext_resource type="Texture2D" uid="uid://dkwilsyy227q0" path="res://meta/icons/repo.svg" id="3_l3md8"]
+
+[node name="ModuleList" type="Panel" node_paths=PackedStringArray("fetching_label")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5v4q3")
+fetching_label = NodePath("MarginContainer/VBoxContainer/FetchingLabel")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(400, 40)
+layout_mode = 2
+placeholder_text = "Search..."
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/icon_max_width = 18
+text = "Import Local"
+icon = ExtResource("1_emutn")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="InstalledLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "Installed: 0"
+
+[node name="RLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FlowContainer" type="FlowContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="AvailableLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "Available: 0"
+
+[node name="RLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FlowContainer2" type="FlowContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FetchingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+horizontal_alignment = 1
+
+[node name="ManageReposButton" parent="." instance=ExtResource("1_14qnd")]
+visible = false
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -56.0
+offset_top = 21.0
+offset_right = -16.0
+offset_bottom = 61.0
+grow_horizontal = 0
+theme_override_constants/icon_max_width = 20
+toggle_mode = false
+icon = ExtResource("3_l3md8")
+button_label_text = "Manage Repos"
+button_label_position = 1

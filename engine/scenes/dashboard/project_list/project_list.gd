@@ -1,9 +1,12 @@
 extends Panel
 
+signal switch_screen_request(screen: int)
+
 @export var no_projects: Control
 @export var projects: Control
 @export var project_list_vbox: VBoxContainer
 @export var blur_overlay: ColorRect
+@export var new_project_handler: PanelContainer
 
 func _ready() -> void:
 	var project_list: Array[String] = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
@@ -44,3 +47,7 @@ func _on_nebula_window_hide_request() -> void:
 
 func _on_new_project_cancel_pressed() -> void:
 	$NebulaWindow.hide()
+
+
+func _on_new_project_switch_to_module_request() -> void:
+	switch_screen_request.emit(1)

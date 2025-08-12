@@ -5,6 +5,9 @@
 
 [node name="IconSidebarButton" type="Button" node_paths=PackedStringArray("button_label", "panel_container", "button_label_size")]
 custom_minimum_size = Vector2(40, 40)
+anchors_preset = -1
+offset_right = 40.0
+offset_bottom = 40.0
 size_flags_horizontal = 4
 theme_type_variation = &"nButtonIconSidebar"
 toggle_mode = true
@@ -25,9 +28,8 @@ anchor_right = 1.0
 anchor_bottom = 0.5
 offset_left = 2.0
 offset_top = -15.0
-offset_right = 101.0
+offset_right = 15.0
 offset_bottom = 18.0
-grow_horizontal = 0
 grow_vertical = 2
 theme_type_variation = &"nPanelSecondary"
 

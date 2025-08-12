@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="g6"
+     transform="matrix(1.2517675,0,0,1.2517675,-2.7112575,-2.0430153)"
+     style="stroke:#e0e0e0;stroke-width:1.42743;stroke-dasharray:none;stroke-opacity:1">
+    <circle
+       cx="6.2373691"
+       cy="4.1571703"
+       style="fill:none;stroke:#e0e0e0;stroke-width:1.42743;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="circle1"
+       r="1.1597693" />
+    <circle
+       cx="6.2373691"
+       cy="11.888966"
+       r="1.1597693"
+       style="fill:none;stroke:#e0e0e0;stroke-width:1.42743;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="circle2" />
+    <path
+       d="M 6.2373676,10.729196 V 5.3169394"
+       style="fill:none;stroke:#e0e0e0;stroke-width:1.42743;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path2" />
+    <circle
+       cx="10.876445"
+       cy="5.7035294"
+       r="1.1597693"
+       style="fill:none;stroke:#e0e0e0;stroke-width:1.42743;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="circle3" />
+    <path
+       d="m 10.876446,6.8632984 c 0,3.0927179 -4.6390784,1.1597693 -4.6390784,3.8658976"
+       style="fill:none;stroke:#e0e0e0;stroke-width:1.42743;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path3" />
+  </g>
+</svg>

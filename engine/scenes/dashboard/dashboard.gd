@@ -18,3 +18,7 @@ func _on_tab_button_container_selection_changed(index: int, _from: int) -> void:
 	
 	content_container.get_child(index).show()
 	screen_label.text = content_container.get_child(index).name
+
+
+func _on_project_list_switch_screen_request(screen: int) -> void:
+	tab_button_container.select(screen)
