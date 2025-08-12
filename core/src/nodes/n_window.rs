@@ -1,7 +1,7 @@
 use godot::obj::WithUserSignals;
 use godot::prelude::*;
 use godot::global::{Key, HorizontalAlignment, VerticalAlignment};
-use godot::classes::{PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, Control, control::{FocusMode, SizeFlags}};
+use godot::classes::{PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, control::{FocusMode, SizeFlags}};
 
 use crate::utils::singleton::Singleton;
 
@@ -32,6 +32,7 @@ struct NebulaWindow {
     #[export] animation_out_speed: f64,
     #[export] start_origin: Vector2,
     #[export] close_on_escape: bool,
+    #[export] keep_centered: bool,
 
     base: Base<PanelContainer>
 }
@@ -49,7 +50,8 @@ impl IPanelContainer for NebulaWindow {
             animation_in_speed: 0.25,
             animation_out_speed: 0.25,
             close_on_escape: true,
-
+            keep_centered: true,
+            
             start_origin: Vector2 { x: 0.0, y: 0.0 },
             base
         }
@@ -97,6 +99,13 @@ impl IPanelContainer for NebulaWindow {
             };
         }
     }
+
+    fn process(&mut self, _delta: f64) {
+        if self.keep_centered {
+            let mut base_mut = self.base_mut();
+            NebulaWindow::reposition_to_center(&mut base_mut);
+        }
+    }
 }
 
 
@@ -121,14 +130,14 @@ impl NebulaWindow {
             match animation {
                 ShowAnimation::None => {
                     let mut c = self.base_mut();
-                    NebulaWindow::reposition(&mut c);
+                    NebulaWindow::reposition_to_center(&mut c);
 
                     let base: &mut PanelContainer = c.upcast_mut();
                     base.show();
                 }
                 ShowAnimation::ScaleInCenter => {
                     let mut base_gd = self.base().to_godot();
-                    NebulaWindow::reposition(&mut base_gd);
+                    NebulaWindow::reposition_to_center(&mut base_gd);
                     
                     let mut tween: Gd<Tween> = res.create_tween().unwrap();
 
@@ -169,8 +178,8 @@ impl NebulaWindow {
         };
     }
 
-    fn reposition(base_gd: &mut Gd<PanelContainer>) {
-        let size = base_gd.get_size();
+    fn reposition_to_center(base_gd: &mut Gd<PanelContainer>) {
+        let size = base_gd.get_size() * base_gd.get_scale();
         base_gd.set_global_position(Singleton::centerize(Singleton::get_scaled_window_size(), Vector2::cast_int(size)).cast_float());
     }
 
@@ -178,7 +187,3 @@ impl NebulaWindow {
         self.animate_out(self.hide_animation);
     }
 }
-
-
-
-
