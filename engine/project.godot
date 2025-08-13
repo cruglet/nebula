@@ -41,6 +41,7 @@ display_server/driver.linuxbsd="wayland"
 folder_colors={
 "res://components/": "orange",
 "res://meta/": "yellow",
+"res://modules/": "red",
 "res://scenes/": "blue",
 "res://themes/": "pink"
 }
