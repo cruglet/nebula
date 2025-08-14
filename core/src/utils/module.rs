@@ -79,6 +79,11 @@ impl IResource for Module {
             self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
             return true;
         }
+
+        if property == StringName::from("module_image") && FileAccess::file_exists(&value.to_string()) {
+            self.module_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            return true;
+        }
         
         false
     }

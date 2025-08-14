@@ -51,7 +51,7 @@ func load_local_modules() -> void:
 		var module_item: ModuleItem = ModuleItem.from_module(module)
 		var module_file: FileAccess = FileAccess.open(module.get_meta(&"path"), FileAccess.READ)
 		module_item.module_size = module_file.get_length()
-		module_item.module_preview_texture = load(module.project_image)
+		module_item.module_preview_texture = load(module.module_image)
 		module_item.is_local = true
 		module_item.updated.connect(func(_p: String) -> void:
 			updates_pending -= 1

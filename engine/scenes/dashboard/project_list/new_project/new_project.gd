@@ -16,8 +16,7 @@ var dir_regex: RegEx
 func _ready() -> void:
 	dir_regex = RegEx.create_from_string("^(?!^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\\.|$))[^<>:\"/\\\\|?*\\x00-\\x1F]{1,255}$")
 	set_project_name("My Project")
-	populate_module_options()
-	_switch_banner(0)
+	repopulate_module_options()
 
 
 func set_project_name(p_name: String) -> void:
@@ -32,12 +31,15 @@ func set_project_name(p_name: String) -> void:
 	project_path_line_edit.text = project_preview.project_path
 
 
-func populate_module_options() -> void:
+func repopulate_module_options() -> void:
 	module_option_button.clear()
+	module_project_images.clear()
 	for module_path: String in Singleton.loaded_modules:
 		var module: Module = Singleton.loaded_modules.get(module_path)
 		module_option_button.add_item(module.name)
 		module_project_images.append(module.project_image)
+	if Singleton.loaded_modules.size() > 0:
+		_switch_banner(0)
 
 
 func validate_project_creation() -> void:
@@ -81,6 +83,7 @@ func _on_visibility_changed() -> void:
 	if Singleton.loaded_modules.size() > 0:
 		no_module_label.hide()
 		module_options_container.show()
+		repopulate_module_options()
 	else:
 		no_module_label.show()
 		module_options_container.hide()

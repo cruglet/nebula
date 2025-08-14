@@ -1,0 +1,100 @@
+[gd_scene load_steps=4 format=3 uid="uid://dw0t4n57ys8d"]
+
+[ext_resource type="Script" uid="uid://dn3vive72sto2" path="res://scenes/dashboard/project_list/project_item/project_item.gd" id="2_sy1hl"]
+[ext_resource type="Texture2D" uid="uid://4xxbc7xne4f3" path="res://meta/images/project_placeholder.png" id="3_sy1hl"]
+[ext_resource type="Texture2D" uid="uid://d3t5rvdtv5rf3" path="res://meta/icons/delete.svg" id="3_yvc6r"]
+
+[node name="ProjectItem" type="Button" node_paths=PackedStringArray("project_name_label", "project_path_label", "project_banner_rect", "delete_button", "gui_block")]
+clip_children = 2
+custom_minimum_size = Vector2(500, 65)
+anchors_preset = -1
+anchor_right = 1.0
+offset_bottom = 65.0
+grow_horizontal = 2
+theme_type_variation = &"nPanelProjectItem"
+script = ExtResource("2_sy1hl")
+project_name_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectName")
+project_path_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectPath")
+project_banner_rect = NodePath("HBoxContainer/ProjectBanner")
+delete_button = NodePath("DeleteButton")
+gui_block = NodePath("GUIBlock")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="ProjectName" type="Label" parent="HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelPrimary"
+theme_override_font_sizes/font_size = 16
+text = "My Project"
+text_overrun_behavior = 3
+
+[node name="ProjectPath" type="Label" parent="HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+theme_override_font_sizes/font_size = 12
+text = "/home/user/Documents/my-project"
+text_overrun_behavior = 3
+
+[node name="ProjectBanner" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+texture = ExtResource("3_sy1hl")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DeleteButton" type="Button" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+z_index = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = -0.1
+anchor_right = 1.0
+anchor_bottom = -0.1
+offset_left = -31.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 31.0
+grow_horizontal = 0
+scale = Vector2(0.8, 0.8)
+pivot_offset = Vector2(14, 14)
+mouse_default_cursor_shape = 2
+theme_type_variation = &"nPanelProjectItem"
+theme_override_constants/icon_max_width = 16
+icon = ExtResource("3_yvc6r")
+icon_alignment = 1
+
+[node name="GUIBlock" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="focus_entered" from="DeleteButton" to="." method="_on_delete_button_focus_entered"]
+[connection signal="focus_exited" from="DeleteButton" to="." method="_on_delete_button_focus_exited"]
+[connection signal="mouse_entered" from="DeleteButton" to="." method="_on_delete_button_mouse_entered"]
+[connection signal="mouse_exited" from="DeleteButton" to="." method="_on_delete_button_mouse_exited"]
