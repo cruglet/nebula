@@ -1,5 +1,7 @@
 pub(crate) mod nebula;
 pub(crate) mod singleton;
 pub(crate) mod core_settings;
-mod module;
+pub(crate) mod git;
+pub(crate) mod module_request;
+pub(crate) mod module;
 

@@ -1,11 +1,11 @@
-use godot::classes::file_access::ModeFlags;
-use godot::global::{bytes_to_var_with_objects, var_to_bytes_with_objects};
 use godot::prelude::*;
+use godot::classes::file_access::ModeFlags;
 use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource, ResourceUid};
+use godot::global::{bytes_to_var_with_objects, var_to_bytes_with_objects};
 
 #[derive(GodotClass)]
 #[class(base=Resource, tool)]
-struct Module {
+pub struct Module {
     #[export] name: GString,
     #[export(multiline)] description: GString,
     #[export] authors: Array<GString>,
@@ -149,7 +149,6 @@ impl Module {
 
         m
     }
-
 
     #[func]
     fn _generate_module(&self) {

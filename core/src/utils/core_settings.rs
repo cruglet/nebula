@@ -21,7 +21,8 @@ impl IObject for CoreSettings {
 impl CoreSettings {
     #[constant] pub const SETTING_UI_SCALE: i32 = 0;
     #[constant] pub const SETTING_PROJECT_LIST: i32 = 1;
-    const MAX: i32 = 2;
+    #[constant] pub const SETTING_MODULE_LIST: i32 = 2;
+    const MAX: i32 = 3;
 
     #[func]
     fn get_defaults() -> Dictionary {
@@ -29,6 +30,7 @@ impl CoreSettings {
 
         data.set(CoreSettings::SETTING_UI_SCALE, DisplayServer::singleton().screen_get_scale());
         data.set(CoreSettings::SETTING_PROJECT_LIST, Array::<GString>::new());
+        data.set(CoreSettings::SETTING_MODULE_LIST, Array::<GString>::new());
 
         data
     }
@@ -45,6 +47,7 @@ impl CoreSettings {
                     window.set_content_scale_factor(ui_scale);
                     DisplayServer::singleton().window_set_min_size(Vector2i { x: (960.0 * ui_scale).round() as i32, y: (540.0 * ui_scale).round() as i32 });
                 }
+                CoreSettings::SETTING_MODULE_LIST => {},
                 _ => {
                     godot_error!("Config loop out of range!");
                 }

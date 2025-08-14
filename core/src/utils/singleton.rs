@@ -1,9 +1,12 @@
 use godot::{classes::Engine, prelude::*};
-use crate::utils::core_settings::CoreSettings;
+use crate::utils::{core_settings::CoreSettings, module::Module};
 
 #[derive(GodotClass)]
 #[class(base=Node)]
 pub(crate) struct Singleton {
+    #[export]
+    loaded_modules: Dictionary,
+
     base: Base<Node>
 }
 
@@ -11,6 +14,7 @@ pub(crate) struct Singleton {
 impl INode for Singleton {
     fn init(base: Base<Node>) -> Self {
         Self {
+            loaded_modules: Dictionary::new(),
             base,
         }
     }
@@ -33,7 +37,12 @@ impl Singleton {
     pub fn get_tree() -> Gd<SceneTree> {
         let engine = Engine::singleton();
         let tree = engine.get_main_loop().unwrap();
-        tree.try_cast::<SceneTree>().unwrap()
+        let scene_tree: Gd<SceneTree> = tree.try_cast::<SceneTree>().unwrap();
+        if !Singleton::singleton().is_inside_tree() {
+            scene_tree.get_root().unwrap().add_child(&Singleton::singleton());
+        };
+        
+        scene_tree
     }
 
     pub fn get_window_size() -> Vector2i {
