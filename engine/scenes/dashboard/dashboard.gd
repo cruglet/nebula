@@ -5,6 +5,7 @@ extends Panel
 @export var screen_label: Label
 @export var tab_button_container: TabButtonContainer
 @export var animation_player: AnimationPlayer
+@export var modules_button: IconSidebarButton
 
 
 func _ready() -> void:
@@ -22,3 +23,11 @@ func _on_tab_button_container_selection_changed(index: int, _from: int) -> void:
 
 func _on_project_list_switch_screen_request(screen: int) -> void:
 	tab_button_container.select(screen)
+
+
+func _on_modules_updates_available() -> void:
+	modules_button.show_notification_badge()
+
+
+func _on_modules_updates_cleared() -> void:
+	modules_button.hide_notification_badge()

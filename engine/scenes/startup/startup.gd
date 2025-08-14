@@ -35,6 +35,10 @@ func _ready() -> void:
 
 
 func _after_startup_animation() -> void:
+	for module_path: String in CoreSettings.get(CoreSettings.SETTING_MODULE_LIST):
+		var m: Module = Module.load(module_path)
+		m.set_meta(&"path", module_path)
+		Singleton.loaded_modules.set(m.id, m)
 	animation_player.play(&"startup_finished")
 
 

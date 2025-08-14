@@ -5,14 +5,18 @@
 [ext_resource type="Texture2D" uid="uid://ksbs0rl6gsvh" path="res://meta/icons/module.svg" id="1_emutn"]
 [ext_resource type="Texture2D" uid="uid://dkwilsyy227q0" path="res://meta/icons/repo.svg" id="3_l3md8"]
 
-[node name="ModuleList" type="Panel" node_paths=PackedStringArray("fetching_label")]
+[node name="ModuleList" type="Panel" node_paths=PackedStringArray("fetching_label", "installed_label", "available_label", "local_flow_container", "online_flow_container")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5v4q3")
-fetching_label = NodePath("MarginContainer/VBoxContainer/FetchingLabel")
+fetching_label = NodePath("MarginContainer/LocalScrollContainer/VBoxContainer/FetchingLabel")
+installed_label = NodePath("MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer2/InstalledLabel")
+available_label = NodePath("MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer3/AvailableLabel")
+local_flow_container = NodePath("MarginContainer/LocalScrollContainer/VBoxContainer/LocalFlowContainer")
+online_flow_container = NodePath("MarginContainer/LocalScrollContainer/VBoxContainer/OnlineFlowContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -25,21 +29,26 @@ theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="LocalScrollContainer" type="ScrollContainer" parent="MarginContainer"]
 layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/LocalScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(400, 40)
 layout_mode = 2
 placeholder_text = "Search..."
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -48,48 +57,54 @@ theme_override_constants/icon_max_width = 18
 text = "Import Local"
 icon = ExtResource("1_emutn")
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="LLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="LLine" type="HSeparator" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 
-[node name="InstalledLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="InstalledLabel" type="Label" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 theme_type_variation = &"nLabelSecondary"
 text = "Installed: 0"
 
-[node name="RLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="RLine" type="HSeparator" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FlowContainer" type="FlowContainer" parent="MarginContainer/VBoxContainer"]
+[node name="LocalFlowContainer" type="FlowContainer" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="LLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+[node name="LLine" type="HSeparator" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer3"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 
-[node name="AvailableLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+[node name="AvailableLabel" type="Label" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 theme_type_variation = &"nLabelSecondary"
 text = "Available: 0"
 
-[node name="RLine" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+[node name="RLine" type="HSeparator" parent="MarginContainer/LocalScrollContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FlowContainer2" type="FlowContainer" parent="MarginContainer/VBoxContainer"]
+[node name="OnlineFlowContainer" type="HFlowContainer" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 3
+size_flags_vertical = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
 
-[node name="FetchingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="FetchingLabel" type="Label" parent="MarginContainer/LocalScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"nLabelSecondary"

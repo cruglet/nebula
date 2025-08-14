@@ -13,7 +13,9 @@ func _ready() -> void:
 	
 	if project_list.is_empty():
 		no_projects.show()
+		projects.hide()
 	else:
+		no_projects.hide()
 		projects.show()
 
 
