@@ -35,11 +35,26 @@ func _ready() -> void:
 
 
 func _after_startup_animation() -> void:
-	for module_path: String in CoreSettings.get(CoreSettings.SETTING_MODULE_LIST):
+	load_and_validate_modules()
+	animation_player.play(&"startup_finished")
+
+
+func load_and_validate_modules() -> void:
+	var modules: Array = CoreSettings.get(CoreSettings.SETTING_MODULE_LIST)
+	
+	for i: int in range(modules.size()):
+		var module_path: String = modules.get(i)
+		
+		if not FileAccess.file_exists(module_path):
+			push_warning("Module file deleted or moved! (%s). Removing..." % module_path)
+			modules.remove_at(i)
+			continue
+		
 		var m: Module = Module.load(module_path)
 		m.set_meta(&"path", module_path)
 		Singleton.loaded_modules.set(m.id, m)
-	animation_player.play(&"startup_finished")
+	
+	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, modules)
 
 
 func _after_startup_finished_animation() -> void:

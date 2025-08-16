@@ -15,7 +15,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="NewProject" type="PanelContainer" node_paths=PackedStringArray("project_preview", "project_name_line_edit", "project_path_line_edit", "no_module_label", "module_options_container", "module_option_button")]
+[node name="NewProject" type="PanelContainer" node_paths=PackedStringArray("project_preview", "project_name_line_edit", "project_path_line_edit", "no_module_label", "module_options_container", "module_option_button", "error_label", "create_button")]
 anchors_preset = -1
 offset_right = 540.0
 offset_bottom = 442.0
@@ -27,9 +27,11 @@ script = ExtResource("1_ivkhn")
 project_preview = NodePath("MarginContainer/VBoxContainer/ProjectItem")
 project_name_line_edit = NodePath("MarginContainer/VBoxContainer/ProjectNameLineEdit")
 project_path_line_edit = NodePath("MarginContainer/VBoxContainer/ProjectPathLineEdit")
-no_module_label = NodePath("MarginContainer/VBoxContainer/NoModuleLabel")
+no_module_label = NodePath("MarginContainer/VBoxContainer/ErrorLabel")
 module_options_container = NodePath("MarginContainer/VBoxContainer/ModuleOptionsContainer")
 module_option_button = NodePath("MarginContainer/VBoxContainer/ModuleOptionsContainer/ModuleOptionButton")
+error_label = NodePath("MarginContainer/VBoxContainer/ErrorLabel")
+create_button = NodePath("MarginContainer/VBoxContainer/HBoxContainer/CreateButton")
 metadata/_edit_use_anchors_ = true
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -49,10 +51,12 @@ text = "Preview"
 
 [node name="ProjectItem" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_gbhcd")]
 layout_mode = 2
+size_flags_vertical = 4
 is_preview = true
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 20
 
 [node name="HProjectName" type="Label" parent="MarginContainer/VBoxContainer"]
@@ -63,6 +67,7 @@ text = "Project Name"
 [node name="ProjectNameLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+size_flags_vertical = 4
 placeholder_text = "My Project"
 max_length = 36
 context_menu_enabled = false
@@ -70,6 +75,7 @@ context_menu_enabled = false
 [node name="spacer" type="Control" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="HProjectPathLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -79,6 +85,7 @@ text = "Project Path"
 [node name="ProjectPathLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
 theme_override_styles/read_only = SubResource("StyleBoxFlat_qa5mk")
 placeholder_text = "/home/user/Documents/my-project"
@@ -109,9 +116,11 @@ expand_icon = true
 [node name="spacer2" type="Control" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 20
 
 [node name="HModuleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
@@ -119,19 +128,9 @@ layout_mode = 2
 theme_type_variation = &"nLabelSecondary"
 text = "Module"
 
-[node name="NoModuleLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
-visible = false
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/default_color = Color(1, 0.3019608, 0.3019608, 1)
-bbcode_enabled = true
-text = "[url]No modules found! Please download or import a module.[/url]"
-horizontal_alignment = 1
-meta_underlined = false
-
 [node name="ModuleOptionsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="ModuleOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/ModuleOptionsContainer"]
 custom_minimum_size = Vector2(0, 30)
@@ -143,10 +142,23 @@ popup/item_0/id = 0
 
 [node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 20
+
+[node name="ErrorLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/default_color = Color(1, 0.3019608, 0.3019608, 1)
+bbcode_enabled = true
+text = "Error Message"
+horizontal_alignment = 1
+meta_underlined = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 10
 alignment = 1
 
@@ -167,8 +179,9 @@ text = "Create"
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/ProjectNameLineEdit" to="." method="_on_project_name_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ProjectPathLineEdit/ProjectDirButton" to="." method="_on_project_dir_button_pressed"]
-[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/NoModuleLabel" to="." method="_on_no_module_label_meta_clicked"]
-[connection signal="meta_hover_ended" from="MarginContainer/VBoxContainer/NoModuleLabel" to="." method="_on_no_module_label_meta_hover_ended"]
-[connection signal="meta_hover_started" from="MarginContainer/VBoxContainer/NoModuleLabel" to="." method="_on_no_module_label_meta_hover_started"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ModuleOptionsContainer/ModuleOptionButton" to="." method="_on_module_option_button_item_selected"]
+[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_clicked"]
+[connection signal="meta_hover_ended" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_hover_ended"]
+[connection signal="meta_hover_started" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_hover_started"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]

@@ -118,6 +118,17 @@ impl CoreSettings {
         success
     }
 
+    #[func]
+    fn append(key: i32, value: Variant) -> bool {
+        let mut settings_arr: Array<Variant> = CoreSettings::get(key)
+            .try_to::<Array<Variant>>()
+            .unwrap_or_else(|_| Array::new());
+
+        settings_arr.push(&value);
+        CoreSettings::set(key, settings_arr.to_variant());
+        true
+    }
+
     pub fn _get_data() -> Dictionary {
         let mut data: Dictionary = Dictionary::new();
 

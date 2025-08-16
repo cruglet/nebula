@@ -23,6 +23,7 @@ impl IObject for ModuleRequest {
 impl ModuleRequest {
     #[signal] fn metadata_fetched(metadata: Dictionary, source_url: GString, module_size: i64);
     #[signal] fn preview_image_fetched(image_data: PackedByteArray, module_id: GString, image_type: GString);
+    #[signal] fn could_not_connect();
 
     #[func]
     fn fetch_parallel(&self, repositories: Array<GString>) -> Gd<ModuleRequest> {
@@ -48,13 +49,15 @@ impl ModuleRequest {
     }
 
     fn on_module_list_request_completed(&mut http_ref: Gd<HttpRequest>, result: i64, response_code: i64, _headers: PackedStringArray, body: PackedByteArray) {
+       let request_instance: Gd<ModuleRequest> = http_ref.get_meta("request_instance").try_to().expect("This should not hit");
+
        if result != 0 || response_code != 200 {
-           godot_error!("Failed to fetch module list data!");
+           godot_error!("Failed to fetch module list data! {} {}", result, response_code);
+           request_instance.signals().could_not_connect().emit();
            return
        };
 
        let text: GString = body.get_string_from_utf8();
-       let request_instance: Gd<ModuleRequest> = http_ref.get_meta("request_instance").try_to().expect("This should not hit");
        ModuleRequest::parse_modules_file(text, request_instance);
        http_ref.queue_free();
     }

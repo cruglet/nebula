@@ -1,7 +1,7 @@
 use godot::obj::WithUserSignals;
 use godot::prelude::*;
 use godot::global::{Key, HorizontalAlignment, VerticalAlignment};
-use godot::classes::{PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, control::{FocusMode, SizeFlags}};
+use godot::classes::{Control, PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, control::{FocusMode, SizeFlags}};
 
 use crate::utils::singleton::Singleton;
 
@@ -78,10 +78,17 @@ impl IPanelContainer for NebulaWindow {
         c.add_theme_constant_override("margin_right", self.border_margin);
         c.add_theme_constant_override("margin_bottom", self.border_margin);
         vb.add_child(&c);
+        
+        let self_ref = self.to_gd();
 
         for i in 0..self.base().get_children().len() {
             if let Some(mut node) = self.base().get_child(i as i32) {
                 node.reparent(&c);
+                if let Ok(n) = node.try_cast::<Control>() {
+                    if !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
+                        n.signals().item_rect_changed().connect_other(&self_ref, NebulaWindow::on_item_rect_changed);
+                    }
+                };
             };
         };
 
@@ -117,12 +124,17 @@ impl NebulaWindow {
     #[func]
     fn show(&mut self) {
         self.base_mut().set_as_top_level(true);
+        self.base_mut().set_size(Vector2::splat(0.0));
         self.animate_in(self.show_animation);
     }
 
     #[func]
     fn hide(&mut self) {
         self.signals().hide_request().emit();
+    }
+
+    fn on_item_rect_changed(&mut self) {
+        self.base_mut().set_size(Vector2::splat(0.0));
     }
 
     fn animate_in(&mut self, animation: ShowAnimation) {

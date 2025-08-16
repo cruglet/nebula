@@ -7,6 +7,10 @@ signal switch_screen_request(screen: int)
 @export var project_list_vbox: VBoxContainer
 @export var blur_overlay: ColorRect
 @export var new_project_handler: PanelContainer
+@export var new_project_window: NebulaWindow
+@export var loading_window: NebulaWindow
+
+var creating_project: bool = false
 
 func _ready() -> void:
 	var project_list: Array[String] = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
@@ -40,16 +44,23 @@ func hide_blur() -> void:
 func _on_create_button_pressed() -> void:
 	release_focus()
 	show_blur()
-	$NebulaWindow.show()
+	new_project_window.show()
 
 
 func _on_nebula_window_hide_request() -> void:
-	hide_blur()
+	if not creating_project:
+		hide_blur()
 
 
 func _on_new_project_cancel_pressed() -> void:
-	$NebulaWindow.hide()
+	new_project_window.hide()
 
 
 func _on_new_project_switch_to_module_request() -> void:
 	switch_screen_request.emit(1)
+
+
+func _on_new_project_create_request(path: String, module: Module) -> void:
+	creating_project = true
+	new_project_window.hide()
+	loading_window.show()

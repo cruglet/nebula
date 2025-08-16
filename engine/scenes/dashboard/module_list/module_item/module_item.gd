@@ -16,7 +16,7 @@ signal updated(id: String)
 		module_description = md
 @export var module_version: String:
 	set(mv):
-		_preview_version_label.text = mv
+		_preview_version_label.text = "v" + mv
 		module_version = mv
 @export var module_preview_texture: Texture2D:
 	set(mpt):
@@ -26,8 +26,16 @@ signal updated(id: String)
 	set(ms):
 		_preview_size_label.text = String.humanize_size(ms)
 		module_size = ms
+@export var module_file_path: String:
+	get():
+		if not module_file_path:
+			return OS.get_user_data_dir().path_join("modules").path_join(module_id) + ".nmod"
+		else:
+			return module_file_path
 @export var module_id: String
 @export var module_source: String
+
+
 
 @export_group("Internal")
 @export var _preview_name_label: Label
@@ -44,13 +52,16 @@ var downloading: bool = false
 var is_local: bool = false
 var update_available: bool = false
 var update_url: String
+var update_version: String
+var update_size: int
+
 
 
 static func from_dict(dict: Dictionary) -> ModuleItem:
 	var module_item: ModuleItem = MODULE_ITEM.duplicate().instantiate()
 	module_item.module_name = dict.get("name")
 	module_item.module_description = dict.get("description")
-	module_item.module_version = "v%s.%s.%s" % [dict.get("major_version"), dict.get("minor_version"), dict.get("patch_number")]
+	module_item.module_version = "%s.%s.%s" % [dict.get("major_version"), dict.get("minor_version"), dict.get("patch_number")]
 	module_item.module_id = dict.get("id")
 	return module_item
 
@@ -59,7 +70,7 @@ static func from_module(module: Module) -> ModuleItem:
 	var module_item: ModuleItem = MODULE_ITEM.duplicate().instantiate()
 	module_item.module_name = module.name
 	module_item.module_description = module.description
-	module_item.module_version = "v%s.%s.%s" % [module.major_version, module.minor_version, module.patch_number]
+	module_item.module_version = "%s.%s.%s" % [module.major_version, module.minor_version, module.patch_number]
 	module_item.module_id = module.id
 	return module_item
 
@@ -73,12 +84,18 @@ func _process(_delta: float) -> void:
 		_while_downloading()
 
 
-func set_update_available(source_url: String) -> void:
+func set_update_available(source_url: String, module_update_size: int, module_update_version: String) -> void:
 	update_available = true
 	_update_available_text.show()
 	is_local = false
 	update_url = source_url
+	update_version = module_update_version
+	update_size = module_update_size
 	_check_downloadable()
+
+
+func get_module_version_string() -> String:
+	return module_version
 
 
 func _check_downloadable() -> void:
@@ -107,24 +124,22 @@ func _on_download_completed(result: int, response: int, _headers: PackedStringAr
 		push_error("Could not download module! ", result, response)
 		return
 	
-	if not DirAccess.dir_exists_absolute(get_module_file_path().get_base_dir()):
-		DirAccess.make_dir_recursive_absolute(get_module_file_path().get_base_dir())
+	if not DirAccess.dir_exists_absolute(module_file_path.get_base_dir()):
+		DirAccess.make_dir_recursive_absolute(module_file_path.get_base_dir())
 	
-	var file: FileAccess = FileAccess.open(get_module_file_path(), FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open(module_file_path, FileAccess.WRITE)
 	file.store_buffer(body)
 	file.close()
 	
 	if update_available:
 		updated.emit(module_id)
 		update_available = false
+		module_version = update_version
+		module_size = update_size
 	
 	downloading = false
 	is_local = true
 	_download_progress_bar.hide()
 	_update_available_text.hide()
-	installed_to_local.emit(module_id, get_module_file_path())
+	installed_to_local.emit(module_id, module_file_path)
 	_check_downloadable()
-
-
-func get_module_file_path() -> String:
-	return OS.get_user_data_dir().path_join("modules").path_join(module_id) + ".nmod"
