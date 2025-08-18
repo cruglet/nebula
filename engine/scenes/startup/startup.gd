@@ -52,7 +52,7 @@ func load_and_validate_modules() -> void:
 		
 		var m: Module = Module.load(module_path)
 		m.set_meta(&"path", module_path)
-		Singleton.loaded_modules.set(m.id, m)
+		Singleton.register_module(m)
 	
 	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, modules)
 

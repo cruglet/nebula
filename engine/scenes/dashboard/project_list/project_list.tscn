@@ -12,7 +12,7 @@ shader_parameter/blur_amount = 2.50000011875
 shader_parameter/blur_quality = 4
 shader_parameter/dither_strength = 0.1
 
-[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window")]
+[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -21,6 +21,7 @@ grow_vertical = 2
 script = ExtResource("1_j7fao")
 no_projects = NodePath("NoProjects")
 projects = NodePath("ProjectList")
+project_count_label = NodePath("ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ProjectNumLabel")
 project_list_vbox = NodePath("ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
 blur_overlay = NodePath("BlurOverlay")
 new_project_handler = NodePath("NewProjectWindow/NewProject")
@@ -29,6 +30,7 @@ loading_window = NodePath("LoadingWindow")
 metadata/_edit_lock_ = true
 
 [node name="NoProjects" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -90,7 +92,6 @@ text = "Import"
 icon = ExtResource("3_e6idx")
 
 [node name="ProjectList" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -122,6 +123,7 @@ theme_override_constants/separation = 15
 
 [node name="ProjectNumLabel" type="Label" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Projects - 0"
 
 [node name="Control" type="Control" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
