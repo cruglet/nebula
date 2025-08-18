@@ -12,7 +12,7 @@ shader_parameter/blur_amount = 2.50000011875
 shader_parameter/blur_quality = 4
 shader_parameter/dither_strength = 0.1
 
-[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window")]
+[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -21,6 +21,7 @@ grow_vertical = 2
 script = ExtResource("1_j7fao")
 no_projects = NodePath("NoProjects")
 projects = NodePath("ProjectList")
+project_count_label = NodePath("ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ProjectNumLabel")
 project_list_vbox = NodePath("ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
 blur_overlay = NodePath("BlurOverlay")
 new_project_handler = NodePath("NewProjectWindow/NewProject")

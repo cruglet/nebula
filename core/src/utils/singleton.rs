@@ -1,11 +1,13 @@
 use godot::{classes::Engine, prelude::*};
-use crate::utils::{core_settings::CoreSettings, module::Module};
+
+use crate::utils::module::Module;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
 pub(crate) struct Singleton {
-    #[export]
-    loaded_modules: Dictionary,
+    loaded_modules_dict: Dictionary,
+    loaded_modules_arr: Array<Gd<Module>>,
+    pub loaded_project_path: GString,
 
     base: Base<Node>
 }
@@ -14,7 +16,9 @@ pub(crate) struct Singleton {
 impl INode for Singleton {
     fn init(base: Base<Node>) -> Self {
         Self {
-            loaded_modules: Dictionary::new(),
+            loaded_modules_dict: Dictionary::new(),
+            loaded_modules_arr: Array::new(),
+            loaded_project_path: GString::new(),
             base,
         }
     }
@@ -22,6 +26,60 @@ impl INode for Singleton {
 
 #[godot_api]
 impl Singleton {
+    #[func]
+    pub fn register_module(&mut self, module: Gd<Module>) {
+        self.loaded_modules_dict.set(module.bind().get_module_id(), self.loaded_modules_arr.len() as i32);
+        self.loaded_modules_arr.push(&module);
+    }
+
+    #[func]
+    pub fn get_module(&mut self, id_or_index: Variant) -> Gd<Module> {
+        let mut index: i32 = 0;
+        if let Ok(module_id) = id_or_index.try_to::<GString>() {
+            if let Some(i) = self.loaded_modules_dict.get(module_id) {
+                index = i.try_to::<i32>().unwrap();
+            }
+        } else if let Ok(module_index) = id_or_index.try_to::<i32>() {
+            index = module_index;
+        }
+
+        if let Some(module) = self.loaded_modules_arr.get(index as usize) {
+            return module.to_godot();
+        }
+        Module::new()
+    }
+
+    #[func]
+    pub fn remove_module(&mut self, id_or_index: Variant) {
+        let mut index: i32 = 0;
+        if let Ok(module_id) = id_or_index.try_to::<GString>() {
+            if let Some(i) = self.loaded_modules_dict.get(module_id) {
+                index = i.try_to::<i32>().unwrap();
+            }
+        } else if let Ok(module_index) = id_or_index.try_to::<i32>() {
+            index = module_index;
+        }
+
+        if let Some(module) = self.loaded_modules_arr.get(index as usize) {
+            self.loaded_modules_arr.remove(index as usize);
+            self.loaded_modules_dict.remove(module.bind().get_module_id());
+        }
+    }
+
+    #[func]
+    pub fn get_modules(&mut self) -> Array<Gd<Module>> {
+        self.loaded_modules_arr.to_godot()
+    }
+
+    #[func]
+    pub fn get_module_ids(&self) -> Array<GString> {
+        self.loaded_modules_dict
+            .keys_array()
+            .iter_shared()
+            .map(|v| v.to::<GString>())
+            .collect()
+    }
+
     pub fn singleton() -> Gd<Self> {
         Engine::singleton().get_singleton(&Self::class_name().to_string_name()).unwrap().cast::<Self>()
     }

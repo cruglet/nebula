@@ -62,7 +62,7 @@ func _load_local_module(module_path: String) -> void:
 	var module_item: ModuleItem = ModuleItem.from_module(module)
 	var module_file: FileAccess = FileAccess.open(module_path, FileAccess.READ)
 	module_item.module_size = module_file.get_length()
-	module_item.module_preview_texture = load(module.module_image)
+	module_item.module_preview_texture = QuickLoader.load_image(module.module_image)
 	module_item.is_local = true
 	module_item.module_file_path = module_path
 	module_item.updated.connect(func(_id: String) -> void:
@@ -145,7 +145,7 @@ func _on_module_downloaded(id: String, path: String) -> void:
 	var module_list: Array = CoreSettings.get(CoreSettings.SETTING_MODULE_LIST)
 	module_list.append(path)
 	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, module_list)
-	Singleton.loaded_modules.set(id, Module.load(path))
+	Singleton.register_module(Module.load(path))
 
 
 func _on_could_not_connect() -> void:
@@ -154,7 +154,6 @@ func _on_could_not_connect() -> void:
 
 
 func _on_import_local_button_pressed() -> void:
-	print(Singleton.loaded_modules)
 	print(CoreSettings.get(CoreSettings.SETTING_MODULE_LIST))
 	open_module_file_dialog.show()
 
@@ -165,7 +164,6 @@ func _on_open_module_file_dialog_file_selected(path: String) -> void:
 	
 	var module: Module = Module.load(path)
 	
-	if module and not (module.id in Singleton.loaded_modules):
-		Singleton.loaded_modules.set(module.id, module)
-		print(CoreSettings.append(CoreSettings.SETTING_MODULE_LIST, path))
+	if module and not (module.id in Singleton.get_module_ids()):
+		Singleton.register_module(module)
 		_load_local_module(path)

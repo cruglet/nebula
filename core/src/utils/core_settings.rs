@@ -63,13 +63,8 @@ impl CoreSettings {
             return false;
         }
 
-        let config_file_op: Option<Gd<FileAccess>> = FileAccess::open(&CoreSettings::get_path(), ModeFlags::READ);
-
-        if config_file_op.is_some() {
-            let config_file = config_file_op.unwrap();
-            if config_file.get_var().get_type() == VariantType::DICTIONARY {
-                return true;
-            };
+        if let Some(config_file) = FileAccess::open(&CoreSettings::get_path(), ModeFlags::READ) && config_file.get_var().get_type() == VariantType::DICTIONARY {
+            return true;
         }
 
         false
@@ -94,7 +89,7 @@ impl CoreSettings {
 
     #[func]
     pub fn set(key: i32, value: Variant) -> bool {
-        let mut data: Dictionary = Dictionary::new();
+        let mut data: Dictionary = Self::_get_data();
 
         data.set(key, value);
 

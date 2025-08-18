@@ -15,7 +15,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="NewProject" type="PanelContainer" node_paths=PackedStringArray("project_preview", "project_name_line_edit", "project_path_line_edit", "no_module_label", "module_options_container", "module_option_button", "error_label", "create_button")]
+[node name="NewProject" type="PanelContainer" node_paths=PackedStringArray("project_preview", "project_name_line_edit", "project_path_line_edit", "module_options_container", "module_option_button", "error_label", "create_button")]
 anchors_preset = -1
 offset_right = 540.0
 offset_bottom = 442.0
@@ -27,7 +27,6 @@ script = ExtResource("1_ivkhn")
 project_preview = NodePath("MarginContainer/VBoxContainer/ProjectItem")
 project_name_line_edit = NodePath("MarginContainer/VBoxContainer/ProjectNameLineEdit")
 project_path_line_edit = NodePath("MarginContainer/VBoxContainer/ProjectPathLineEdit")
-no_module_label = NodePath("MarginContainer/VBoxContainer/ErrorLabel")
 module_options_container = NodePath("MarginContainer/VBoxContainer/ModuleOptionsContainer")
 module_option_button = NodePath("MarginContainer/VBoxContainer/ModuleOptionsContainer/ModuleOptionButton")
 error_label = NodePath("MarginContainer/VBoxContainer/ErrorLabel")
@@ -180,8 +179,8 @@ text = "Create"
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/ProjectNameLineEdit" to="." method="_on_project_name_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ProjectPathLineEdit/ProjectDirButton" to="." method="_on_project_dir_button_pressed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ModuleOptionsContainer/ModuleOptionButton" to="." method="_on_module_option_button_item_selected"]
-[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_clicked"]
-[connection signal="meta_hover_ended" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_hover_ended"]
-[connection signal="meta_hover_started" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_no_module_label_meta_hover_started"]
+[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_error_label_meta_clicked"]
+[connection signal="meta_hover_ended" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_error_label_meta_hover_ended"]
+[connection signal="meta_hover_started" from="MarginContainer/VBoxContainer/ErrorLabel" to="." method="_on_error_label_meta_hover_started"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]

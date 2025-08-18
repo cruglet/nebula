@@ -1,6 +1,6 @@
 use godot::prelude::*;
 use godot::classes::file_access::ModeFlags;
-use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource, ResourceUid};
+use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource, ResourceUid, Os};
 use godot::global::{bytes_to_var_with_objects, var_to_bytes_with_objects};
 
 #[derive(GodotClass)]
@@ -28,7 +28,8 @@ pub struct Module {
         hint_string = "Export Module"
     )]
     _generate_mod_fn: Callable,
-
+    
+    #[base]
     base: Base<Resource>,
 }
 
@@ -92,7 +93,7 @@ impl IResource for Module {
 #[godot_api]
 impl Module {
     #[func]
-    fn new() -> Gd<Module> {
+    pub fn new() -> Gd<Module> {
         Gd::from_init_fn(|base| {
             Module {
                 name: GString::new(),
@@ -141,7 +142,7 @@ impl Module {
         }
 
         let offset: u64 = (4 + meta_size).into();
-        let success: bool = ProjectSettings::singleton().load_resource_pack_ex(&path.to_string()).replace_files(true).offset(offset.try_into().unwrap()).done();
+        let success: bool = ProjectSettings::singleton().load_resource_pack_ex(&path.to_string()).replace_files(!Os::singleton().is_debug_build()).offset(offset.try_into().unwrap()).done();
 
         if success {
             let mut module_data = m.bind_mut();
@@ -158,6 +159,10 @@ impl Module {
     #[func]
     fn get_version_string(&self) -> GString {
         format!("{}.{}.{}", self.major_version, self.minor_version, self.patch_number).to_godot()
+    }
+
+    pub fn get_module_id(&self) -> GString {
+        self.id.to_godot()
     }
 
     #[func]

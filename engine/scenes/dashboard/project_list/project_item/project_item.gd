@@ -1,6 +1,8 @@
 class_name ProjectItem
 extends Button
 
+signal open_project_request(instance: ProjectItem)
+
 @export var is_preview: bool = false:
 	set(ip):
 		if ip:
@@ -106,3 +108,9 @@ func _on_mouse_entered() -> void:
 
 func _on_mouse_exited() -> void:
 	_hide_button.call_deferred()
+
+
+func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.double_click:
+			open_project_request.emit(self)

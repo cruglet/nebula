@@ -1,5 +1,8 @@
 extends PanelContainer
 
+const VALIDATION_ERR_NO_MODULES: String = "No modules found! Please download or import a module."
+const VALIDATION_ERR_OCCUPIED: String = "A directory with files inside already exists with this name."
+
 signal create_request(path: String, module: Module)
 signal cancel_pressed
 signal switch_to_module_request
@@ -7,7 +10,6 @@ signal switch_to_module_request
 @export var project_preview: ProjectItem
 @export var project_name_line_edit: LineEdit
 @export var project_path_line_edit: LineEdit
-@export var no_module_label: RichTextLabel
 @export var module_options_container: VBoxContainer
 @export var module_option_button: OptionButton
 @export var error_label: RichTextLabel
@@ -21,7 +23,14 @@ func _ready() -> void:
 	dir_regex = RegEx.create_from_string("^(?!^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\\.|$))[^<>:\"/\\\\|?*\\x00-\\x1F]{1,255}$")
 	set_project_name("My Project")
 	repopulate_module_options()
-	validate_project_creation()
+
+
+func get_project_name() -> String:
+	return project_preview.project_name
+
+
+func get_project_path() -> String:
+	return project_preview.project_path
 
 
 func set_project_name(p_name: String) -> void:
@@ -40,21 +49,20 @@ func set_project_name(p_name: String) -> void:
 func repopulate_module_options() -> void:
 	module_option_button.clear()
 	module_project_images.clear()
-	for module_path: String in Singleton.loaded_modules:
-		var module: Module = Singleton.loaded_modules.get(module_path)
+	for module: Module in Singleton.get_modules():
 		module_option_button.add_item(module.name)
 		module_project_images.append(module.project_image)
-	if Singleton.loaded_modules.size() > 0:
+	if Singleton.get_modules().size() > 0:
 		_switch_module(0)
 
 
 func validate_project_creation() -> void:
-	if Singleton.loaded_modules.size() == 0:
-		validation_error("[url]No modules found! Please download or import a module.[/url]")
+	if Singleton.get_modules().size() == 0:
+		validation_error("[url]%s[/url]" % VALIDATION_ERR_NO_MODULES)
 		return
 	if DirAccess.dir_exists_absolute(project_preview.project_path):
 		if DirAccess.get_files_at(project_preview.project_path):
-			validation_error("A directory with files inside already exists with this name.")
+			validation_error(VALIDATION_ERR_OCCUPIED)
 			return
 	
 	error_label.hide()
@@ -69,8 +77,8 @@ func validation_error(err: String) -> void:
 
 func _switch_module(index: int) -> void:
 	if not module_project_images.is_empty():
-		project_preview.project_banner_texture = load(module_project_images[index])
-		selected_module = Singleton.loaded_modules.get(index)
+		project_preview.project_banner_texture = QuickLoader.load_image(module_project_images[index])
+		selected_module = Singleton.get_module(index)
 
 
 func _on_cancel_button_pressed() -> void:
@@ -88,27 +96,14 @@ func _on_project_dir_button_pressed() -> void:
 	pass
 
 
-func _on_no_module_label_meta_hover_started(_meta: Variant) -> void:
-	no_module_label.meta_underlined = true
-
-
-func _on_no_module_label_meta_hover_ended(_meta: Variant) -> void:
-	no_module_label.meta_underlined = false
-
-
-func _on_no_module_label_meta_clicked(_meta: Variant) -> void:
-	cancel_pressed.emit()
-	switch_to_module_request.emit()
-
-
 func _on_visibility_changed() -> void:
-	if Singleton.loaded_modules.size() > 0:
-		no_module_label.hide()
+	if Singleton.get_modules().size() > 0:
 		module_options_container.show()
-		repopulate_module_options()
 	else:
-		no_module_label.show()
 		module_options_container.hide()
+	
+	repopulate_module_options()
+	validate_project_creation()
 
 
 func _on_module_option_button_item_selected(index: int) -> void:
@@ -117,3 +112,21 @@ func _on_module_option_button_item_selected(index: int) -> void:
 
 func _on_create_button_pressed() -> void:
 	create_request.emit(project_preview.project_path, selected_module)
+
+
+func _on_error_label_meta_hover_started(_meta: Variant) -> void:
+	error_label.meta_underlined = true
+
+
+func _on_error_label_meta_hover_ended(_meta: Variant) -> void:
+	error_label.meta_underlined = false
+
+
+func _on_error_label_meta_clicked(meta: Variant) -> void:
+	if meta == VALIDATION_ERR_NO_MODULES:
+		cancel_pressed.emit()
+		switch_to_module_request.emit()
+
+
+func _on_error_label_gui_input(event: InputEvent) -> void:
+	print(event)
