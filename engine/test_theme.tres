@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="nTheme" load_steps=2 format=3 uid="uid://cjcw1l1qlkf7m"]
+
+[ext_resource type="Script" uid="uid://dif6fkyslpa50" path="res://test/n_theme.gd" id="1_lib2y"]
+
+[resource]
+script = ExtResource("1_lib2y")
+colorscheme_2 = Color(0, 0, 0, 1)
+metadata/_custom_type_script = "uid://dif6fkyslpa50"

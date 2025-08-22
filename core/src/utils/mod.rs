@@ -6,4 +6,5 @@ pub(crate) mod module_request;
 pub(crate) mod module;
 pub(crate) mod quick_loader;
 pub mod project_data;
+pub mod n_theme;
 

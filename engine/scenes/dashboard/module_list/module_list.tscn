@@ -115,6 +115,7 @@ horizontal_alignment = 1
 [node name="ManageReposButton" parent="." instance=ExtResource("1_14qnd")]
 visible = false
 layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -56.0
