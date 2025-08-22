@@ -142,7 +142,7 @@ impl Module {
         }
 
         let offset: u64 = (4 + meta_size).into();
-        let success: bool = ProjectSettings::singleton().load_resource_pack_ex(&path.to_string()).replace_files(!Os::singleton().is_debug_build()).offset(offset.try_into().unwrap()).done();
+        let success: bool = ProjectSettings::singleton().load_resource_pack_ex(&path.to_string()).replace_files(Os::singleton().has_feature("realease")).offset(offset.try_into().unwrap()).done();
 
         if success {
             let mut module_data = m.bind_mut();
