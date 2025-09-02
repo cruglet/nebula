@@ -2,23 +2,23 @@ core/target/
 core/Cargo.lock
 core/**/*.rs.bk
 
-engine/.import/
-engine/.godot/
-engine/android/
-engine/*.import
-engine/*.log
+client/.import/
+client/.godot/
+client/android/
+client/*.import
+client/*.log
 
-engine/.mono/
-engine/.mono_cache/
-engine/.godot/
-engine/.mono/metadata/
-engine/*.mono
+client/.mono/
+client/.mono_cache/
+client/.godot/
+client/.mono/metadata/
+client/*.mono
 
-engine/*.godot
-engine/*.tmp
-engine/*.temp
+client/*.godot
+client/*.tmp
+client/*.temp
 
-!engine/project.godot
+!client/project.godot
 
 *.DS_Store
 *.swp
