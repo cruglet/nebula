@@ -128,8 +128,10 @@ grow_horizontal = 2
 custom_minimum_size = Vector2(6, 0)
 layout_mode = 2
 
-[node name="Button" type="Button" parent="InfoContainer"]
+[node name="InfoButton" type="Button" parent="InfoContainer"]
 layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
 theme_type_variation = &"nButtonIconFlat"
 theme_override_constants/icon_max_width = 110
 theme_override_constants/align_to_largest_stylebox = 1
