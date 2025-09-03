@@ -1,6 +1,6 @@
 use std::fs;
 use godot::prelude::*;
-use godot::classes::{Object, IObject, Image, ImageTexture, FileAccess, ResourceUid};
+use godot::classes::{Object, IObject, Image, ImageTexture, FileAccess, ResourceUid, Texture2D};
 
 
 #[derive(GodotClass)]
@@ -29,16 +29,12 @@ impl QuickActions {
     }
 
     #[func]
-    fn load_image_with_fallback(path: GString, fallback_path: GString) -> Gd<ImageTexture> {
+    fn load_image_with_fallback(path: GString, fallback_image: Gd<Texture2D>) -> Gd<Texture2D> {
         if let Some(img) = QuickActions::_load_image(path) {
-            return img;
-        }
-        
-        if let Some(fb) = QuickActions::_load_image(fallback_path) {
-            return fb;
+            return img.upcast();
         }
 
-        ImageTexture::new_gd()
+        fallback_image
     }
 
     fn _load_image(path: GString) -> Option<Gd<ImageTexture>> {
