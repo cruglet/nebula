@@ -77,7 +77,7 @@ func validation_error(err: String) -> void:
 
 func _switch_module(index: int) -> void:
 	if not module_project_images.is_empty():
-		project_preview.project_banner_texture = QuickLoader.load_image(module_project_images[index])
+		project_preview.project_banner_texture = QuickActions.load_image(module_project_images[index])
 		selected_module = Singleton.get_module(index)
 
 

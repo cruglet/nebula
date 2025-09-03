@@ -45,7 +45,7 @@ layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer"]
+[node name="SearchLineEdit" type="LineEdit" parent="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(400, 40)
 layout_mode = 2
 placeholder_text = "Search..."
@@ -115,6 +115,7 @@ horizontal_alignment = 1
 [node name="ManageReposButton" parent="." instance=ExtResource("1_14qnd")]
 visible = false
 layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -56.0
@@ -140,5 +141,6 @@ filters = PackedStringArray("*.nmod;Nebula Module")
 show_hidden_files = true
 use_native_dialog = true
 
+[connection signal="text_changed" from="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/SearchLineEdit" to="." method="_on_search_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/ImportLocalButton" to="." method="_on_import_local_button_pressed"]
 [connection signal="file_selected" from="OpenModuleFileDialog" to="." method="_on_open_module_file_dialog_file_selected"]

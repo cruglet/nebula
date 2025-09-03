@@ -91,7 +91,7 @@ func refresh_project_list() -> void:
 		project_item.project_path = project_path
 		
 		var module: Module = Singleton.get_module(project_data.get("module"))
-		project_item.project_banner_texture = QuickLoader.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
+		project_item.project_banner_texture = QuickActions.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
 		
 		project_item.open_project_request.connect(_on_open_project_request)
 		project_item.remove_project_request.connect(_on_remove_project_request)
@@ -191,6 +191,6 @@ func _on_remove_project_remove_button_pressed() -> void:
 	check_for_no_projects()
 	
 	if delete_contents_checkbox.button_pressed:
-		QuickFS.delete_folder_recursively(project_path)
+		QuickActions.delete_folder_recursively(project_path)
 	
 	remove_project_window.hide()

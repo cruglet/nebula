@@ -62,7 +62,7 @@ func _load_local_module(module_path: String) -> void:
 	var module_item: ModuleItem = ModuleItem.from_module(module)
 	var module_file: FileAccess = FileAccess.open(module_path, FileAccess.READ)
 	module_item.module_size = module_file.get_length()
-	module_item.module_preview_texture = QuickLoader.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
+	module_item.module_preview_texture = QuickActions.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
 	module_item.is_local = true
 	module_item.module_file_path = module_path
 	module_item.updated.connect(func(_id: String) -> void:
@@ -129,8 +129,8 @@ func _on_module_preview_image_fetched(img_data: PackedByteArray, module_id: Stri
 
 
 func update_module_count() -> void:
-	installed_label.text = "Installed: %s" % local_flow_container.get_child_count()
-	available_label.text = "Available: %s" % online_flow_container.get_child_count()
+	installed_label.text = "Installed: %s" % QuickActions.get_visible_children(local_flow_container).size()
+	available_label.text = "Available: %s" % QuickActions.get_visible_children(online_flow_container).size()
 
 
 func _on_module_downloaded(id: String, path: String) -> void:
@@ -166,3 +166,14 @@ func _on_open_module_file_dialog_file_selected(path: String) -> void:
 	if module and not (module.id in Singleton.get_module_ids()):
 		Singleton.register_module(module)
 		_load_local_module(path)
+
+
+func _on_search_line_edit_text_changed(new_text: String) -> void:
+	for module_item_container: Container in [local_flow_container, online_flow_container]:
+		for child: ModuleItem in module_item_container.get_children():
+			if new_text.is_empty() or child.matches(new_text):
+				child.show()
+			else:
+				child.hide()
+	
+	update_module_count()

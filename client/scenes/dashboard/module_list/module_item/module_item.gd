@@ -56,7 +56,6 @@ var update_version: String
 var update_size: int
 
 
-
 static func from_dict(dict: Dictionary) -> ModuleItem:
 	var module_item: ModuleItem = MODULE_ITEM.duplicate().instantiate()
 	module_item.module_name = dict.get("name")
@@ -82,6 +81,15 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if downloading:
 		_while_downloading()
+
+
+func matches(search_string: String) -> bool:
+	var search_str: String = search_string.to_lower().to_snake_case()
+	if module_name.to_snake_case().begins_with(search_str):
+		return true
+	elif module_id.begins_with(search_str):
+		return true
+	return false
 
 
 func set_update_available(source_url: String, module_update_size: int, module_update_version: String) -> void:
