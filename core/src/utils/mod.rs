@@ -4,7 +4,6 @@ pub(crate) mod core_settings;
 pub(crate) mod git;
 pub(crate) mod module_request;
 pub(crate) mod module;
-pub(crate) mod quick_loader;
-pub(crate) mod quick_fs;
+pub(crate) mod quick_actions;
 pub mod project_data;
 
