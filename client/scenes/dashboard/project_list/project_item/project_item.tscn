@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://4xxbc7xne4f3" path="res://meta/images/project_placeholder.png" id="3_sy1hl"]
 [ext_resource type="Texture2D" uid="uid://d3t5rvdtv5rf3" path="res://meta/icons/delete.svg" id="3_yvc6r"]
 
-[node name="ProjectItem" type="Button" node_paths=PackedStringArray("project_name_label", "project_path_label", "project_banner_rect", "delete_button", "gui_block")]
+[node name="ProjectItem" type="Button" node_paths=PackedStringArray("project_name_label", "project_path_label", "project_banner_rect", "remove_button", "gui_block")]
 clip_children = 2
 custom_minimum_size = Vector2(500, 65)
 anchors_preset = 10
@@ -16,7 +16,7 @@ script = ExtResource("2_sy1hl")
 project_name_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectName")
 project_path_label = NodePath("HBoxContainer/MarginContainer/VBoxContainer/ProjectPath")
 project_banner_rect = NodePath("HBoxContainer/ProjectBanner")
-delete_button = NodePath("DeleteButton")
+remove_button = NodePath("RemoveButton")
 gui_block = NodePath("GUIBlock")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
@@ -60,7 +60,7 @@ texture = ExtResource("3_sy1hl")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="DeleteButton" type="Button" parent="."]
+[node name="RemoveButton" type="Button" parent="."]
 self_modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = -1
@@ -93,8 +93,8 @@ grow_vertical = 2
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
-[connection signal="focus_entered" from="DeleteButton" to="." method="_on_delete_button_focus_entered"]
-[connection signal="focus_exited" from="DeleteButton" to="." method="_on_delete_button_focus_exited"]
-[connection signal="mouse_entered" from="DeleteButton" to="." method="_on_delete_button_mouse_entered"]
-[connection signal="mouse_exited" from="DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="focus_entered" from="RemoveButton" to="." method="_on_remove_button_focus_entered"]
+[connection signal="focus_exited" from="RemoveButton" to="." method="_on_remove_button_focus_exited"]
+[connection signal="mouse_entered" from="RemoveButton" to="." method="_on_remove_button_mouse_entered"]
+[connection signal="mouse_exited" from="RemoveButton" to="." method="_on_remove_button_mouse_exited"]
+[connection signal="pressed" from="RemoveButton" to="." method="_on_remove_button_pressed"]

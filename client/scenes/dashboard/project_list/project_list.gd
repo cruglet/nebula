@@ -94,7 +94,7 @@ func refresh_project_list() -> void:
 		project_item.project_banner_texture = QuickLoader.load_image(module.project_image)
 		
 		project_item.open_project_request.connect(_on_open_project_request)
-		project_item.delete_project_request.connect(_on_delete_project_request)
+		project_item.remove_project_request.connect(_on_remove_project_request)
 		
 		project_list_vbox.add_child(project_item)
 		project_item_map.set(project_path, project_item)
@@ -117,7 +117,7 @@ func _on_open_project_request(item: ProjectItem) -> void:
 	get_tree().change_scene_to_file(module.entry_scene)
 
 
-func _on_delete_project_request(item: ProjectItem) -> void:
+func _on_remove_project_request(item: ProjectItem) -> void:
 	current_project_item = item
 	remove_project_window.show()
 	show_blur()
