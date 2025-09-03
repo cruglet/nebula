@@ -1,11 +1,19 @@
-[gd_scene load_steps=5 format=3 uid="uid://cyjfqss5ytw51"]
+[gd_scene load_steps=8 format=3 uid="uid://cyjfqss5ytw51"]
 
 [ext_resource type="Script" uid="uid://c03pnbe0altuu" path="res://scenes/dashboard/module_list/module_list.gd" id="1_5v4q3"]
 [ext_resource type="PackedScene" uid="uid://dm0udoa17mh36" path="res://components/ui/icon_sidebar_button/icon_sidebar_button.tscn" id="1_14qnd"]
 [ext_resource type="Texture2D" uid="uid://ksbs0rl6gsvh" path="res://meta/icons/module.svg" id="1_emutn"]
 [ext_resource type="Texture2D" uid="uid://dkwilsyy227q0" path="res://meta/icons/repo.svg" id="3_l3md8"]
+[ext_resource type="Shader" uid="uid://c8srm6epgj1mo" path="res://components/shader/blur.gdshader" id="5_8qwoq"]
+[ext_resource type="Texture2D" uid="uid://4xxbc7xne4f3" path="res://meta/images/project_placeholder.png" id="5_bvxfp"]
 
-[node name="ModuleList" type="Panel" node_paths=PackedStringArray("fetching_label", "installed_label", "available_label", "local_flow_container", "online_flow_container", "open_module_file_dialog")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yp1ne"]
+shader = ExtResource("5_8qwoq")
+shader_parameter/blur_amount = 2.50000011875
+shader_parameter/blur_quality = 4
+shader_parameter/dither_strength = 0.1
+
+[node name="ModuleList" type="Panel" node_paths=PackedStringArray("fetching_label", "installed_label", "available_label", "local_flow_container", "online_flow_container", "blur_overlay", "open_module_file_dialog", "module_info_window", "module_info_banner", "module_info_name_label", "module_info_description_label", "module_info_authors_label", "module_info_version_label", "module_info_id_label", "module_info_size_label")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -17,7 +25,16 @@ installed_label = NodePath("MarginContainer/ScrollContainer/VBoxContainer/HBoxCo
 available_label = NodePath("MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer3/AvailableLabel")
 local_flow_container = NodePath("MarginContainer/ScrollContainer/VBoxContainer/LocalFlowContainer")
 online_flow_container = NodePath("MarginContainer/ScrollContainer/VBoxContainer/OnlineFlowContainer")
+blur_overlay = NodePath("BlurOverlay")
 open_module_file_dialog = NodePath("OpenModuleFileDialog")
+module_info_window = NodePath("ModuleInfoWindow")
+module_info_banner = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/Panel/ModuleTexture")
+module_info_name_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/ModuleName")
+module_info_description_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/ModuleDescription")
+module_info_authors_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/Authors")
+module_info_version_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/Version")
+module_info_id_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/ID")
+module_info_size_label = NodePath("ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/Size")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -141,6 +158,141 @@ filters = PackedStringArray("*.nmod;Nebula Module")
 show_hidden_files = true
 use_native_dialog = true
 
+[node name="BlurOverlay" type="ColorRect" parent="."]
+visible = false
+top_level = true
+material = SubResource("ShaderMaterial_yp1ne")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModuleInfoWindow" type="NebulaWindow" parent="."]
+title_text = "Module Info"
+visible = false
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 11.0
+
+[node name="PanelContainer" type="PanelContainer" parent="ModuleInfoWindow"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="ModuleInfoWindow/PanelContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"nPanelSecondary"
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ModuleInfoWindow/PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Panel" type="Panel" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+clip_children = 1
+custom_minimum_size = Vector2(240, 120)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="ModuleTexture" type="TextureRect" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/Panel"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_bvxfp")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Control" type="Control" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ModuleName" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Nebula Module"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ModuleDescription" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelThin"
+text = "This is the description for the module!"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="AuthorsHeader" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "Authors"
+
+[node name="Authors" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Cruglet, Cruglet2, Cruglet3"
+
+[node name="HSeparator2" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="VersionHeader" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "Current Version"
+
+[node name="Version" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "v0.0.0"
+
+[node name="HSeparator3" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="IDHeader" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "ID"
+
+[node name="ID" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "module_id"
+
+[node name="HSeparator5" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SizeHeader" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nLabelSecondary"
+text = "Size"
+
+[node name="Size" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "1.00KiB"
+
+[node name="HSeparator4" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MoreInfoCloseButton" type="Button" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Close"
+
 [connection signal="text_changed" from="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/SearchLineEdit" to="." method="_on_search_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/ImportLocalButton" to="." method="_on_import_local_button_pressed"]
 [connection signal="file_selected" from="OpenModuleFileDialog" to="." method="_on_open_module_file_dialog_file_selected"]
+[connection signal="hide_request" from="ModuleInfoWindow" to="." method="_on_module_info_window_hide_request"]
+[connection signal="pressed" from="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer/MoreInfoCloseButton" to="." method="_on_more_info_close_button_pressed"]

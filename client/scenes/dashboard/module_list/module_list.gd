@@ -12,7 +12,19 @@ const FETCH_TEXT_SPEED: float = 0.5
 @export var available_label: Label
 @export var local_flow_container: FlowContainer
 @export var online_flow_container: FlowContainer
+@export var blur_overlay: ColorRect
 @export var open_module_file_dialog: FileDialog
+
+@export_group("Module Info")
+@export var module_info_window: NebulaWindow
+@export var module_info_banner: TextureRect
+@export var module_info_name_label: Label
+@export var module_info_description_label: Label
+@export var module_info_authors_label: Label
+@export var module_info_version_label: Label
+@export var module_info_id_label: Label
+@export var module_info_size_label: Label
+
 
 var offline: bool = false
 var loading_text_anim_timer: Timer
@@ -48,9 +60,48 @@ func _ready() -> void:
 	module_request.fetch_parallel(INTERNAL_MODULES)
 
 
+func update_module_count() -> void:
+	installed_label.text = "Installed: %s" % QuickActions.get_visible_children(local_flow_container).size()
+	available_label.text = "Available: %s" % QuickActions.get_visible_children(online_flow_container).size()
+
+
 func load_local_modules() -> void:
 	for module_path: String in CoreSettings.get(CoreSettings.SETTING_MODULE_LIST):
 		_load_local_module(module_path)
+
+
+func show_module_info(module_item: ModuleItem) -> void:
+	module_info_name_label.text = module_item.module_name
+	module_info_description_label.text = module_item.module_description
+	module_info_authors_label.text = ", ".join(module_item.module_authors)
+	module_info_version_label.text = "v" + module_item.module_version
+	module_info_id_label.text = module_item.module_id
+	module_info_size_label.text = String.humanize_size(module_item.module_size)
+	module_info_banner.texture = module_item.module_preview_texture
+	show_blur()
+	module_info_window.show()
+
+
+func hide_module_info() -> void:
+	module_info_window.hide()
+
+
+func show_blur() -> void:
+	blur_overlay.material.set_shader_parameter(&"blur_amount", 0.0)
+	blur_overlay.show()
+	
+	var tween: Tween = get_tree().create_tween()
+	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 2.5, 0.25)
+
+
+func hide_blur() -> void:
+	blur_overlay.material.set_shader_parameter(&"blur_amount", 2.5)
+	
+	var tween: Tween = get_tree().create_tween()
+	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 0.0, 0.25)
+	
+	await tween.finished
+	blur_overlay.hide()
 
 
 func _load_local_module(module_path: String) -> void:
@@ -68,6 +119,7 @@ func _load_local_module(module_path: String) -> void:
 	module_item.updated.connect(func(_id: String) -> void:
 		updates_pending -= 1
 	)
+	module_item.more_info_request.connect(_on_module_item_more_info_request)
 	module_file.close()
 	local_loaded_modules.set(module.id, module_item)
 	local_flow_container.add_child(module_item)
@@ -110,6 +162,7 @@ func _on_module_metadata_fetched(data: Dictionary, source_url: String, module_si
 	module_item.module_source = source_url
 	module_item.module_size = module_size
 	module_item.installed_to_local.connect(_on_module_downloaded)
+	module_item.more_info_request.connect(_on_module_item_more_info_request)
 	online_loaded_modules.set(data.id, module_item)
 	online_flow_container.add_child(module_item)
 	update_module_count()
@@ -128,9 +181,8 @@ func _on_module_preview_image_fetched(img_data: PackedByteArray, module_id: Stri
 		online_loaded_images.append(module_id)
 
 
-func update_module_count() -> void:
-	installed_label.text = "Installed: %s" % QuickActions.get_visible_children(local_flow_container).size()
-	available_label.text = "Available: %s" % QuickActions.get_visible_children(online_flow_container).size()
+func _on_module_item_more_info_request(instance: ModuleItem) -> void:
+	show_module_info(instance)
 
 
 func _on_module_downloaded(id: String, path: String) -> void:
@@ -177,3 +229,11 @@ func _on_search_line_edit_text_changed(new_text: String) -> void:
 				child.hide()
 	
 	update_module_count()
+
+
+func _on_module_info_window_hide_request() -> void:
+	hide_blur()
+
+
+func _on_more_info_close_button_pressed() -> void:
+	module_info_window.hide()

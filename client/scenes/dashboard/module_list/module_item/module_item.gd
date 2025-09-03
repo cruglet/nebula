@@ -4,6 +4,7 @@ extends PanelContainer
 const MODULE_ITEM: PackedScene = preload("uid://bs1txkbdc5lg7")
 
 signal installed_to_local(id: String, path: String)
+signal more_info_request(instance: ModuleItem)
 signal updated(id: String)
 
 @export var module_name: String:
@@ -18,6 +19,8 @@ signal updated(id: String)
 	set(mv):
 		_preview_version_label.text = "v" + mv
 		module_version = mv
+	get:
+		return module_version.lstrip('v')
 @export var module_preview_texture: Texture2D:
 	set(mpt):
 		_preview_image_rect.texture = mpt
@@ -35,7 +38,7 @@ signal updated(id: String)
 @export var module_id: String
 @export var module_source: String
 
-
+var module_authors: Array[String]
 
 @export_group("Internal")
 @export var _preview_name_label: Label
@@ -62,6 +65,7 @@ static func from_dict(dict: Dictionary) -> ModuleItem:
 	module_item.module_description = dict.get("description")
 	module_item.module_version = "%s.%s.%s" % [dict.get("major_version"), dict.get("minor_version"), dict.get("patch_number")]
 	module_item.module_id = dict.get("id")
+	module_item.module_authors = dict.get("authors")
 	return module_item
 
 
@@ -71,6 +75,7 @@ static func from_module(module: Module) -> ModuleItem:
 	module_item.module_description = module.description
 	module_item.module_version = "%s.%s.%s" % [module.major_version, module.minor_version, module.patch_number]
 	module_item.module_id = module.id
+	module_item.module_authors = module.authors
 	return module_item
 
 
@@ -82,7 +87,7 @@ func _process(_delta: float) -> void:
 	if downloading:
 		_while_downloading()
 
-
+## Used for searching
 func matches(search_string: String) -> bool:
 	var search_str: String = search_string.to_lower().to_snake_case()
 	if module_name.to_snake_case().begins_with(search_str):
@@ -151,3 +156,7 @@ func _on_download_completed(result: int, response: int, _headers: PackedStringAr
 	_update_available_text.hide()
 	installed_to_local.emit(module_id, module_file_path)
 	_check_downloadable()
+
+
+func _on_more_info_button_pressed() -> void:
+	more_info_request.emit(self)
