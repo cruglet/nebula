@@ -197,6 +197,7 @@ icon = ExtResource("5_pq66u")
 button_label_text = "Modules"
 
 [node name="ThemesButton" parent="TabButtonContainer" instance=ExtResource("4_5ihmn")]
+visible = false
 layout_mode = 2
 icon = ExtResource("6_4jrbh")
 button_label_text = "Themes"
