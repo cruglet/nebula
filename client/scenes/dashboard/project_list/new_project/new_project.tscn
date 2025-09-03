@@ -144,13 +144,13 @@ size_flags_vertical = 4
 theme_override_constants/separation = 20
 
 [node name="ErrorLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
-visible = false
-custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"nRichTextThin"
 theme_override_colors/default_color = Color(1, 0.3019608, 0.3019608, 1)
 bbcode_enabled = true
 text = "Error Message"
+fit_content = true
 horizontal_alignment = 1
 meta_underlined = false
 

@@ -21,9 +21,9 @@ const FETCH_TEXT_SPEED: float = 0.5
 @export var module_info_name_label: Label
 @export var module_info_description_label: Label
 @export var module_info_authors_label: Label
-@export var module_info_version_label: Label
+@export var module_info_version_label: RichTextLabel
 @export var module_info_id_label: Label
-@export var module_info_size_label: Label
+@export var module_info_size_label: RichTextLabel
 
 
 var offline: bool = false
@@ -78,6 +78,19 @@ func show_module_info(module_item: ModuleItem) -> void:
 	module_info_id_label.text = module_item.module_id
 	module_info_size_label.text = String.humanize_size(module_item.module_size)
 	module_info_banner.texture = module_item.module_preview_texture
+	
+	if module_item.update_available:
+		module_info_version_label.text += "[color=#47ff60] -> v" + module_item.update_version
+		
+		var update_text_col: String
+		
+		if module_item.update_size < module_item.module_size:
+			update_text_col = "#47ff60"
+		else:
+			update_text_col = "#ff4d4d"
+		
+		module_info_size_label.text += "[color=%s] -> %s" % [update_text_col, String.humanize_size(module_item.update_size)]
+	
 	show_blur()
 	module_info_window.show()
 
@@ -137,6 +150,7 @@ func _load_local_module(module_path: String) -> void:
 			)
 			online_module_item.free()
 	
+	CoreSettings.append(CoreSettings.SETTING_MODULE_LIST, module_path)
 	update_module_count()
 
 

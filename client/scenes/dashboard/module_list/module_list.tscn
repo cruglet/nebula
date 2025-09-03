@@ -251,9 +251,11 @@ layout_mode = 2
 theme_type_variation = &"nLabelSecondary"
 text = "Current Version"
 
-[node name="Version" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Version" type="RichTextLabel" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+bbcode_enabled = true
 text = "v0.0.0"
+fit_content = true
 
 [node name="HSeparator3" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -277,9 +279,11 @@ layout_mode = 2
 theme_type_variation = &"nLabelSecondary"
 text = "Size"
 
-[node name="Size" type="Label" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Size" type="RichTextLabel" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+bbcode_enabled = true
 text = "1.00KiB"
+fit_content = true
 
 [node name="HSeparator4" type="HSeparator" parent="ModuleInfoWindow/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
