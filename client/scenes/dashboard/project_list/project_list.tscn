@@ -19,10 +19,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_j7fao")
-no_projects = NodePath("NoProjects")
-projects = NodePath("ProjectList")
-project_count_label = NodePath("ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ProjectNumLabel")
-project_list_vbox = NodePath("ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
+no_projects = NodePath("MarginContainer/NoProjects")
+projects = NodePath("MarginContainer/ProjectList")
+project_count_label = NodePath("MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ProjectNumLabel")
+project_list_vbox = NodePath("MarginContainer/ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
 blur_overlay = NodePath("BlurOverlay")
 new_project_handler = NodePath("NewProjectWindow/NewProject")
 new_project_window = NodePath("NewProjectWindow")
@@ -32,17 +32,24 @@ delete_contents_checkbox = NodePath("RemoveProjectWindow/PanelContainer/MarginCo
 import_project_dialog = NodePath("ImportProjectDialog")
 metadata/_edit_lock_ = true
 
-[node name="NoProjects" type="Control" parent="."]
-visible = false
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="NoProjects" type="Control" parent="MarginContainer"]
+visible = false
+layout_mode = 2
 metadata/_edit_lock_ = true
 
-[node name="NoProjectsLabel" type="Label" parent="NoProjects"]
+[node name="NoProjectsLabel" type="Label" parent="MarginContainer/NoProjects"]
 modulate = Color(1, 1, 1, 0.18431373)
 layout_mode = 1
 anchors_preset = -1
@@ -62,7 +69,7 @@ text = "Looks like you don't have any projects set up,
 either CREATE or IMPORT a project."
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="NoProjects"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/NoProjects"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -77,7 +84,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="CreateButton" type="Button" parent="NoProjects/HBoxContainer"]
+[node name="CreateButton" type="Button" parent="MarginContainer/NoProjects/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
@@ -85,7 +92,7 @@ theme_type_variation = &"nButtonPrimary"
 text = "Create"
 icon = ExtResource("2_j7fao")
 
-[node name="ImportButton" type="Button" parent="NoProjects/HBoxContainer"]
+[node name="ImportButton" type="Button" parent="MarginContainer/NoProjects/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
@@ -94,16 +101,11 @@ theme_override_constants/icon_max_width = 18
 text = "Import"
 icon = ExtResource("3_e6idx")
 
-[node name="ProjectList" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="ProjectList" type="Control" parent="MarginContainer"]
+layout_mode = 2
 mouse_filter = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="ProjectList"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/ProjectList"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -115,25 +117,22 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ProjectList/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ProjectList/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ProjectList/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="ProjectNumLabel" type="Label" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ProjectNumLabel" type="Label" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Projects - 0"
 
-[node name="Control" type="Control" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(10, 0)
-layout_mode = 2
-
-[node name="CreateButton" type="Button" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="CreateButton" type="Button" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(120, 30)
 layout_mode = 2
 size_flags_vertical = 4
@@ -141,7 +140,7 @@ mouse_default_cursor_shape = 2
 theme_type_variation = &"nButtonPrimary"
 text = "Create"
 
-[node name="ImportButton" type="Button" parent="ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ImportButton" type="Button" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(120, 30)
 layout_mode = 2
 size_flags_vertical = 4
@@ -149,19 +148,24 @@ mouse_default_cursor_shape = 2
 theme_type_variation = &"nButtonSecondary"
 text = "Import"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ProjectList/MarginContainer/VBoxContainer"]
+[node name="SearchLineEdit" type="LineEdit" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+placeholder_text = "Search..."
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="ProjectList/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_right = 8
 
-[node name="ProjectListVBox" type="VBoxContainer" parent="ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer"]
+[node name="ProjectListVBox" type="VBoxContainer" parent="MarginContainer/ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -285,10 +289,11 @@ mouse_default_cursor_shape = 2
 theme_type_variation = &"nButtonDanger"
 text = "Remove"
 
-[connection signal="pressed" from="NoProjects/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
-[connection signal="pressed" from="NoProjects/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
-[connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
-[connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="pressed" from="MarginContainer/NoProjects/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="MarginContainer/NoProjects/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="text_changed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/SearchLineEdit" to="." method="_on_search_line_edit_text_changed"]
 [connection signal="file_selected" from="ImportProjectDialog" to="." method="_on_import_project_dialog_file_selected"]
 [connection signal="hide_request" from="NewProjectWindow" to="." method="_on_nebula_window_hide_request"]
 [connection signal="cancel_pressed" from="NewProjectWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]

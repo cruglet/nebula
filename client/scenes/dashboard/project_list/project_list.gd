@@ -102,11 +102,7 @@ func refresh_project_list() -> void:
 
 
 func update_project_count() -> void:
-	var project_list: Array = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
-	project_count_label.text = "Projects - %s" % project_list.size()
-	
-	if project_list.size() == 0:
-		pass
+	project_count_label.text = "Projects - %s" % QuickActions.get_visible_children(project_list_vbox).size()
 
 
 func _on_open_project_request(item: ProjectItem) -> void:
@@ -227,4 +223,14 @@ func _on_import_project_dialog_file_selected(path: String) -> void:
 	check_projects_exist()
 	refresh_project_list()
 	check_for_no_projects()
+	update_project_count()
+
+
+func _on_search_line_edit_text_changed(new_text: String) -> void:
+	for child: ProjectItem in project_list_vbox.get_children():
+		if new_text.is_empty():
+			child.show()
+			continue
+		child.visible = child.matches(new_text)
+	
 	update_project_count()

@@ -64,6 +64,14 @@ static func from_module(module: Module, p_name: String, p_path: String) -> Proje
 	return project_item
 
 
+## Used for searching
+func matches(search_string: String) -> bool:
+	var search_str: String = search_string.to_lower().to_snake_case()
+	if project_name.to_snake_case().begins_with(search_str):
+		return true
+	return false
+
+
 func _play_hover_animation() -> void:
 	var tween: Tween = get_tree().create_tween()
 	tween.set_ease(Tween.EASE_OUT)
