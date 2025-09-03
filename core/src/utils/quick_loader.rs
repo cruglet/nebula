@@ -1,5 +1,5 @@
 use godot::prelude::*;
-use godot::classes::{Object, IObject, Image, ImageTexture, FileAccess, file_access::ModeFlags};
+use godot::classes::{Object, IObject, Image, ImageTexture, FileAccess, ResourceUid};
 
 
 #[derive(GodotClass)]
@@ -19,17 +19,17 @@ impl IObject for QuickLoader {
 
 #[godot_api]
 impl QuickLoader {
-    #[func]
-    fn load_image(path: GString) -> Gd<ImageTexture> {
+    fn _load_image(path: GString) -> Option<Gd<ImageTexture>> {
         let mut img = Image::new_gd();
-        let extension: GString = path.get_extension();
+        let img_path: GString = ResourceUid::singleton().call("ensure_path", &[path.to_variant()]).to_string().into();
+        let extension: GString = img_path.get_extension();
 
-        if !FileAccess::file_exists(&path) {
+        if !FileAccess::file_exists(&img_path) {
             godot_warn!("Image texture file does not exist!");
-            return ImageTexture::new_gd();
+            return None;
         }
 
-        let img_buffer = &FileAccess::get_file_as_bytes(&path);
+        let img_buffer = &FileAccess::get_file_as_bytes(&img_path);
 
         if extension.eq(&"svg".to_godot()) {
             img.load_svg_from_buffer(img_buffer);
@@ -39,10 +39,28 @@ impl QuickLoader {
             img.load_jpg_from_buffer(img_buffer);
         }
 
-        if let Some(tex) = ImageTexture::create_from_image(&img) {
-            return tex;
+        ImageTexture::create_from_image(&img)
+    }
+
+
+    #[func]
+    fn load_image(path: GString) -> Gd<ImageTexture> {
+        if let Some(img) = QuickLoader::_load_image(path) {
+            return img;
         }
-    
+        ImageTexture::new_gd()
+    }
+
+    #[func]
+    fn load_image_with_fallback(path: GString, fallback_path: GString) -> Gd<ImageTexture> {
+        if let Some(img) = QuickLoader::_load_image(path) {
+            return img;
+        }
+        
+        if let Some(fb) = QuickLoader::_load_image(fallback_path) {
+            return fb;
+        }
+
         ImageTexture::new_gd()
     }
 }

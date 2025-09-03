@@ -30,8 +30,9 @@ signal remove_project_request(instance: ProjectItem)
 		project_path = pp
 @export var project_banner_texture: Texture2D:
 	set(ppt):
-		project_banner_rect.texture = ppt
-		project_banner_texture = ppt
+		if ppt:
+			project_banner_rect.texture = ppt
+			project_banner_texture = ppt
 @export_group("Internal")
 @export var project_name_label: Label
 @export var project_path_label: Label

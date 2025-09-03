@@ -91,7 +91,7 @@ func refresh_project_list() -> void:
 		project_item.project_path = project_path
 		
 		var module: Module = Singleton.get_module(project_data.get("module"))
-		project_item.project_banner_texture = QuickLoader.load_image(module.project_image)
+		project_item.project_banner_texture = QuickLoader.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
 		
 		project_item.open_project_request.connect(_on_open_project_request)
 		project_item.remove_project_request.connect(_on_remove_project_request)
@@ -113,6 +113,11 @@ func _on_open_project_request(item: ProjectItem) -> void:
 	var project_file: FileAccess = FileAccess.open(item.project_path, FileAccess.READ)
 	var project_data: Dictionary = project_file.get_var(true)
 	var module: Module = Singleton.get_module(project_data.get("module"))
+	
+	if not module.id:
+		push_error("Could not find module!")
+		# TODO: Toast invalid module!
+		return
 	
 	get_tree().change_scene_to_file(module.entry_scene)
 

@@ -62,7 +62,7 @@ func _load_local_module(module_path: String) -> void:
 	var module_item: ModuleItem = ModuleItem.from_module(module)
 	var module_file: FileAccess = FileAccess.open(module_path, FileAccess.READ)
 	module_item.module_size = module_file.get_length()
-	module_item.module_preview_texture = QuickLoader.load_image(module.module_image)
+	module_item.module_preview_texture = QuickLoader.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
 	module_item.is_local = true
 	module_item.module_file_path = module_path
 	module_item.updated.connect(func(_id: String) -> void:
