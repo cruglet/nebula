@@ -16,7 +16,6 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [node name="NewProject" type="PanelContainer" node_paths=PackedStringArray("project_preview", "project_name_line_edit", "project_path_line_edit", "module_options_container", "module_option_button", "error_label", "create_button")]
-anchors_preset = -1
 offset_right = 540.0
 offset_bottom = 442.0
 grow_horizontal = 2

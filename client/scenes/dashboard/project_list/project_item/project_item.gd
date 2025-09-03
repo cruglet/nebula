@@ -2,6 +2,7 @@ class_name ProjectItem
 extends Button
 
 signal open_project_request(instance: ProjectItem)
+signal delete_project_request(instance: ProjectItem)
 
 @export var is_preview: bool = false:
 	set(ip):
@@ -114,3 +115,7 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.double_click:
 			open_project_request.emit(self)
+
+
+func _on_delete_button_pressed() -> void:
+	delete_project_request.emit(self)

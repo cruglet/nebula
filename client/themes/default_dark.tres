@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=77 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=64 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/primary.ttf" id="1_vhynu"]
 [ext_resource type="FontFile" uid="uid://g3iia37ktbw7" path="res://meta/fonts/secondary.ttf" id="2_5e7fv"]
@@ -86,6 +86,10 @@ corner_radius_bottom_left = 6
 shadow_color = Color(0.16862746, 0.1764706, 0.2, 1)
 shadow_size = 1
 shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vhynu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5e7fv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_807qo"]
 content_margin_left = 8.0
@@ -270,125 +274,61 @@ expand_margin_top = 33.0
 expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
-[sub_resource type="DPITexture" id="DPITexture_u64fg"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\".45\" stroke-width=\"2\" d=\"m9 11-3-3 3-3\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v2t5x"]
+bg_color = Color(0.78039217, 0.27450982, 0.27450982, 0.4627451)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.5686275, 0.2, 0.2, 0.4627451)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
 
-[sub_resource type="DPITexture" id="DPITexture_xs2ua"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"m8 1a1 1 0 0 0 -1 1v5h-2c-1.108 0-2 .892-2 2v1h10v-1c0-1.108-.892-2-2-2h-2v-5a1 1 0 0 0 -1-1zm-5 10v4l10-1v-3z\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhevn"]
+bg_color = Color(1, 1, 1, 0.1254902)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
-[sub_resource type="DPITexture" id="DPITexture_74lqh"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#b2b2b2\" d=\"M2 3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8v-1H8v-4h2V8h4v2h1V7a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1V4a1 1 0 0 0-1-1Z\"/><path fill=\"#fefffe\" d=\"M13 13h2v-2h-2V9h-2v2H9v2h2v2h2z\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5e7fv"]
+bg_color = Color(1, 0.49803922, 0.46666667, 1)
+border_width_left = 12
+border_width_right = 12
+border_color = Color(1, 0.49803922, 0.46666667, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.54901963, 0.27450982, 0.27450982, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
 
-[sub_resource type="DPITexture" id="DPITexture_fydlf"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M8 1.7 5.626 5.797 1 6.895l3.236 3.408-.359 4.673 4.14-1.977 4.157 1.942-.396-4.653L15 6.895l-4.626-1.098z\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vhynu"]
+bg_color = Color(1, 0.3019608, 0.3019608, 1)
+border_width_left = 12
+border_width_right = 12
+border_color = Color(1, 0.3019608, 0.3019608, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.36, 0.18, 0.18, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
 
-[sub_resource type="DPITexture" id="DPITexture_rewqk"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#e0e0e0\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 2H6m2 4v8M4 9l4 5 4-5\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_807qo"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#e0e0e0\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 14h4m-2-4V2m4 5L8 2 4 7\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_u6x60"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#b2b2b2\" d=\"M2 1v14h12V6H9V1zm8 0v4h4z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_mio1h"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path fill=\"#fff\" fill-opacity=\".6\" d=\"M14 5a4 4 0 0 0-4 4v46a4 4 0 0 0 4 4h36a4 4 0 0 0 4-4V22a1 1 0 0 0-.29-.707l-16-16a1 1 0 0 0-.707-.29V5H14zm0 2h22v12a4 4 0 0 0 4 4h12v32a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_7pf0q"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#b2b2b2\" d=\"M2 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1V3a1 1 0 0 0-1-1z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_ascpa"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path fill=\"#e0e0e0\" d=\"M12 10a4 4 0 0 0-4 4v36a4 4 0 0 0 4 4h40a4 4 0 0 0 4-4V22a4 4 0 0 0-4-4H36l-2-4c-1-2-2-4-4-4z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_chgoc"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\".45\" stroke-width=\"2\" d=\"m6 11 3-3-3-3\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_xvubt"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"m2 2v2h2v-2zm4 0v2h8v-2zm-4 5v2h2v-2zm4 0v2h8v-2zm-4 5v2h2v-2zm4 0v2h8v-2z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_vhxmk"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M3 2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9c1.105 0 1.818-.91 2-2l1-6a1 1 0 0 0-1-1H6c-.552 0-.909.455-1 1l-1 6c-.091.545-.448 1-1 1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1 1 1 0 0 0 1 1h5a1 1 0 0 0-1-1H7a2 2 0 0 0-2-2H3z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_uexy3"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M8 11V4m4 4L8 4 4 8\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_taty1"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#b2b2b2\" d=\"M5 8a4 4 0 1 1 4 4v2a6 6 0 1 0-6-6H1l3 4 3-4z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_xv4hg"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4l-3-3h-1v6H3zm1 0v5h3V1zm4 8a1 1 0 0 1 0 4 1 1 0 0 1 0-4z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_58qye"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"M9 1v2h6V1zM4 1a1 1 0 0 0-.691.291l-2 2a1 1 0 0 0 1.414 1.414l.293-.293v7.172l-.293-.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l2-2a1 1 0 0 0-1.414-1.414l-.293.293V4.412l.293.293a1 1 0 0 0 1.414-1.414l-2-2A1 1 0 0 0 4 1zm5 6v2h4V7zm0 6v2h2v-2z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_oq3gy"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#e0e0e0\" d=\"m2 2v5h5v-5zm7 0v5h5v-5zm-7 7v5h5v-5zm7 0v5h5v-5z\"/></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_16tms"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path d=\"m13.297.714h-13.013a.454.454 0 0 0 -.318.779l4.615 4.507v7.086a.45.45 0 0 0 .738.354l3.511-2.812a.454.454 0 0 0 .17-.354v-4.274l4.614-4.506a.454.454 0 0 0 -.317-.779z\"/><path d=\"m11.085832 14.18196c3.399443 1.97457 6.855925-2.441094 4.074102-5.1815164-2.781825-2.7404217-7.2642008.6646174-5.2597994 4.0134654l-1.9001346 1.871854 1.1856973 1.168051zm1.699723-4.4945981c2.236109 0 2.236109 3.3042441 0 3.3042441-2.236108 0-2.236108-3.3042441 0-3.3042441z\"/></g></svg>
-"
-
-[sub_resource type="DPITexture" id="DPITexture_eogvt"]
-resource_local_to_scene = false
-resource_name = ""
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#b2b2b2\" d=\"M8 2C5.443 2 2.209 3.948 1.045 7.705a1 1 0 0 0 0 .55C2.163 12.211 5.5 14 8 14s5.836-1.789 6.961-5.725a1 1 0 0 0 0-.55C13.861 3.935 10.554 2 8 2zm0 2a4 4 0 0 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 0 0 0 4 2 2 0 0 0 0-4z\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kfw5u"]
+bg_color = Color(0.67058825, 0.2, 0.2, 1)
+border_width_left = 12
+border_width_right = 12
+border_color = Color(0.67058825, 0.2, 0.2, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.3019608, 0.13725491, 0.13725491, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_007w3"]
 content_margin_left = 4.0
@@ -454,13 +394,6 @@ shadow_color = Color(0, 0.27058825, 0.56078434, 0.41568628)
 shadow_size = 1
 shadow_offset = Vector2(0, 2)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhevn"]
-bg_color = Color(1, 1, 1, 0.1254902)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m8n11"]
 bg_color = Color(0, 0.4509804, 0.87058824, 1)
 border_width_left = 12
@@ -510,6 +443,10 @@ variation_opentype = {
 variation_embolden = 1.0
 variation_transform = Transform2D(1, 0, 0, 0.92, 0, 0)
 spacing_bottom = 1
+
+[sub_resource type="FontVariation" id="FontVariation_vhynu"]
+base_font = ExtResource("1_vhynu")
+variation_embolden = 0.25
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_16tms"]
 content_margin_left = 8.0
@@ -626,6 +563,12 @@ Button/styles/focus = SubResource("StyleBoxFlat_ryjy6")
 Button/styles/hover = SubResource("StyleBoxFlat_umbh3")
 Button/styles/normal = SubResource("StyleBoxFlat_upr5y")
 Button/styles/pressed = SubResource("StyleBoxFlat_161vo")
+CheckBox/styles/disabled = SubResource("StyleBoxEmpty_vhynu")
+CheckBox/styles/focus = SubResource("StyleBoxEmpty_5e7fv")
+CheckBox/styles/hover = SubResource("StyleBoxEmpty_vhynu")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxEmpty_vhynu")
+CheckBox/styles/normal = SubResource("StyleBoxEmpty_vhynu")
+CheckBox/styles/pressed = SubResource("StyleBoxEmpty_vhynu")
 FileDialog/colors/file_disabled_color = Color(1, 1, 1, 0.25)
 FileDialog/colors/file_icon_color = Color(1, 1, 1, 1)
 FileDialog/colors/folder_icon_color = Color(0, 0.64705884, 1, 1)
@@ -670,6 +613,12 @@ Window/font_sizes/title_font_size = 16
 Window/fonts/title_font = SubResource("FontVariation_74lqh")
 Window/styles/embedded_border = SubResource("StyleBoxFlat_rewqk")
 Window/styles/embedded_unfocused_border = SubResource("StyleBoxFlat_rewqk")
+nButtonDanger/base_type = &"Button"
+nButtonDanger/styles/disabled = SubResource("StyleBoxFlat_v2t5x")
+nButtonDanger/styles/focus = SubResource("StyleBoxFlat_nhevn")
+nButtonDanger/styles/hover = SubResource("StyleBoxFlat_5e7fv")
+nButtonDanger/styles/normal = SubResource("StyleBoxFlat_vhynu")
+nButtonDanger/styles/pressed = SubResource("StyleBoxFlat_kfw5u")
 nButtonIconFlat/base_type = &"Button"
 nButtonIconFlat/colors/font_color = Color(1, 1, 1, 1)
 nButtonIconFlat/colors/font_hover_pressed_color = Color(0.09803922, 0.78431374, 0.9411765, 1)
@@ -708,6 +657,8 @@ nLabelSecondary/base_type = &"Label"
 nLabelSecondary/colors/font_color = Color(1, 1, 1, 0.19607843)
 nLabelSecondary/font_sizes/font_size = 16
 nLabelSecondary/fonts/font = SubResource("FontVariation_xs2ua")
+nLabelThin/base_type = &"Label"
+nLabelThin/fonts/font = SubResource("FontVariation_vhynu")
 nLineEditIcon/base_type = &"LineEdit"
 nLineEditIcon/styles/focus = SubResource("StyleBoxFlat_16tms")
 nLineEditIcon/styles/normal = SubResource("StyleBoxFlat_oq3gy")

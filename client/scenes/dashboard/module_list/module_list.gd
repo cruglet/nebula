@@ -154,7 +154,6 @@ func _on_could_not_connect() -> void:
 
 
 func _on_import_local_button_pressed() -> void:
-	print(CoreSettings.get(CoreSettings.SETTING_MODULE_LIST))
 	open_module_file_dialog.show()
 
 

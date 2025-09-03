@@ -126,7 +126,3 @@ func _on_error_label_meta_clicked(meta: Variant) -> void:
 	if meta == VALIDATION_ERR_NO_MODULES:
 		cancel_pressed.emit()
 		switch_to_module_request.emit()
-
-
-func _on_error_label_gui_input(event: InputEvent) -> void:
-	print(event)
