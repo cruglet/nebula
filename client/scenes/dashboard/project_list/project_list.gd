@@ -14,6 +14,7 @@ signal switch_screen_request(screen: int)
 @export var loading_window: NebulaWindow
 @export var remove_project_window: NebulaWindow
 @export var delete_contents_checkbox: CheckBox
+@export var import_project_dialog: FileDialog
 
 var current_project_item: ProjectItem
 var project_item_map: Dictionary[String, ProjectItem]
@@ -91,7 +92,7 @@ func refresh_project_list() -> void:
 		project_item.project_path = project_path
 		
 		var module: Module = Singleton.get_module(project_data.get("module"))
-		project_item.project_banner_texture = QuickActions.load_image_with_fallback(module.project_image, "uid://4xxbc7xne4f3")
+		project_item.project_banner_texture = QuickActions.load_image_with_fallback(module.project_image, ProjectItem.FALLBACK_IMAGE)
 		
 		project_item.open_project_request.connect(_on_open_project_request)
 		project_item.remove_project_request.connect(_on_remove_project_request)
@@ -194,3 +195,36 @@ func _on_remove_project_remove_button_pressed() -> void:
 		QuickActions.delete_folder_recursively(project_path)
 	
 	remove_project_window.hide()
+
+
+func _on_import_button_pressed() -> void:
+	import_project_dialog.show()
+
+
+func _on_import_project_dialog_file_selected(path: String) -> void:
+	if path in CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST):
+		# TODO: Toast this project is already loaded!
+		return
+	
+	var data: Dictionary = FileAccess.open(path, FileAccess.READ).get_var(true)
+	
+	if not data.has("module"):
+		# TODO: Toast invalid/corrupted project file.
+		return
+	
+	var project_module: Module = Singleton.get_module(data.get("module"))
+	
+	if not project_module.entry_scene:
+		# TODO: Toast this project uses a module that is either not downloaded or incompatible.
+		return
+	
+	CoreSettings.prepend(CoreSettings.SETTING_PROJECT_LIST, path)
+	
+	var project_item: ProjectItem = ProjectItem.from_module(project_module, data.get("name", "<Unknown Name>"), path)
+	project_list_vbox.add_child(project_item)
+	project_list_vbox.move_child(project_item, 0)
+	
+	check_projects_exist()
+	refresh_project_list()
+	check_for_no_projects()
+	update_project_count()

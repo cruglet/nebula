@@ -1,8 +1,12 @@
 class_name ProjectItem
 extends Button
 
+const PROJECT_ITEM: PackedScene = preload("uid://dw0t4n57ys8d")
+const FALLBACK_IMAGE: Texture2D = preload("uid://4xxbc7xne4f3")
+
 signal open_project_request(instance: ProjectItem)
 signal remove_project_request(instance: ProjectItem)
+
 
 @export var is_preview: bool = false:
 	set(ip):
@@ -49,6 +53,15 @@ var item_hovering: bool = false:
 	set(ih):
 		item_hovering = ih
 		_show_remove_button()
+
+
+static func from_module(module: Module, p_name: String, p_path: String) -> ProjectItem:
+	var project_item: ProjectItem = PROJECT_ITEM.duplicate(true).instantiate()
+	project_item.project_name = p_name
+	project_item.project_path = p_path
+	project_item.project_banner_texture = QuickActions.load_image_with_fallback(module.project_image, FALLBACK_IMAGE)
+	
+	return project_item
 
 
 func _play_hover_animation() -> void:

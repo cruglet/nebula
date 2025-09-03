@@ -12,7 +12,7 @@ shader_parameter/blur_amount = 2.50000011875
 shader_parameter/blur_quality = 4
 shader_parameter/dither_strength = 0.1
 
-[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window", "remove_project_window", "delete_contents_checkbox")]
+[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window", "remove_project_window", "delete_contents_checkbox", "import_project_dialog")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -29,6 +29,7 @@ new_project_window = NodePath("NewProjectWindow")
 loading_window = NodePath("LoadingWindow")
 remove_project_window = NodePath("RemoveProjectWindow")
 delete_contents_checkbox = NodePath("RemoveProjectWindow/PanelContainer/MarginContainer/VBoxContainer/CheckBox")
+import_project_dialog = NodePath("ImportProjectDialog")
 metadata/_edit_lock_ = true
 
 [node name="NoProjects" type="Control" parent="."]
@@ -177,30 +178,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="OpenGameDialog" type="FileDialog" parent="."]
+[node name="ImportProjectDialog" type="FileDialog" parent="."]
 auto_translate_mode = 2
-transparent_bg = true
 oversampling_override = 1.0
 title = "Open a File"
 initial_position = 2
-size = Vector2i(1001, 450)
-transparent = true
 ok_button_text = "Open"
 file_mode = 0
 access = 2
-filters = PackedStringArray("*.wbfs;Wii Backup Filesystem")
-file_filter_toggle_enabled = false
-favorites_enabled = false
-layout_toggle_enabled = false
-
-[node name="OpenProjectDialog" type="FileDialog" parent="."]
-auto_translate_mode = 2
-title = "Open a File"
-initial_position = 2
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("project.nebula;Nebula Project File")
+filters = PackedStringArray("*.nproj;Nebula Project File")
 use_native_dialog = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -300,7 +286,10 @@ theme_type_variation = &"nButtonDanger"
 text = "Remove"
 
 [connection signal="pressed" from="NoProjects/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="NoProjects/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
 [connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="file_selected" from="ImportProjectDialog" to="." method="_on_import_project_dialog_file_selected"]
 [connection signal="hide_request" from="NewProjectWindow" to="." method="_on_nebula_window_hide_request"]
 [connection signal="cancel_pressed" from="NewProjectWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]
 [connection signal="create_request" from="NewProjectWindow/NewProject" to="." method="_on_new_project_create_request"]
