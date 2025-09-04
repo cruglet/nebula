@@ -40,6 +40,10 @@ func _notification(what: int) -> void:
 		check_projects_exist()
 		refresh_project_list()
 		check_for_no_projects()
+	if what == NOTIFICATION_VISIBILITY_CHANGED:
+		check_projects_exist()
+		refresh_project_list()
+		check_for_no_projects()
 
 
 func show_blur() -> void:
