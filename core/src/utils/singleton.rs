@@ -35,7 +35,7 @@ impl INode for Singleton {
 impl Singleton {
     #[func]
     pub fn send_notification(&mut self, title: GString, description: GString) {
-        const NOTIFICATION_TIME: f32 = 4.0;
+        const NOTIFICATION_TIME: f32 = 4.5;
 
         let mut notification_panel: Gd<PanelContainer> = PanelContainer::new_alloc();
         notification_panel.set_custom_minimum_size(Vector2 { x: 400.0, y: 70.0 });

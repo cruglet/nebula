@@ -182,8 +182,10 @@ impl NebulaWindow {
                     tween.set_trans(tween::TransitionType::QUINT);
                     tween.tween_property(&base_gd, "scale", &Vector2::ZERO.to_variant(), self.animation_in_speed);
                     tween.signals().finished().connect(move || {
-                        base_gd.hide();
-                        base_gd.set_scale(Vector2::ONE);
+                        if base_gd.is_instance_valid() {
+                            base_gd.hide();
+                            base_gd.set_scale(Vector2::ONE);
+                        }
                     });
                 }
             }
