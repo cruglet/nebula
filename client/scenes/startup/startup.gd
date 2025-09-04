@@ -41,20 +41,26 @@ func _after_startup_animation() -> void:
 
 func load_and_validate_modules() -> void:
 	var modules: Array = CoreSettings.get(CoreSettings.SETTING_MODULE_LIST)
+	var filtered_modules: Array = modules.filter(func(module_path: String) -> bool:
+		if FileAccess.file_exists(module_path):
+			return true
+		else:
+			print("Module file deleted or moved! (%s). Removing" % module_path)
+			return false
+	)
 	
-	for i: int in range(modules.size()):
-		var module_path: String = modules.get(i)
-		
-		if not FileAccess.file_exists(module_path):
-			push_warning("Module file deleted or moved! (%s). Removing..." % module_path)
-			modules.remove_at(i)
-			continue
-		
+	var final_modules: Array = []
+	
+	for module_path: String in filtered_modules:
 		var m: Module = Module.load(module_path)
+		if Singleton.get_module(m.id).entry_scene:
+			continue
 		m.set_meta(&"path", module_path)
 		Singleton.register_module(m)
+		final_modules.append(module_path)
 	
-	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, modules)
+	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, final_modules)
+
 
 
 func _after_startup_finished_animation() -> void:
