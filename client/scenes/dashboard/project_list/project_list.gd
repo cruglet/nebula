@@ -101,8 +101,8 @@ func _on_open_project_request(item: ProjectItem) -> void:
 	var module: Module = Singleton.get_module(project_data.get("module"))
 	
 	if not module.id:
+		Singleton.send_notification("Error!", "Could not find module associated with \"%s\"" % project_data.get("name"))
 		push_error("Could not find module!")
-		# TODO: Toast invalid module!
 		return
 	
 	get_tree().change_scene_to_file(module.entry_scene)
@@ -189,19 +189,19 @@ func _on_import_button_pressed() -> void:
 
 func _on_import_project_dialog_file_selected(path: String) -> void:
 	if path in CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST):
-		# TODO: Toast this project is already loaded!
+		Singleton.send_notification("Project import cancelled...", "This project is already loaded!")
 		return
 	
 	var data: Dictionary = FileAccess.open(path, FileAccess.READ).get_var(true)
 	
 	if not data.has("module"):
-		# TODO: Toast invalid/corrupted project file.
+		Singleton.send_notification("Error!", "An invalid/corrupted project file could not be imported!")
 		return
 	
 	var project_module: Module = Singleton.get_module(data.get("module"))
 	
 	if not project_module.entry_scene:
-		# TODO: Toast this project uses a module that is either not downloaded or incompatible.
+		Singleton.send_notification("Import project failed!", "This project uses a module that is either not downloaded or incomplatible (Module ID: %s)." % data.get("module"))
 		return
 	
 	CoreSettings.prepend(CoreSettings.SETTING_PROJECT_LIST, path)
