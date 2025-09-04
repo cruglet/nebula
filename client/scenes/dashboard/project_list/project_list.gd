@@ -20,30 +20,13 @@ var current_project_item: ProjectItem
 var project_item_map: Dictionary[String, ProjectItem]
 var creating_project: bool = false
 
-func _ready() -> void:
-	check_projects_exist()
-	
-	var project_list: Array = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
-	
-	if project_list.is_empty():
-		no_projects.show()
-		projects.hide()
-	else:
-		no_projects.hide()
-		projects.show()
-		refresh_project_list()
-		update_project_count()
-
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN or what == NOTIFICATION_VISIBILITY_CHANGED:
 		check_projects_exist()
 		refresh_project_list()
 		check_for_no_projects()
-	if what == NOTIFICATION_VISIBILITY_CHANGED:
-		check_projects_exist()
-		refresh_project_list()
-		check_for_no_projects()
+		update_project_count()
 
 
 func show_blur() -> void:
@@ -86,7 +69,9 @@ func check_projects_exist() -> void:
 
 func refresh_project_list() -> void:
 	project_item_map.clear()
-	for child: Node in project_list_vbox.get_children(): child.queue_free()
+	for child: Control in project_list_vbox.get_children(): 
+		child.hide()
+		child.queue_free()
 	var project_list: Array = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
 	for project_path: String in project_list:
 		var project_file: FileAccess = FileAccess.open(project_path, FileAccess.READ)
@@ -187,6 +172,7 @@ func _on_remove_project_remove_button_pressed() -> void:
 	project_list.pop_at(i)
 	
 	CoreSettings.set(CoreSettings.SETTING_PROJECT_LIST, project_list)
+	current_project_item.hide()
 	current_project_item.queue_free()
 	update_project_count()
 	check_for_no_projects()
