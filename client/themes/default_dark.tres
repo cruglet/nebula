@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=64 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=65 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/primary.ttf" id="1_vhynu"]
 [ext_resource type="FontFile" uid="uid://g3iia37ktbw7" path="res://meta/fonts/secondary.ttf" id="2_5e7fv"]
@@ -488,6 +488,18 @@ corner_radius_top_right = 99
 corner_radius_bottom_right = 99
 corner_radius_bottom_left = 99
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1u036"]
+bg_color = Color(0.15294118, 0.16078432, 0.18039216, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.09411765, 0.09411765, 0.10980392, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tc0rw"]
 bg_color = Color(0.2958, 0.31053334, 0.34, 0.3647059)
 corner_radius_top_left = 12
@@ -663,6 +675,8 @@ nLineEditIcon/styles/normal = SubResource("StyleBoxFlat_oq3gy")
 nLineEditIcon/styles/read_only = SubResource("StyleBoxFlat_58qye")
 nPanelIconNotificationBadge/base_type = &"Panel"
 nPanelIconNotificationBadge/styles/panel = SubResource("StyleBoxFlat_eogvt")
+nPanelNotification/base_type = &"Panel"
+nPanelNotification/styles/panel = SubResource("StyleBoxFlat_1u036")
 nPanelProjectItem/base_type = &"Panel"
 nPanelProjectItem/styles/focus = SubResource("StyleBoxFlat_tc0rw")
 nPanelProjectItem/styles/hover = SubResource("StyleBoxFlat_0lbup")
