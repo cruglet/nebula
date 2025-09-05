@@ -1,7 +1,8 @@
 use godot::prelude::*;
 
-use crate::utils::{module::Module, singleton::Singleton};
+use crate::utils::singleton::Singleton;
 
+#[allow(dead_code)]
 #[derive(GodotClass)]
 #[class(base=Object)]
 struct ProjectData {

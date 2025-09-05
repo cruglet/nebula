@@ -60,6 +60,7 @@ impl INode for Singleton {
     }
 }
 
+#[allow(dead_code)]
 #[godot_api]
 impl Singleton {
     #[constant] pub const SHADER_BLUR: i32 = 0;
