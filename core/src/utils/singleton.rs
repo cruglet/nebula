@@ -1,4 +1,4 @@
-use godot::{classes::{canvas_layer, control::SizeFlags, tween::{self, EaseType, TransitionType}, CanvasLayer, Control, Engine, InputEventMouseButton, Label, MarginContainer, Panel, PanelContainer, ProgressBar, Timer, Tween, VBoxContainer}, global::{HorizontalAlignment, MouseButton}, prelude::*};
+use godot::{classes::{control::{LayoutPreset, SizeFlags}, notify::ControlNotification, tween::{EaseType, TransitionType}, CanvasLayer, ColorRect, Control, Engine, InputEventMouseButton, Label, MarginContainer, PanelContainer, ProgressBar, Shader, ShaderMaterial, Tween, VBoxContainer}, global::MouseButton, prelude::*};
 
 use crate::utils::module::Module;
 
@@ -8,31 +8,111 @@ pub(crate) struct Singleton {
     loaded_modules_dict: Dictionary,
     loaded_modules_arr: Array<Gd<Module>>,
     pub loaded_project_path: GString,
-    pub canvas_layer: Gd<CanvasLayer>,
-
+    ui_canvas_layer: Gd<CanvasLayer>,
+    screen_canvas_layer: Gd<CanvasLayer>,
+    screen_blur_rect: Gd<ColorRect>,
+    loaded_shaders_dict: Dictionary,
     base: Base<Node>
 }
+
 
 #[godot_api]
 impl INode for Singleton {
     fn init(base: Base<Node>) -> Self {
+        let mut loaded_shaders_dict = Dictionary::new();
+
+        let mut blur_shader: Gd<Shader> = Shader::new_gd();
+        blur_shader.set_code(Self::SHADER_BLUR_CODE);
+
+        loaded_shaders_dict.set(Singleton::SHADER_BLUR, blur_shader);
+
         Self {
             loaded_modules_dict: Dictionary::new(),
             loaded_modules_arr: Array::new(),
             loaded_project_path: GString::new(),
-            canvas_layer: CanvasLayer::new_alloc(),
+            ui_canvas_layer: CanvasLayer::new_alloc(),
+            screen_canvas_layer: CanvasLayer::new_alloc(),
+            screen_blur_rect: ColorRect::new_alloc(),
+            loaded_shaders_dict,
             base,
         }
     }
     fn ready(&mut self) {
-        let mut canvas = self.canvas_layer.to_godot();
-        canvas.set("z_index", &10.to_variant());
-        self.base_mut().add_child(&canvas);
+        let mut ui_canvas = self.ui_canvas_layer.to_godot();
+        ui_canvas.set_layer(10);
+        self.base_mut().add_child(&ui_canvas);
+
+        let mut screen_canvas = self.screen_canvas_layer.to_godot();
+        screen_canvas.set_layer(5);
+        self.base_mut().add_child(&screen_canvas);
+
+        let mut scr_blur_rect = self.screen_blur_rect.to_godot();
+        scr_blur_rect.set_anchors_preset(LayoutPreset::FULL_RECT);
+        scr_blur_rect.notify(ControlNotification::RESIZED);
+        scr_blur_rect.hide();
+
+        let mut scr_blur_mat: Gd<ShaderMaterial> = ShaderMaterial::new_gd();
+        let scr_blur_shader: Gd<Shader> = self.get_shader(Singleton::SHADER_BLUR);
+        scr_blur_mat.set_shader(&scr_blur_shader);
+        scr_blur_rect.set_material(&scr_blur_mat);
+
+        screen_canvas.add_child(&scr_blur_rect);
     }
 }
 
 #[godot_api]
 impl Singleton {
+    #[constant] pub const SHADER_BLUR: i32 = 0;
+
+    #[func]
+    pub fn get_shader(&mut self, shader: i32) -> Gd<Shader> {
+        if let Some(shd) = self.loaded_shaders_dict.get(shader) {
+            return shd.try_to().unwrap()
+        };
+        godot_error!("Could not load shader!");
+        Shader::new_gd()
+    }
+
+    #[func]
+    pub fn get_shader_code(&mut self, shader: i32) -> GString {
+        match shader {
+            Self::SHADER_BLUR => Self::SHADER_BLUR_CODE.into(),
+            _ => "".into()
+        }
+    }
+
+    #[func]
+    pub fn show_screen_blur(&mut self) {
+        let fade_in_time = 0.25;
+        let blur_amount = 2.5;
+
+        let mut shader_mat = self.screen_blur_rect.get_material().unwrap().try_cast::<ShaderMaterial>().unwrap();
+        
+        shader_mat.set_shader_parameter(&StringName::from("blur_amount"), &0.0.to_variant());
+
+        if let Some(mut blur_in_tween) = self.base_mut().create_tween() {
+            blur_in_tween.tween_property(&shader_mat, "shader_parameter/blur_amount", &blur_amount.to_variant(), fade_in_time);
+        }
+
+        self.screen_blur_rect.show();
+    }
+
+    #[func]
+    pub fn hide_screen_blur(&mut self) {
+        let fade_out_time = 0.25;
+
+        let shader_mat = self.screen_blur_rect.get_material().unwrap().try_cast::<ShaderMaterial>().unwrap();
+
+        let mut rect = self.screen_blur_rect.to_godot();
+        
+        if let Some(mut blur_in_tween) = self.base_mut().create_tween() {
+            blur_in_tween.tween_property(&shader_mat, "shader_parameter/blur_amount", &0.0.to_variant(), fade_out_time);
+            blur_in_tween.signals().finished().connect(move || {
+                rect.hide();
+            });
+        }
+    }
+    
     #[func]
     pub fn send_notification(&mut self, title: GString, description: GString) {
         const NOTIFICATION_TIME: f32 = 4.5;
@@ -42,10 +122,8 @@ impl Singleton {
         notification_panel.set_theme_type_variation(&StringName::from("nPanelNotification"));
         let panel_ref = notification_panel.to_godot();
         notification_panel.signals().gui_input().connect(move |event| {
-            if let Ok(e) = event.try_cast::<InputEventMouseButton>() {
-                if e.get_button_index() == MouseButton::LEFT && e.is_pressed() {
-                    Singleton::animate_notification_out(panel_ref.to_godot());
-                }
+            if let Ok(e) = event.try_cast::<InputEventMouseButton>() && e.get_button_index() == MouseButton::LEFT && e.is_pressed() {
+                Singleton::animate_notification_out(panel_ref.to_godot());
             }
         });
 
@@ -90,7 +168,7 @@ impl Singleton {
         let pos = notification_panel.get_position();
         notification_panel.set_position(Vector2 { x: pos.x, y: 30.0 });
 
-        let mut canvas_layer = self.canvas_layer.to_godot();
+        let mut canvas_layer = self.ui_canvas_layer.to_godot();
         canvas_layer.add_child(&notification_panel);
 
         let notification_time_tween_op: Option<Gd<Tween>> = self.base_mut().create_tween();
@@ -251,4 +329,42 @@ impl Singleton {
 
         Vector2i {x: center.x - offset.x, y: center.y - offset.y}
     }
+
+const SHADER_BLUR_CODE: &'static str = r#"
+shader_type canvas_item;
+
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
+uniform float blur_amount : hint_range(0.0, 10.0) = 2.0;
+uniform int blur_quality : hint_range(1, 4) = 3;
+uniform float dither_strength : hint_range(0.0, 1.0) = 0.1;
+
+void fragment() {
+    vec2 tex_size = 1.0 / vec2(textureSize(screen_tex, 0));
+    vec4 col = vec4(0.0);
+    float total_weight = 0.0;
+
+    int half_kernel = blur_quality;
+    float sigma = blur_amount * 0.4;
+    float sigma_sq = sigma * sigma;
+
+    for (int x = -half_kernel; x <= half_kernel; x++) {
+        for (int y = -half_kernel; y <= half_kernel; y++) {
+            vec2 offset = vec2(float(x), float(y)) * tex_size * blur_amount;
+
+            float distance_sq = float(x * x + y * y);
+            float weight = exp(-distance_sq / (2.0 * sigma_sq));
+
+            col += texture(screen_tex, SCREEN_UV + offset) * weight;
+            total_weight += weight;
+        }
+    }
+
+    col = col / total_weight;
+
+    float noise = fract(sin(dot(SCREEN_UV, vec2(12.9898, 78.233))) * 43758.5453);
+    col.rgb += (noise - 0.5) * dither_strength / 255.0;
+
+    COLOR = col;
+}
+"#;
 }
