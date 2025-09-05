@@ -61,7 +61,10 @@ func check_for_no_projects() -> void:
 func check_projects_exist() -> void:
 	var project_list: Array = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
 	var filtered_list: Array = project_list.filter(func(project_path: String) -> bool:
-		return FileAccess.file_exists(project_path)
+		var file_exists: bool = FileAccess.file_exists(project_path)
+		if not file_exists:
+			Singleton.send_notification("Project Removed!", "A project has been deleted or moved from its original location.\n(%s)" % project_path)
+		return file_exists
 	)
 	
 	CoreSettings.set(CoreSettings.SETTING_PROJECT_LIST, filtered_list)
