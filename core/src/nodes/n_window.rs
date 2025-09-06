@@ -52,6 +52,8 @@ struct NebulaWindow {
     #[export] keep_centered: bool,
     #[export] screen_fx: ScreenFX,
 
+    scene_origin: Option<Gd<Node>>,
+
     base: Base<PanelContainer>
 }
 
@@ -70,6 +72,7 @@ impl IPanelContainer for NebulaWindow {
             close_on_escape: true,
             keep_centered: true,
             screen_fx: ScreenFX::Blur,
+            scene_origin: None,
             
             start_origin: Vector2 { x: 0.0, y: 0.0 },
             base
@@ -77,6 +80,11 @@ impl IPanelContainer for NebulaWindow {
     }
 
     fn ready(&mut self) {
+        let mut tree = Singleton::get_tree().try_cast::<SceneTree>().unwrap();
+
+        self.scene_origin = tree.get_current_scene();
+        let origin = tree.get_current_scene();
+
         self.signals().hide_request().connect_self(Self::on_hide_request);
         self.base_mut().set_focus_mode(FocusMode::ALL);
         
@@ -117,6 +125,12 @@ impl IPanelContainer for NebulaWindow {
             let singleton: Gd<Singleton> = Singleton::singleton();
             let ui_layer = singleton.bind().get_ui_canvas_layer();
             self_ref.call_deferred("reparent", &[ui_layer.to_variant()]);
+
+            let win_holder: Gd<Node> = Node::new_alloc();
+            self_ref.get_parent().expect("No parent").call_deferred("add_child", &[win_holder.to_variant()]);
+            win_holder.signals().tree_exiting().connect(move || {
+                self_ref.queue_free();
+            });
         }
     }
         
