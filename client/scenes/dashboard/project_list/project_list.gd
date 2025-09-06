@@ -162,7 +162,7 @@ func _on_import_button_pressed() -> void:
 
 func _on_import_project_dialog_file_selected(path: String) -> void:
 	if path in CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST):
-		Singleton.send_notification("Project import cancelled...", "This project is already loaded!")
+		Singleton.send_notification("Project import cancelled", "This project has already been imported!")
 		return
 	
 	var data: Dictionary = FileAccess.open(path, FileAccess.READ).get_var(true)
