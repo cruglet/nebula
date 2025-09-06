@@ -26,6 +26,7 @@ const FETCH_TEXT_SPEED: float = 0.5
 
 
 var offline: bool = false
+var all_requests_finished: bool = false
 var loading_text_anim_timer: Timer
 var _fetch_text_iter: int = 0
 var updates_pending: int = 0:
@@ -56,6 +57,7 @@ func _ready() -> void:
 	module_request.metadata_fetched.connect(_on_module_metadata_fetched)
 	module_request.preview_image_fetched.connect(_on_module_preview_image_fetched)
 	module_request.could_not_connect.connect(_on_could_not_connect)
+	module_request.fetch_complete.connect(func() -> void: all_requests_finished = true)
 	module_request.fetch_parallel(INTERNAL_MODULES)
 
 
@@ -137,6 +139,9 @@ func _load_local_module(module_path: String) -> void:
 func _on_fetching_text_timeout() -> void:
 	if offline:
 		return
+	if all_requests_finished:
+		fetching_label.hide()
+		return
 	_fetch_text_iter = wrapi(_fetch_text_iter + 1, 0, 4)
 	fetching_label.text = "Fetching available modules online" + ".".repeat(_fetch_text_iter)
 
@@ -195,6 +200,7 @@ func _on_module_downloaded(id: String, path: String) -> void:
 
 
 func _on_could_not_connect() -> void:
+	Singleton.send_notification("Offline Mode", "Nebula was not able to establish a network connection. The engine will run in offline mode.")
 	offline = true
 	fetching_label.text = "Offline Mode"
 
