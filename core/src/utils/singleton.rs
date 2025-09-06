@@ -8,7 +8,7 @@ pub(crate) struct Singleton {
     loaded_modules_dict: Dictionary,
     loaded_modules_arr: Array<Gd<Module>>,
     pub loaded_project_path: GString,
-    ui_canvas_layer: Gd<CanvasLayer>,
+    #[var] pub ui_canvas_layer: Gd<CanvasLayer>,
     screen_canvas_layer: Gd<CanvasLayer>,
     screen_blur_rect: Gd<ColorRect>,
     loaded_shaders_dict: Dictionary,

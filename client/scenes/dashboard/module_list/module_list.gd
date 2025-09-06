@@ -12,7 +12,6 @@ const FETCH_TEXT_SPEED: float = 0.5
 @export var available_label: Label
 @export var local_flow_container: FlowContainer
 @export var online_flow_container: FlowContainer
-@export var blur_overlay: ColorRect
 @export var open_module_file_dialog: FileDialog
 
 @export_group("Module Info")
@@ -91,30 +90,11 @@ func show_module_info(module_item: ModuleItem) -> void:
 		
 		module_info_size_label.text += "[color=%s] -> %s" % [update_text_col, String.humanize_size(module_item.update_size)]
 	
-	show_blur()
 	module_info_window.show()
 
 
 func hide_module_info() -> void:
 	module_info_window.hide()
-
-
-func show_blur() -> void:
-	blur_overlay.material.set_shader_parameter(&"blur_amount", 0.0)
-	blur_overlay.show()
-	
-	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 2.5, 0.25)
-
-
-func hide_blur() -> void:
-	blur_overlay.material.set_shader_parameter(&"blur_amount", 2.5)
-	
-	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 0.0, 0.25)
-	
-	await tween.finished
-	blur_overlay.hide()
 
 
 func _load_local_module(module_path: String) -> void:
@@ -243,10 +223,6 @@ func _on_search_line_edit_text_changed(new_text: String) -> void:
 				child.hide()
 	
 	update_module_count()
-
-
-func _on_module_info_window_hide_request() -> void:
-	hide_blur()
 
 
 func _on_more_info_close_button_pressed() -> void:

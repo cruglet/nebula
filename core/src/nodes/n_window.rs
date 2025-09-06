@@ -19,6 +19,23 @@ enum HideAnimation {
     None,
 }
 
+#[derive(GodotConvert, Var, Export, Clone, Copy)]
+#[godot(via = i32)]
+enum ScreenFX {
+    None,
+    Blur,
+}
+
+impl From<i32> for ScreenFX {
+    fn from(value: i32) -> Self {
+        match value {
+            1 => ScreenFX::Blur,
+            _ => ScreenFX::None,
+        }
+    }
+}
+
+
 #[derive(GodotClass)]
 #[class(base=PanelContainer)]
 struct NebulaWindow {
@@ -33,6 +50,7 @@ struct NebulaWindow {
     #[export] start_origin: Vector2,
     #[export] close_on_escape: bool,
     #[export] keep_centered: bool,
+    #[export] screen_fx: ScreenFX,
 
     base: Base<PanelContainer>
 }
@@ -51,6 +69,7 @@ impl IPanelContainer for NebulaWindow {
             animation_out_speed: 0.25,
             close_on_escape: true,
             keep_centered: true,
+            screen_fx: ScreenFX::Blur,
             
             start_origin: Vector2 { x: 0.0, y: 0.0 },
             base
@@ -84,26 +103,32 @@ impl IPanelContainer for NebulaWindow {
         for i in 0..self.base().get_children().len() {
             if let Some(mut node) = self.base().get_child(i as i32) {
                 node.reparent(&c);
-                if let Ok(n) = node.try_cast::<Control>() {
-                    if !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
+                if let Ok(n) = node.try_cast::<Control>() && !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
                         n.signals().item_rect_changed().connect_other(&self_ref, NebulaWindow::on_item_rect_changed);
-                    }
                 };
             };
         };
 
         self.base_mut().add_child(&vb);
+
+        let mut self_ref = self.to_gd();
+        
+        if self.get_screen_fx() != (ScreenFX::None as i32) {
+            let singleton: Gd<Singleton> = Singleton::singleton();
+            let ui_layer = singleton.bind().get_ui_canvas_layer();
+            self_ref.call_deferred("reparent", &[ui_layer.to_variant()]);
+        }
     }
+        
+    
 
     fn input(&mut self, event: Gd<InputEvent>) {
         if !self.close_on_escape || !self.base().is_visible_in_tree() {
             return;
         }
         
-        if let Ok(e) = event.try_cast::<InputEventKey>() {
-            if e.get_keycode() == Key::ESCAPE {
+        if let Ok(e) = event.try_cast::<InputEventKey>() && e.get_keycode() == Key::ESCAPE {
                 self.signals().hide_request().emit();
-            };
         }
     }
 
@@ -139,6 +164,12 @@ impl NebulaWindow {
 
     fn animate_in(&mut self, animation: ShowAnimation) {
         if let Ok(mut res) = Singleton::get_tree().try_cast::<SceneTree>() {
+            
+            match ScreenFX::from(self.get_screen_fx()) {
+                ScreenFX::Blur => Singleton::singleton().bind_mut().show_screen_blur(),
+                _ => {}
+            }
+
             match animation {
                 ShowAnimation::None => {
                     let mut c = self.base_mut();
@@ -169,6 +200,12 @@ impl NebulaWindow {
 
     fn animate_out(&mut self, animation: HideAnimation) {
         if let Ok(mut res) = Singleton::get_tree().try_cast::<SceneTree>() {
+
+            match ScreenFX::from(self.get_screen_fx()) {
+                ScreenFX::Blur => Singleton::singleton().bind_mut().hide_screen_blur(),
+                _ => {}
+            }
+
             match animation {
                 HideAnimation::None => {
                     let mut c = self.base_mut();

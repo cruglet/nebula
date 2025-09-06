@@ -1,18 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://ct15sak82m0y0"]
+[gd_scene load_steps=5 format=3 uid="uid://ct15sak82m0y0"]
 
 [ext_resource type="Script" uid="uid://8wyhklto22ik" path="res://scenes/dashboard/project_list/project_list.gd" id="1_j7fao"]
 [ext_resource type="Texture2D" uid="uid://b8jqckm12c1eb" path="res://meta/icons/add.svg" id="2_j7fao"]
 [ext_resource type="Texture2D" uid="uid://bqfagmo47lo4o" path="res://meta/icons/dir.svg" id="3_e6idx"]
-[ext_resource type="Shader" uid="uid://c8srm6epgj1mo" path="res://components/shader/blur.gdshader" id="5_e6idx"]
 [ext_resource type="PackedScene" uid="uid://dsj577bhb635s" path="res://scenes/dashboard/project_list/new_project/new_project.tscn" id="5_i1b5s"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_i1b5s"]
-shader = ExtResource("5_e6idx")
-shader_parameter/blur_amount = 2.50000011875
-shader_parameter/blur_quality = 4
-shader_parameter/dither_strength = 0.1
-
-[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "blur_overlay", "new_project_handler", "new_project_window", "loading_window", "remove_project_window", "delete_contents_checkbox", "import_project_dialog")]
+[node name="ProjectList" type="Panel" node_paths=PackedStringArray("no_projects", "projects", "project_count_label", "project_list_vbox", "new_project_handler", "new_project_window", "loading_window", "remove_project_window", "delete_contents_checkbox", "import_project_dialog")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -23,7 +16,6 @@ no_projects = NodePath("MarginContainer/NoProjects")
 projects = NodePath("MarginContainer/ProjectList")
 project_count_label = NodePath("MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ProjectNumLabel")
 project_list_vbox = NodePath("MarginContainer/ProjectList/MarginContainer/VBoxContainer/ScrollContainer/MarginContainer/ProjectListVBox")
-blur_overlay = NodePath("BlurOverlay")
 new_project_handler = NodePath("NewProjectWindow/NewProject")
 new_project_window = NodePath("NewProjectWindow")
 loading_window = NodePath("LoadingWindow")
@@ -171,17 +163,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="BlurOverlay" type="ColorRect" parent="."]
-visible = false
-top_level = true
-material = SubResource("ShaderMaterial_i1b5s")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="ImportProjectDialog" type="FileDialog" parent="."]
 auto_translate_mode = 2
 oversampling_override = 1.0
@@ -295,10 +276,8 @@ text = "Remove"
 [connection signal="pressed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
 [connection signal="text_changed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/SearchLineEdit" to="." method="_on_search_line_edit_text_changed"]
 [connection signal="file_selected" from="ImportProjectDialog" to="." method="_on_import_project_dialog_file_selected"]
-[connection signal="hide_request" from="NewProjectWindow" to="." method="_on_nebula_window_hide_request"]
 [connection signal="cancel_pressed" from="NewProjectWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]
 [connection signal="create_request" from="NewProjectWindow/NewProject" to="." method="_on_new_project_create_request"]
 [connection signal="switch_to_module_request" from="NewProjectWindow/NewProject" to="." method="_on_new_project_switch_to_module_request"]
-[connection signal="hide_request" from="RemoveProjectWindow" to="." method="_on_remove_project_window_hide_request"]
 [connection signal="pressed" from="RemoveProjectWindow/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_remove_project_cancel_button_pressed"]
 [connection signal="pressed" from="RemoveProjectWindow/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/RemoveButton" to="." method="_on_remove_project_remove_button_pressed"]

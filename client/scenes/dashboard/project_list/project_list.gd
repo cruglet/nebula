@@ -8,7 +8,6 @@ signal switch_screen_request(screen: int)
 @export var projects: Control
 @export var project_count_label: Label
 @export var project_list_vbox: VBoxContainer
-@export var blur_overlay: ColorRect
 @export var new_project_handler: PanelContainer
 @export var new_project_window: NebulaWindow
 @export var loading_window: NebulaWindow
@@ -27,24 +26,6 @@ func _notification(what: int) -> void:
 		refresh_project_list()
 		check_for_no_projects()
 		update_project_count()
-
-
-func show_blur() -> void:
-	blur_overlay.material.set_shader_parameter(&"blur_amount", 0.0)
-	blur_overlay.show()
-	
-	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 2.5, 0.25)
-
-
-func hide_blur() -> void:
-	blur_overlay.material.set_shader_parameter(&"blur_amount", 2.5)
-	
-	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(blur_overlay.material, ^"shader_parameter/blur_amount", 0.0, 0.25)
-	
-	await tween.finished
-	blur_overlay.hide()
 
 
 func check_for_no_projects() -> void:
@@ -114,17 +95,10 @@ func _on_open_project_request(item: ProjectItem) -> void:
 func _on_remove_project_request(item: ProjectItem) -> void:
 	current_project_item = item
 	remove_project_window.show()
-	show_blur()
 
 func _on_create_button_pressed() -> void:
 	release_focus()
-	show_blur()
 	new_project_window.show()
-
-
-func _on_nebula_window_hide_request() -> void:
-	if not creating_project:
-		hide_blur()
 
 
 func _on_new_project_cancel_pressed() -> void:
@@ -157,10 +131,6 @@ func _on_new_project_create_request(path: String, module: Module) -> void:
 	ProjectData.set_path(path)
 	
 	get_tree().change_scene_to_file(module.entry_scene)
-
-
-func _on_remove_project_window_hide_request() -> void:
-	hide_blur()
 
 
 func _on_remove_project_cancel_button_pressed() -> void:
