@@ -1,3 +1,4 @@
+use godot::obj::{WithBaseField, WithUserSignals};
 use godot::prelude::*;
 use godot::classes::{HttpRequest, RegEx};
 use godot::classes::{http_client::Method, object::ConnectFlags};
@@ -24,21 +25,33 @@ impl ModuleRequest {
     #[signal] fn metadata_fetched(metadata: Dictionary, source_url: GString, module_size: i64);
     #[signal] fn preview_image_fetched(image_data: PackedByteArray, module_id: GString, image_type: GString);
     #[signal] fn could_not_connect();
+    #[signal] fn fetch_complete();
 
     #[func]
     fn fetch_parallel(&self, repositories: Array<GString>) -> Gd<ModuleRequest> {
-        for i in 0..repositories.len() {
+        let mut amount_fetched: u16 = 0;
+        let req_amount = repositories.len();
+        for i in 0..req_amount {
             if let Some(full_repo_url) = repositories.get(i) {
                 let repo_url = full_repo_url.get_basename(); // this removes the .git at the end if the clone link is used
                 let modules_file_url = repo_url.path_join("blob/main/MODULES");
                 let raw_module_url = Git::convert_github_to_raw_url(modules_file_url);
                 let mut module_request: Gd<HttpRequest> = HttpRequest::new_alloc();
                 Singleton::singleton().add_child(&module_request);
-
+                
                 module_request.set_meta("request_instance", &self.base().to_variant());
 
                 module_request.signals().request_completed().builder().flags(ConnectFlags::ONE_SHOT).connect_other_gd(&module_request, ModuleRequest::on_module_list_request_completed);
                 module_request.request(&raw_module_url);
+                let self_ref = self.to_gd();
+                module_request.signals().request_completed().connect(move |_a, _b, _c, _d| {
+                    let amount = &amount_fetched;
+                    amount_fetched = *amount + 1;
+
+                    if amount_fetched == req_amount as u16 {
+                        self_ref.signals().fetch_complete().emit();
+                    }
+                });
             } else {
                 godot_warn!("Invalid repository string at index {}, skipping...", i);
                 continue;
