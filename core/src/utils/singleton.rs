@@ -24,7 +24,11 @@ impl INode for Singleton {
         let mut blur_shader: Gd<Shader> = Shader::new_gd();
         blur_shader.set_code(Self::SHADER_BLUR_CODE);
 
+        let mut editor_2d_grid_shader: Gd<Shader> = Shader::new_gd();
+        editor_2d_grid_shader.set_code(Self::SHADER_EDITOR_2D_GRID_CODE);
+
         loaded_shaders_dict.set(Singleton::SHADER_BLUR, blur_shader);
+        loaded_shaders_dict.set(Singleton::SHADER_EDITOR_2D_GRID, editor_2d_grid_shader);
 
         Self {
             loaded_modules_dict: Dictionary::new(),
@@ -64,6 +68,7 @@ impl INode for Singleton {
 #[godot_api]
 impl Singleton {
     #[constant] pub const SHADER_BLUR: i32 = 0;
+    #[constant] pub const SHADER_EDITOR_2D_GRID: i32 = 1;
 
     #[func]
     pub fn get_shader(&mut self, shader: i32) -> Gd<Shader> {
@@ -78,6 +83,7 @@ impl Singleton {
     pub fn get_shader_code(&mut self, shader: i32) -> GString {
         match shader {
             Self::SHADER_BLUR => Self::SHADER_BLUR_CODE.into(),
+            Self::SHADER_EDITOR_2D_GRID => Self::SHADER_EDITOR_2D_GRID_CODE.into(),
             _ => "".into()
         }
     }
@@ -365,6 +371,95 @@ void fragment() {
     float noise = fract(sin(dot(SCREEN_UV, vec2(12.9898, 78.233))) * 43758.5453);
     col.rgb += (noise - 0.5) * dither_strength / 255.0;
 
+    COLOR = col;
+}
+"#;
+
+
+const SHADER_EDITOR_2D_GRID_CODE: &'static str = r#"
+shader_type canvas_item;
+
+uniform float zoom = 1.0;
+uniform float minor_spacing_x = 32.0;
+uniform float minor_spacing_y = 32.0;
+uniform float major_spacing_x = 256.0; // 32 * 8
+uniform float major_spacing_y = 256.0; // 32 * 8
+uniform float minor_line_width = 1.0;
+uniform float major_line_width = 2.0;
+uniform int grid_pattern = 1; // 0 = none, 1 = lines, 2 = dots
+uniform vec4 grid_minor : source_color = vec4(0.5, 0.5, 0.5, 0.5);
+uniform vec4 grid_major : source_color = vec4(0.2, 0.2, 0.2, 1.0);
+uniform vec2 position = vec2(0.0);
+
+// Bounds (in world units, not screen units)
+uniform float bound_left = -999999.0;
+uniform float bound_right = 999999.0;
+uniform float bound_bottom = -999999.0;
+uniform float bound_top = 999999.0;
+uniform vec4 bound_outside_color : source_color = vec4(0.0, 0.0, 0.0, 0.5);
+
+void fragment() {
+    vec2 world_pos = (FRAGCOORD.xy - position) / zoom; // <-- corrected
+    
+    vec2 minor_uv = world_pos / vec2(minor_spacing_x, minor_spacing_y);
+    vec2 major_uv = world_pos / vec2(major_spacing_x, major_spacing_y);
+    
+    vec2 minor_cell = fract(minor_uv);
+    vec2 major_cell = fract(major_uv);
+    
+    vec4 col = vec4(0.0);
+    
+    if (grid_pattern == 1) {
+        vec2 minor_thickness = vec2(minor_line_width) / vec2(minor_spacing_x, minor_spacing_y);
+        vec2 major_thickness = vec2(major_line_width) / vec2(major_spacing_x, major_spacing_y);
+        
+        float minor_alpha = smoothstep(0.3, 0.8, zoom);
+        
+        float major_thickness_boost = smoothstep(1.0, 0.3, zoom) * 0.5;
+        major_thickness += major_thickness_boost / vec2(major_spacing_x, major_spacing_y);
+        
+        if (minor_cell.x < minor_thickness.x) {
+            vec4 line_col = vec4(grid_minor.rgb, grid_minor.a * minor_alpha);
+            col = line_col;
+        }
+        
+        if (minor_cell.y < minor_thickness.y) {
+            vec4 line_col = vec4(grid_minor.rgb, grid_minor.a * minor_alpha);
+            col = mix(col, line_col, line_col.a * (1.0 - col.a));
+            col.a = min(col.a + line_col.a, 1.0);
+        }
+        
+        if (major_cell.x < major_thickness.x) {
+            col = grid_major;
+        }
+        
+        if (major_cell.y < major_thickness.y) {
+            col = mix(col, grid_major, grid_major.a * (1.0 - col.a));
+            col.a = min(col.a + grid_major.a, 1.0);
+        }
+    } else if (grid_pattern == 2) {
+        float minor_alpha = clamp((zoom - 0.4), 0.0, 1.0);
+        vec4 minor_col = vec4(grid_minor.rgb, grid_minor.a * minor_alpha);
+        
+        vec2 major_grid_pos = world_pos / vec2(major_spacing_x, major_spacing_y);
+        ivec2 major_cell_index = ivec2(floor(major_grid_pos));
+        bool is_major = (abs(major_cell_index.x * int(major_spacing_x) / int(minor_spacing_x)) % int(major_spacing_x / minor_spacing_x) == 0) &&
+                        (abs(major_cell_index.y * int(major_spacing_y) / int(minor_spacing_y)) % int(major_spacing_y / minor_spacing_y) == 0);
+        
+        vec2 dot_center = vec2(0.5);
+        float dist = distance(minor_cell, dot_center);
+        float radius = 0.1 / zoom;
+        if (dist < radius) {
+            col = is_major ? grid_major : minor_col;
+        }
+    }
+
+    // Bounds check (in world space)
+    if (world_pos.x < bound_left || world_pos.x > bound_right ||
+        world_pos.y < bound_bottom || world_pos.y > bound_top) {
+        col = mix(col, bound_outside_color, bound_outside_color.a);
+    }
+    
     COLOR = col;
 }
 "#;

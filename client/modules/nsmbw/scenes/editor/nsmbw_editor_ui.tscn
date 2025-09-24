@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dbf3abyup0qv3"]
+
+[node name="NSMBWEditorUI" type="CanvasLayer"]
+
+[node name="Nebula2DEditor" type="Nebula2DEditor" parent="."]
+bound_right = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Nebula2DEditor"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2

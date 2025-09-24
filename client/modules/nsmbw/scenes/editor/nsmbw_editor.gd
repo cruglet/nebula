@@ -1,0 +1,2 @@
+class_name NSMBWEditor
+extends Nebula2DEditor

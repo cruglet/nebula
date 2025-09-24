@@ -5,7 +5,6 @@
 
 [node name="IconSidebarButton" type="Button" node_paths=PackedStringArray("_button_label", "_panel_container", "_button_label_size", "_notification_badge")]
 custom_minimum_size = Vector2(40, 40)
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 40.0
 size_flags_horizontal = 4

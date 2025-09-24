@@ -1,0 +1,12 @@
+[gd_resource type="Module" format=3 uid="uid://dnxmoyy8pdj5k"]
+
+[resource]
+name = "New Super Mario Bros. Wii"
+description = "The module used for modding New Super Mario Bros. Wii."
+authors = Array[String](["Cruglet"])
+group = "wii"
+id = "nsmbw"
+entry_scene = "res://modules/nsmbw/scenes/editor/main_editor.tscn"
+module_folder = "res://modules/nsmbw"
+module_image = "res://modules/nsmbw/meta/banner.svg"
+project_image = "res://modules/nsmbw/meta/banner.svg"
