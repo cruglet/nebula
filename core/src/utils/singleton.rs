@@ -24,7 +24,11 @@ impl INode for Singleton {
         let mut blur_shader: Gd<Shader> = Shader::new_gd();
         blur_shader.set_code(Self::SHADER_BLUR_CODE);
 
+        let mut editor_2d_grid_shader: Gd<Shader> = Shader::new_gd();
+        editor_2d_grid_shader.set_code(Self::SHADER_EDITOR_2D_GRID_CODE);
+
         loaded_shaders_dict.set(Singleton::SHADER_BLUR, blur_shader);
+        loaded_shaders_dict.set(Singleton::SHADER_EDITOR_2D_GRID, editor_2d_grid_shader);
 
         Self {
             loaded_modules_dict: Dictionary::new(),
@@ -64,6 +68,7 @@ impl INode for Singleton {
 #[godot_api]
 impl Singleton {
     #[constant] pub const SHADER_BLUR: i32 = 0;
+    #[constant] pub const SHADER_EDITOR_2D_GRID: i32 = 1;
 
     #[func]
     pub fn get_shader(&mut self, shader: i32) -> Gd<Shader> {
@@ -78,6 +83,7 @@ impl Singleton {
     pub fn get_shader_code(&mut self, shader: i32) -> GString {
         match shader {
             Self::SHADER_BLUR => Self::SHADER_BLUR_CODE.into(),
+            Self::SHADER_EDITOR_2D_GRID => Self::SHADER_EDITOR_2D_GRID_CODE.into(),
             _ => "".into()
         }
     }
@@ -365,6 +371,109 @@ void fragment() {
     float noise = fract(sin(dot(SCREEN_UV, vec2(12.9898, 78.233))) * 43758.5453);
     col.rgb += (noise - 0.5) * dither_strength / 255.0;
 
+    COLOR = col;
+}
+"#;
+
+
+const SHADER_EDITOR_2D_GRID_CODE: &'static str = r#"
+shader_type canvas_item;
+uniform float zoom = 1.0;
+uniform vec2 minor_spacing = vec2(32.0, 32.0);
+uniform vec2 major_spacing = vec2(256.0, 256.0);
+uniform float minor_line_width = 1.0; // in pixels
+uniform float major_line_width = 2.0; // in pixels
+uniform int grid_pattern = 1; // 0 = none, 1 = lines, 2 = dots
+uniform bool fade_minor = true;
+uniform bool fade_major = false;
+uniform vec4 grid_minor : source_color = vec4(0.2, 0.2, 0.2, 0.5);
+uniform vec2 grid_offset = vec2(0.0);
+uniform vec4 grid_major : source_color = vec4(0.2, 0.2, 0.2, 1.0);
+uniform vec2 position = vec2(0.0);
+// Dots
+uniform float dot_minor_radius_px = 2.0; // minor dot radius in pixels
+uniform float dot_major_radius_px = 4.0; // major dot radius in pixels
+uniform int dot_major_step = 4;    // every Nth dot will be major
+// Bounds
+uniform bool draw_grid_outside_bounds = false;
+uniform float bound_left = -1000.0;
+uniform float bound_right = 1000.0;
+uniform float bound_bottom = -1000.0;
+uniform float bound_top = 1000.0;
+uniform vec4 bound_outside_color : source_color = vec4(0.0, 0.0, 0.0, 0.5);
+uniform vec4 background_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
+
+void fragment() {
+    vec2 world_pos = (FRAGCOORD.xy + position) / zoom;
+    vec2 minor_uv = ((world_pos + grid_offset) / vec2(minor_spacing.x, minor_spacing.y));
+    vec2 major_uv = ((world_pos + grid_offset) / vec2(major_spacing.x, major_spacing.y));
+    vec2 minor_cell = fract(minor_uv);
+    vec2 major_cell = fract(major_uv);
+    
+    // Start with background color
+    vec4 col = background_color;
+    
+    // Check out-of-bounds and set background accordingly
+    bool out_of_bounds = (world_pos.x < bound_left || world_pos.x > bound_right ||
+                          world_pos.y < -bound_top || world_pos.y > -bound_bottom);
+    
+    // Set background: either normal background or out-of-bounds background
+    col = out_of_bounds ? bound_outside_color : background_color;
+    
+    // Only draw grid if we're inside bounds OR if draw_grid_outside_bounds is true
+    if (!out_of_bounds || draw_grid_outside_bounds) {
+        // Determine fade factors for grid lines
+        float minor_alpha = fade_minor ? smoothstep(0.3, 0.8, zoom) : 1.0;
+        float major_alpha = fade_major ? smoothstep(0.3, 0.8, zoom) : 1.0;
+        
+        // ----- Line grid -----
+        if (grid_pattern == 1) {
+            vec2 minor_thickness = vec2(minor_line_width / zoom) / vec2(minor_spacing.x, minor_spacing.y);
+            vec2 major_thickness = vec2(major_line_width / zoom) / vec2(major_spacing.x, major_spacing.y);
+            
+            // Minor lines (horizontal + vertical combined)
+            float minor_x = step(minor_cell.x, minor_thickness.x);
+            float minor_y = step(minor_cell.y, minor_thickness.y);
+            float minor_mask = max(minor_x, minor_y);
+            if (minor_mask > 0.0) {
+                // Apply consistent fade everywhere - draw over background
+                float alpha = fade_minor ? minor_alpha : 1.0;
+                col = mix(col, grid_minor, grid_minor.a * alpha);
+            }
+            
+            // Major lines drawn over minor lines
+            float major_x = step(major_cell.x, major_thickness.x);
+            float major_y = step(major_cell.y, major_thickness.y);
+            float major_mask = max(major_x, major_y);
+            if (major_mask > 0.0) {
+                // Apply consistent fade everywhere - draw over background
+                float alpha = fade_major ? major_alpha : 1.0;
+                col = mix(col, grid_major, grid_major.a * alpha);
+            }
+        }
+        // ----- Dot grid -----
+        else if (grid_pattern == 2) {
+            float dot_minor_radius = dot_minor_radius_px / zoom;
+            float dot_major_radius = dot_major_radius_px / zoom;
+            vec2 minor_grid_pos = (world_pos + grid_offset) / vec2(minor_spacing.x, minor_spacing.y);
+            vec2 dot_cell = fract(minor_grid_pos);
+            vec2 dot_center = vec2(0.5);
+            float dist = distance(dot_cell, dot_center);
+            
+            ivec2 dot_index = ivec2(floor(minor_grid_pos));
+            bool is_major = ((dot_index.x % dot_major_step) == 0) &&
+                            ((dot_index.y % dot_major_step) == 0);
+            
+            if (is_major && dist < (dot_major_radius / min(minor_spacing.x, minor_spacing.y))) {
+                float alpha = fade_major ? major_alpha : 1.0;
+                col = mix(col, grid_major, grid_major.a * alpha);
+            } else if (!is_major && dist < (dot_minor_radius / min(minor_spacing.x, minor_spacing.y))) {
+                float alpha = fade_minor ? minor_alpha : 1.0;
+                col = mix(col, grid_minor, grid_minor.a * alpha);
+            }
+        }
+    }
+    
     COLOR = col;
 }
 "#;
