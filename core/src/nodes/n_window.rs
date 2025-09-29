@@ -80,10 +80,9 @@ impl IPanelContainer for NebulaWindow {
     }
 
     fn ready(&mut self) {
-        let mut tree = Singleton::get_tree().try_cast::<SceneTree>().unwrap();
+        let tree = Singleton::get_tree().try_cast::<SceneTree>().unwrap();
 
         self.scene_origin = tree.get_current_scene();
-        let origin = tree.get_current_scene();
 
         self.signals().hide_request().connect_self(Self::on_hide_request);
         self.base_mut().set_focus_mode(FocusMode::ALL);

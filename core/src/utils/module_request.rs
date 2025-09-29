@@ -1,4 +1,4 @@
-use godot::obj::{WithBaseField, WithUserSignals};
+use godot::obj::WithBaseField;
 use godot::prelude::*;
 use godot::classes::{HttpRequest, RegEx};
 use godot::classes::{http_client::Method, object::ConnectFlags};
