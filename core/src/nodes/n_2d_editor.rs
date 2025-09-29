@@ -3,38 +3,78 @@ use godot::global::MouseButtonMask;
 
 use crate::utils::singleton::Singleton;
 
+/// 2D editor viewport control for Nebula.
+///
+/// `Nebula2DEditor` provides a pan/zoomable canvas with optional grid overlay.
+/// Supports drag-selection, touch gestures, mouse warp, bounds clamping, and shader-based grid rendering.
+/// Useful for building level editors, map editors, or any 2D workspace within Godot.
 #[derive(GodotClass)]
 #[class(base=Control, tool)]
 struct Nebula2DEditor {
-
+    /// Current position of the viewport in world coordinates.
     #[var] viewport_position: Vector2,
-    #[var] enable_drag_selection: bool,
-    #[var] warp_mouse: bool,
-    // #[var] stay_within_bounds: bool,
 
+    /// Enable dragging a selection rectangle with left mouse button.
+    #[var] enable_drag_selection: bool,
+
+    /// Warp the mouse when reaching viewport edges during panning.
+    #[var] warp_mouse: bool,
+
+    /// Minimum allowed zoom factor.
     #[var] zoom_minimum: f32,
+
+    /// Maximum allowed zoom factor.
     #[var] zoom_maximum: f32,
+
+    /// Current zoom factor.
     #[var] zoom_amount: f32,
+
+    /// Step factor for mouse wheel zooming.
     #[var] zoom_step: f32,
 
+    /// Grid pattern to display: none, lines, or dots.
     #[var] grid_pattern: GridPattern,
+
+    /// Grid offset in world units.
     #[var] grid_offset: Vector2,
+
+    /// Spacing between major lines/dots.
     #[var] grid_major_spacing: Vector2,
+
+    /// Spacing between minor lines/dots.
     #[var] grid_minor_spacing: Vector2,
+
+    /// Fade out major grid lines/dots when zooming out.
     #[var] grid_fade_out_major: bool,
+
+    /// Fade out minor grid lines/dots when zooming out.
     #[var] grid_fade_out_minor: bool,
+
+    /// Whether to draw the grid outside editor bounds.
     #[var] grid_draw_outside: bool,
     
+    /// Line width for major grid lines in pixels.
     #[var] grid_major_line_width: f32,
+
+    /// Line width for minor grid lines in pixels.
     #[var] grid_minor_line_width: f32,
 
+    /// Radius of major grid dots in pixels.
     #[var] grid_dot_major_radius: f32,
+
+    /// Radius of minor grid dots in pixels.
     #[var] grid_dot_minor_radius: f32,
+
+    /// How far apart the major dots should be for every Nth dot.
     #[var] grid_dot_major_step: i32,
 
+    /// Leftwards viewport boundary, represented as pixels.
     #[var] bound_left: i32,
+    /// Rightwards viewport boundary, represented as pixels.
     #[var] bound_right: i32,    
+    /// Upwards viewport boundary, represented as pixels.
     #[var] bound_top: i32,
+    /// Downwards viewport boundary, represented as pixels.
     #[var] bound_bottom: i32,
 
     ctrl_zoom_anchor: Option<Vector2>,
@@ -410,9 +450,13 @@ impl IControl for Nebula2DEditor {
 
 #[godot_api]
 impl Nebula2DEditor {
+    /// Emitted when a drag-selection rectangle is updated.
     #[signal] fn selection_dragged(rect: Rect2);
+
+    /// Emitted when a drag-selection rectangle is finished.
     #[signal] fn selection_finished(rect: Rect2);
 
+    /// Adds a Control node to the editor's viewport.
     #[func] pub fn add_control(&mut self, mut control: Gd<Control>) {
         control.set_mouse_filter(MouseFilter::IGNORE);
 
@@ -421,14 +465,17 @@ impl Nebula2DEditor {
         }
     }
 
+    /// Adds a control to the current selection.
     #[func] pub fn add_to_selection(&mut self, control: Gd<Control>) {
         self.selected_objects.push(control);
     }
 
+    /// Removes a control from the selection.
     #[func] pub fn remove_from_selection(&mut self, control: Gd<Control>) {
         self.selected_objects.retain(|obj| obj != &control);
     }
 
+    /// Clears the currently active selection.
     #[func] pub fn clear_selection(&mut self) {
         self.selected_objects.clear();
     }
