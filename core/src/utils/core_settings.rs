@@ -2,6 +2,10 @@ use godot::{classes::{file_access::ModeFlags, DirAccess, DisplayServer, FileAcce
 
 use crate::utils::singleton::Singleton;
 
+/// Manages core configuration settings for the application.
+///
+/// `CoreSettings` provides methods to read, write, and apply global settings such as
+/// UI scale, project list, and module list. Configurations are stored in `user://core.cfg`.
 #[derive(GodotClass)]
 #[class(base=Object)]
 pub struct CoreSettings {
@@ -19,11 +23,17 @@ impl IObject for CoreSettings {
 
 #[godot_api]
 impl CoreSettings {
+    /// Constant representing the UI scale setting.
     #[constant] pub const SETTING_UI_SCALE: i32 = 0;
+
+    /// Constant representing the list of projects.
     #[constant] pub const SETTING_PROJECT_LIST: i32 = 1;
+
+    /// Constant representing the list of modules.
     #[constant] pub const SETTING_MODULE_LIST: i32 = 2;
     const MAX: i32 = 3;
 
+    /// Returns the default configuration values as a Dictionary.
     #[func]
     fn get_defaults() -> Dictionary {
         let mut data: Dictionary = Dictionary::new();
@@ -35,6 +45,7 @@ impl CoreSettings {
         data
     }
 
+    /// Applies configuration settings to the running application.
     #[func]
     fn apply_config() {
         let mut window: Gd<Window> = Singleton::get_tree().get_root().unwrap();
@@ -56,7 +67,9 @@ impl CoreSettings {
 
     }
 
-
+    /// Checks if the configuration file exists and is valid.
+    ///
+    /// Returns `true` if `user://core.cfg` exists and contains a valid Dictionary.
     #[func]
     fn exists() -> bool {
         if !FileAccess::file_exists(&CoreSettings::get_path()) {
@@ -70,11 +83,18 @@ impl CoreSettings {
         false
     }
 
+    /// Returns the file path of the core configuration.
     #[func]
     fn get_path() -> GString {
         GString::from("user://core.cfg")
     }
 
+    /// Gets the value of a specific setting.
+    ///
+    /// Parameters:
+    /// - `key`: One of the `SETTING_*` constants.
+    ///
+    /// Returns the setting value as a `Variant`. If the key is missing, returns the default.
     #[func]
     pub fn get(key: i32) -> Variant {
         let mut val: Variant = CoreSettings::get_defaults().get_or_nil(key.to_godot());
@@ -87,6 +107,13 @@ impl CoreSettings {
         val
     }
 
+    /// Sets the value of a specific setting and writes to disk.
+    ///
+    /// Parameters:
+    /// - `key`: One of the `SETTING_*` constants.
+    /// - `value`: The value to store.
+    ///
+    /// Returns `true` if the setting was stored successfully.
     #[func]
     pub fn set(key: i32, value: Variant) -> bool {
         let mut data: Dictionary = Self::_get_data();
@@ -106,6 +133,7 @@ impl CoreSettings {
         true
     }
 
+    /// Sets a setting value and immediately applies configuration.
     #[func]
     fn set_and_apply(key: i32, value: Variant) -> bool {
         let success: bool = CoreSettings::set(key, value);
@@ -113,6 +141,7 @@ impl CoreSettings {
         success
     }
 
+    /// Prepends a value to an array-type setting.
     #[func]
     fn prepend(key: i32, value: Variant) -> bool {
         let mut settings_arr: Array<Variant> = CoreSettings::get(key)
@@ -125,6 +154,7 @@ impl CoreSettings {
         true
     }
 
+    /// Appends a value to an array-type setting.
     #[func]
     fn append(key: i32, value: Variant) -> bool {
         let mut settings_arr: Array<Variant> = CoreSettings::get(key)
