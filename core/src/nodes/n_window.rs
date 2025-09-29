@@ -35,21 +35,48 @@ impl From<i32> for ScreenFX {
     }
 }
 
-
+/// A customizable window with animations, title, and optional screen effects.
+///
+/// [member NebulaWindow] can show/hide itself with scale animations, keep itself centered,
+/// and optionally apply blur effects to the background. It supports keyboard input
+/// for closing with the Escape key and allows flexible layout for child controls.
 #[derive(GodotClass)]
 #[class(base=PanelContainer)]
 struct NebulaWindow {
+    /// Window title text displayed at the top.
     #[export] title_text: GString,
+
+    /// Font size for the window title.
     #[export] title_text_size: i32,
+
+    /// Margin around the title text.
     #[export] title_margin: i32,
+
+    /// Margin around the window border.
     #[export] border_margin: i32,
+
+    /// Animation to use when showing the window.
     #[export] show_animation: ShowAnimation,
+
+    /// Animation to use when hiding the window.
     #[export] hide_animation: HideAnimation,
+
+    /// Speed of the show animation (seconds).
     #[export] animation_in_speed: f64,
+
+    /// Speed of the hide animation (seconds).
     #[export] animation_out_speed: f64,
+
+    /// Initial position offset for the window.
     #[export] start_origin: Vector2,
+
+    /// If true, pressing Escape will close the window.
     #[export] close_on_escape: bool,
+
+    /// If true, window stays centered during processing.
     #[export] keep_centered: bool,
+
+    /// Optional screen effects when window is visible.
     #[export] screen_fx: ScreenFX,
 
     scene_origin: Option<Gd<Node>>,
@@ -156,9 +183,11 @@ impl IPanelContainer for NebulaWindow {
 
 #[godot_api]
 impl NebulaWindow {
+    /// Emitted when the window is requested to hide.
     #[signal]
     fn hide_request();
 
+    /// Shows the window with the configured animation.
     #[func]
     fn show(&mut self) {
         self.base_mut().set_as_top_level(true);
@@ -166,6 +195,7 @@ impl NebulaWindow {
         self.animate_in(self.show_animation);
     }
 
+    /// Hides the window, emitting the [signal hide_request] signal.
     #[func]
     fn hide(&mut self) {
         self.signals().hide_request().emit();
