@@ -7,6 +7,11 @@ use godot::global::bytes_to_var_with_objects;
 use crate::utils::git::Git;
 use crate::utils::singleton::Singleton;
 
+/// Handles fetching module metadata and preview images from remote repositories.
+///
+/// `ModuleRequest` can fetch multiple repositories in parallel, parse module metadata,
+/// retrieve preview images, and emit signals when data is available. This class is designed 
+/// to work asynchronously.
 #[derive(GodotClass)]
 #[class(base=Object)]
 struct ModuleRequest {
@@ -22,11 +27,32 @@ impl IObject for ModuleRequest {
 
 #[godot_api]
 impl ModuleRequest {
+    /// Emitted when metadata for a module is successfully fetched.
+    ///
+    /// Parameters:
+    /// - `metadata`: Dictionary containing the module's metadata.
+    /// - `source_url`: Raw URL of the module file.
+    /// - `module_size`: Size of the module file in bytes.
     #[signal] fn metadata_fetched(metadata: Dictionary, source_url: GString, module_size: i64);
+
+    /// Emitted when a module preview image is successfully fetched.
+    ///
+    /// Parameters:
+    /// - `image_data`: Raw byte array of the image.
+    /// - `module_id`: ID of the module.
+    /// - `image_type`: Extension/type of the image file.
     #[signal] fn preview_image_fetched(image_data: PackedByteArray, module_id: GString, image_type: GString);
+
+    /// Emitted if the connection to a repository fails.
     #[signal] fn could_not_connect();
+
+    /// Emitted when all parallel fetch requests have completed.
     #[signal] fn fetch_complete();
 
+    /// Fetches module metadata from multiple repository URLs in parallel.
+    ///
+    /// `repositories` should be an array of Git repository URLs.
+    /// Returns the `ModuleRequest` instance for chaining.
     #[func]
     fn fetch_parallel(&self, repositories: Array<GString>) -> Gd<ModuleRequest> {
         let mut amount_fetched: u16 = 0;
@@ -74,7 +100,6 @@ impl ModuleRequest {
        ModuleRequest::parse_modules_file(text, request_instance);
        http_ref.queue_free();
     }
-
 
     fn parse_modules_file(text: GString, request_instance: Gd<ModuleRequest>) {
         let module_file_text: PackedStringArray = text.split("\n");
