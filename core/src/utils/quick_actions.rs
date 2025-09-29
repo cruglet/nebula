@@ -2,7 +2,8 @@ use std::fs;
 use godot::prelude::*;
 use godot::classes::{Object, IObject, Image, ImageTexture, FileAccess, ResourceUid, Texture2D};
 
-
+/// Helper class to reduce verbosity for simple (often recursive) operations, such as 
+/// image loading and deleting populated directories.
 #[derive(GodotClass)]
 #[class(base=Object)]
 struct QuickActions {
@@ -20,6 +21,7 @@ impl IObject for QuickActions {
 
 #[godot_api]
 impl QuickActions {
+    /// Loads and returns an ImageTexture from a path to either a PNG, JPEG, or SVG image file.
     #[func]
     fn load_image(path: GString) -> Gd<ImageTexture> {
         if let Some(img) = QuickActions::_load_image(path) {
@@ -28,6 +30,7 @@ impl QuickActions {
         ImageTexture::new_gd()
     }
 
+    /// Similar to [method load_image], but a fallback image can be provided and returned if the load operation fails.
     #[func]
     fn load_image_with_fallback(path: GString, fallback_image: Gd<Texture2D>) -> Gd<Texture2D> {
         if let Some(img) = QuickActions::_load_image(path) {
@@ -60,6 +63,7 @@ impl QuickActions {
         ImageTexture::create_from_image(&img)
     }
 
+    /// Deletes a folder recursively at a given [param path].
     #[func]
     fn delete_folder_recursively(path: GString) {
         let path_str = path.get_base_dir().to_string();
@@ -72,6 +76,7 @@ impl QuickActions {
         }
     }
 
+    /// Returns all of the visible children of a given [param node].
     #[func]
     fn get_visible_children(node: Gd<Node>) -> Array<Gd<Node>> {
         let children: Array<Gd<Node>> = node.get_children();
