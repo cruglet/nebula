@@ -2,12 +2,14 @@ use godot::{classes::{control::{LayoutPreset, SizeFlags}, notify::ControlNotific
 
 use crate::utils::module::Module;
 
+/// Global singleton class that handles the global runtime of Nebula.
 #[derive(GodotClass)]
 #[class(base=Node)]
 pub(crate) struct Singleton {
     loaded_modules_dict: Dictionary,
     loaded_modules_arr: Array<Gd<Module>>,
     pub loaded_project_path: GString,
+    /// The UI Layer responsible for displaying global UI, such as global windows & toast notifications.
     #[var] pub ui_canvas_layer: Gd<CanvasLayer>,
     screen_canvas_layer: Gd<CanvasLayer>,
     screen_blur_rect: Gd<ColorRect>,
@@ -67,9 +69,12 @@ impl INode for Singleton {
 #[allow(dead_code)]
 #[godot_api]
 impl Singleton {
+    /// The enumerated constant for a blur shader, used in shader helper functions.
     #[constant] pub const SHADER_BLUR: i32 = 0;
+    /// The enumerated constant for a 2d grid shader, used in shader helper functions.
     #[constant] pub const SHADER_EDITOR_2D_GRID: i32 = 1;
 
+    /// Returns an instance of a Singleton shader used throughout Nebula.
     #[func]
     pub fn get_shader(&mut self, shader: i32) -> Gd<Shader> {
         if let Some(shd) = self.loaded_shaders_dict.get(shader) {
@@ -79,6 +84,7 @@ impl Singleton {
         Shader::new_gd()
     }
 
+    /// Returns the raw code of a Singleton shader as a String.
     #[func]
     pub fn get_shader_code(&mut self, shader: i32) -> GString {
         match shader {
@@ -88,6 +94,7 @@ impl Singleton {
         }
     }
 
+    /// Applies the screen blur to everything below the Screen FX CanvasLayer (which exists on layer 5).
     #[func]
     pub fn show_screen_blur(&mut self) {
         let fade_in_time = 0.25;
@@ -104,6 +111,7 @@ impl Singleton {
         self.screen_blur_rect.show();
     }
 
+    /// Hides the screen blur from the ScreenFX CanvasLayer (which exists on layer 5).
     #[func]
     pub fn hide_screen_blur(&mut self) {
         let fade_out_time = 0.25;
@@ -120,6 +128,8 @@ impl Singleton {
         }
     }
     
+    /// Makes a notification appear for a short amount of time. Useful for alerting the user towards an error
+    /// or an important piece of information.
     #[func]
     pub fn send_notification(&mut self, title: GString, description: GString) {
         const NOTIFICATION_TIME: f32 = 4.5;
@@ -232,12 +242,15 @@ impl Singleton {
         } 
     }
 
+    /// Registers a module within the engine, adding it to a list to be able to be grabbed later.
     #[func]
     pub fn register_module(&mut self, module: Gd<Module>) {
         self.loaded_modules_dict.set(module.bind().get_module_id(), self.loaded_modules_arr.len() as i32);
         self.loaded_modules_arr.push(&module);
     }
 
+    /// Gets a registered/loaded module. You can grab a module from either it's "id" or the "index" 
+    /// of the module in the stored list.
     #[func]
     pub fn get_module(&mut self, id_or_index: Variant) -> Gd<Module> {
         let mut index: i32 = 0;
@@ -255,6 +268,7 @@ impl Singleton {
         Module::new()
     }
 
+    /// Removes a module from the internal stored list, ether by "id" or by its "index" in said list.
     #[func]
     pub fn remove_module(&mut self, id_or_index: Variant) {
         let mut index: i32 = 0;
@@ -272,11 +286,13 @@ impl Singleton {
         }
     }
 
+    /// Returns the list of all currently registered/loaded modules.
     #[func]
     pub fn get_modules(&mut self) -> Array<Gd<Module>> {
         self.loaded_modules_arr.to_godot()
     }
 
+    /// Returns a list of all module id's in the order that the modules are registered in.
     #[func]
     pub fn get_module_ids(&self) -> Array<GString> {
         self.loaded_modules_dict
