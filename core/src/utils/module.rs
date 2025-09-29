@@ -3,21 +3,53 @@ use godot::classes::file_access::ModeFlags;
 use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource, ResourceUid, Os};
 use godot::global::{bytes_to_var_with_objects, var_to_bytes_with_objects};
 
+/// Represents a module that can be packed into a `.nmod` file for use with Nebula.
+///
+/// A [b]Module[/b] is a modified `.pck` file which contains metadata such as name, description, authors, versioning, and entry scene.
+/// It also includes information about compatible files and folder paths. This resource can be used
+/// to generate `.nmod` files using the built-in module packer.
 #[derive(GodotClass)]
 #[class(base=Resource, tool)]
 pub struct Module {
+    /// Name of the module.
     #[export] name: GString,
+
+    /// Description of the module. Supports multiple lines.
     #[export(multiline)] description: GString,
+
+    /// List of authors of the module.
     #[export] authors: Array<GString>,
+
+    /// Group of the module (used for categorization or module type).
     #[export] group: GString,
+
+    /// Unique ID of the module. Automatically sanitized (lowercase, underscores instead of spaces).
     #[export] id: GString,
+
+    /// Major version number of the module.
     #[export] major_version: u8,
+
+    /// Minor version number of the module.
     #[export] minor_version: u8,
+
+    /// Patch number of the module.
     #[export] patch_number: u8,
+
+    /// Entry scene file for the module (e.g., `res://scenes/main.tscn`). [br]
+    /// [b]Note:[/b] The entry scene [i]must[/i] be set as a [b]path[/b], as UIDs tend to cause inconsistent behavior.
     #[export(file="*.tscn,*.scn*,*.res")] entry_scene: GString,
+
+    /// Root folder containing the module's files.
     #[export(dir)] module_folder: GString,
+
+    /// Thumbnail or representative image for the module.
     #[export(file="*.png,*.jpg,*.jpeg,*.svg")] module_image: GString,
+
+    /// Image representing the a project of this module.
     #[export(file="*.png,*.jpg,*.jpeg,*.svg")] project_image: GString,
+
+    /// List of file extensions or names compatible with this module. This can be used to predetermine game file integrity
+    /// before loading the project.
     #[export] compatible_files: Array<GString>,
 
     export_folder: GString,
@@ -32,6 +64,7 @@ pub struct Module {
     #[base]
     base: Base<Resource>,
 }
+
 
 #[godot_api]
 impl IResource for Module {
@@ -92,6 +125,7 @@ impl IResource for Module {
 
 #[godot_api]
 impl Module {
+    /// Creates a new, empty module resource.
     #[func]
     pub fn new() -> Gd<Module> {
         Gd::from_init_fn(|base| {
@@ -116,7 +150,10 @@ impl Module {
         })
     }
 
-
+    /// Loads a module from a `.nmod` file and its metadata.
+    ///
+    /// Returns a `Module` with all fields populated from the file.
+    /// Throws an error if the file cannot be read or if required metadata is missing.
     #[func]
     fn load(path: GString) -> Gd<Module> {
         let mut m: Gd<Module> = Module::new();
@@ -156,15 +193,20 @@ impl Module {
         m
     }
 
+    /// Returns the module's version as a string formatted as `major.minor.patch`.
     #[func]
     fn get_version_string(&self) -> GString {
         format!("{}.{}.{}", self.major_version, self.minor_version, self.patch_number).to_godot()
     }
 
+    /// Returns the module's ID.
     pub fn get_module_id(&self) -> GString {
         self.id.to_godot()
     }
 
+    /// Generates the `.nmod` file for this module, packing all files in the module folder.
+    ///
+    /// Performs validation of all required fields and logs errors if any are missing.
     #[func]
     fn _generate_module(&self) {
         if self.name.is_empty() {
