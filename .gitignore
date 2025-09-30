@@ -18,6 +18,8 @@ client/*.godot
 client/*.tmp
 client/*.temp
 
+_local/
+
 !client/project.godot
 
 *.DS_Store
