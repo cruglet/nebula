@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=66 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=68 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/primary.ttf" id="1_vhynu"]
 [ext_resource type="FontFile" uid="uid://g3iia37ktbw7" path="res://meta/fonts/secondary.ttf" id="2_5e7fv"]
@@ -202,6 +202,22 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fjdk4"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9019608, 0.41960785, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6neeu"]
+bg_color = Color(0.9098039, 0.9098039, 0.9098039, 0.2)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9098039, 0.9098039, 0.9098039, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v7x5o"]
 bg_color = Color(0, 0.60666656, 0.91, 0.2)
@@ -620,6 +636,8 @@ Nebula2DEditor/colors/background_color = Color(0.15430853, 0.1594978, 0.18024808
 Nebula2DEditor/colors/major_color = Color(0.18431373, 0.19215687, 0.21176471, 1)
 Nebula2DEditor/colors/minor_color = Color(0.18431373, 0.19215687, 0.21176471, 1)
 Nebula2DEditor/colors/outside_region_color = Color(0.08887204, 0.094596736, 0.10604551, 1)
+Nebula2DEditor/styles/object_preselect_box = SubResource("StyleBoxFlat_fjdk4")
+Nebula2DEditor/styles/selected_objects_box = SubResource("StyleBoxFlat_6neeu")
 Nebula2DEditor/styles/selection_box = SubResource("StyleBoxFlat_v7x5o")
 NebulaWindow/styles/panel = SubResource("StyleBoxFlat_xv4hg")
 Panel/styles/panel = SubResource("StyleBoxFlat_u64fg")
