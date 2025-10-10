@@ -260,7 +260,7 @@ impl NebulaWindow {
                     let mut tween: Gd<Tween> = res.create_tween().unwrap();
                     tween.set_ease(tween::EaseType::OUT);
                     tween.set_trans(tween::TransitionType::QUINT);
-                    tween.tween_property(&base_gd, "scale", &Vector2::ZERO.to_variant(), self.animation_in_speed);
+                    tween.tween_property(&base_gd, "scale", &Vector2::ZERO.to_variant(), self.animation_out_speed);
                     tween.signals().finished().connect(move || {
                         if base_gd.is_instance_valid() {
                             base_gd.hide();
