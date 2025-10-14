@@ -713,7 +713,7 @@ impl Nebula2DEditor {
         self.selected_objects_panel.add_theme_stylebox_override("panel", selected_style.as_ref());
         self.selected_objects_panel.show();
     }
-
+    
     
     fn reload_theme(&mut self) {
         let mut shader_material = self.editor_shader_material.to_godot();

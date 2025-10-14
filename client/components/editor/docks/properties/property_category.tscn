@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://dnukd56sbop6c"]
+
+[ext_resource type="Script" uid="uid://hptap2710g55" path="res://components/editor/docks/properties/property_category.gd" id="1_oc3gx"]
+
+[node name="PropertyCategory" type="PanelContainer" node_paths=PackedStringArray("category_name_label", "category_icon_rect")]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme_type_variation = &"nPanelPropertyCategory"
+script = ExtResource("1_oc3gx")
+category_name_label = NodePath("MarginContainer/CenterContainer/HBoxContainer/Label")
+category_icon_rect = NodePath("MarginContainer/CenterContainer/HBoxContainer/Texture")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="Texture" type="TextureRect" parent="MarginContainer/CenterContainer/HBoxContainer"]
+layout_mode = 2
+expand_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Category"

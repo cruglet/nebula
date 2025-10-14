@@ -1,0 +1,62 @@
+[gd_scene load_steps=4 format=3 uid="uid://dwoslainqrwl6"]
+
+[ext_resource type="Script" uid="uid://bmjucki40h7lo" path="res://components/editor/docks/properties/properties_dock.gd" id="1_miujr"]
+[ext_resource type="PackedScene" uid="uid://dnukd56sbop6c" path="res://components/editor/docks/properties/property_category.tscn" id="2_y5ivy"]
+[ext_resource type="PackedScene" uid="uid://bkxtru76hpjiy" path="res://components/editor/docks/properties/property.tscn" id="3_y5ivy"]
+
+[node name="Properties" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_miujr")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PropertyCategory" parent="MarginContainer/VBoxContainer" instance=ExtResource("2_y5ivy")]
+layout_mode = 2
+category_name = "Koopa"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Search..."
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Property" parent="MarginContainer/VBoxContainer" instance=ExtResource("3_y5ivy")]
+layout_mode = 2
+
+[node name="Property2" parent="MarginContainer/VBoxContainer" instance=ExtResource("3_y5ivy")]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Restore Defaults"
+
+[node name="Control2" type="Control" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
