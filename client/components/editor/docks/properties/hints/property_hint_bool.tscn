@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpbw6a13dchbw"]
+
+[ext_resource type="Script" uid="uid://cs1vma36skbca" path="res://components/editor/docks/properties/hints/property_hint_bool.gd" id="1_hifch"]
+
+[node name="PropertyHintBool" type="PanelContainer" node_paths=PackedStringArray("property_checkbox", "property_label")]
+theme_type_variation = &"nPanelPropertyHint"
+script = ExtResource("1_hifch")
+property_checkbox = NodePath("MarginContainer/HBoxContainer/CheckBox")
+property_label = NodePath("MarginContainer/HBoxContainer/Label")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "On"
+
+[connection signal="toggled" from="MarginContainer/HBoxContainer/CheckBox" to="." method="_on_check_box_toggled"]
