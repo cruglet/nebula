@@ -1,4 +1,4 @@
-use godot::classes::control::LayoutPreset;
+use godot::classes::control::{CursorShape, LayoutPreset};
 use godot::obj::{NewAlloc, WithBaseField, WithUserSignals};
 use godot::prelude::*;
 use godot::global::{Key, HorizontalAlignment, VerticalAlignment};
@@ -152,14 +152,21 @@ impl IPanelContainer for NebulaWindow {
             cb.set_custom_minimum_size(Vector2 { x: 0.0, y: 22.0 });
             cb.set_theme_type_variation("nWindowMaximizeButton");
             cb.set_toggle_mode(true);
+            cb.set_default_cursor_shape(CursorShape::POINTING_HAND);
             
             let self_ref = self.to_gd();
-            cb.signals().toggled().connect_other(&self_ref, NebulaWindow::on_fullscreen_toggled);
-
-            self.fullscreen_button = cb.to_godot();
+            let callable = Callable::from_local_fn("on_fullscreen_toggled", move |args: &[&Variant]| {
+                if let Some(toggled_on) = args.get(0).and_then(|v| v.try_to::<bool>().ok()) {
+                    self_ref.clone().call_deferred("_handle_fullscreen_toggle", &[toggled_on.to_variant()]);
+                }
+                Ok(Variant::nil())
+            });
             
+            cb.connect("toggled", &callable);
+            self.fullscreen_button = cb.clone();
             l.add_child(&cb);
         }
+
 
         let mut c: Gd<MarginContainer> = MarginContainer::new_alloc();
         c.set_h_size_flags(SizeFlags::EXPAND_FILL);
@@ -169,18 +176,24 @@ impl IPanelContainer for NebulaWindow {
         c.add_theme_constant_override("margin_bottom", self.border_margin);
         vb.add_child(&c);
         
-        let self_ref = self.to_gd();
-
         for i in 0..self.base().get_children().len() {
             if let Some(mut node) = self.base().get_child(i as i32) {
                 node.reparent(&c);
-                if let Ok(mut n) = node.try_cast::<Control>() && !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
-                        n.set_h_size_flags(SizeFlags::FILL);
-                        n.set_v_size_flags(SizeFlags::FILL);
-                        n.signals().item_rect_changed().connect_other(&self_ref, NebulaWindow::on_item_rect_changed);
+                if let Ok(mut n) = node.try_cast::<Control>() {
+                    n.set_h_size_flags(SizeFlags::FILL);
+                    n.set_v_size_flags(SizeFlags::FILL);
+                    
+                    let self_ref = self.to_gd();
+                    let callable = Callable::from_local_fn("on_item_rect_changed", move |_args: &[&Variant]| {
+                        let mut base = self_ref.clone().upcast::<PanelContainer>();
+                        base.call_deferred("set_size", &[Vector2::splat(0.0).to_variant()]);
+                        Ok(Variant::nil())
+                    });
+                    
+                    n.connect("item_rect_changed", &callable);
                 };
             };
-        };
+        }
     
         self.vbox = vb.to_godot();
         vb.set_h_size_flags(SizeFlags::SHRINK_BEGIN);
@@ -225,7 +238,7 @@ impl IPanelContainer for NebulaWindow {
         }
 
         if self.fullscreen_on {
-            self.base_mut().set_size(Singleton::get_scaled_window_size().cast_float());
+            self.base_mut().set_custom_minimum_size(Singleton::get_scaled_window_size().cast_float());
         }
     }
 }
@@ -249,12 +262,6 @@ impl NebulaWindow {
     #[func]
     fn hide(&mut self) {
         self.signals().hide_request().emit();
-    }
-
-    fn on_item_rect_changed(&mut self) {
-        if !self.fullscreen_on {
-            self.base_mut().set_size(Vector2::splat(0.0));
-        }
     }
 
     fn animate_in(&mut self, animation: ShowAnimation) {
@@ -333,9 +340,11 @@ impl NebulaWindow {
         self.animate_out(self.hide_animation);
         self.fullscreen_on = false;
         self.fullscreen_button.set_pressed_no_signal(false);
+        self.base_mut().set_custom_minimum_size(Vector2::ZERO);
     }
 
-    fn on_fullscreen_toggled(&mut self, toggled_on: bool) {
+    #[func]
+    fn _handle_fullscreen_toggle(&mut self, toggled_on: bool) {
         if let Ok(mut res) = Singleton::get_tree().try_cast::<SceneTree>() {
             let base_gd = self.base().to_godot();
             let mut tween: Gd<Tween> = res.create_tween().unwrap();
@@ -354,7 +363,7 @@ impl NebulaWindow {
 
                 let screen_size = Singleton::get_scaled_window_size();
                 tween.tween_property(&base_gd, "global_position", &Vector2::ZERO.to_variant(), 0.3);
-                tween.tween_property(&base_gd, "size", &screen_size.cast_float().to_variant(), 0.3);
+                tween.tween_property(&base_gd, "custom_minimum_size", &screen_size.cast_float().to_variant(), 0.3);
                 
             } else {
                 self.fullscreen_on = false;
@@ -367,6 +376,7 @@ impl NebulaWindow {
                 };
                 
                 tween.tween_property(&base_gd, "global_position", &target_position.to_variant(), 0.3);
+                tween.tween_property(&base_gd, "custom_minimum_size", &self.original_size.to_variant(), 0.3);
                 tween.tween_property(&base_gd, "size", &self.original_size.to_variant(), 0.3);
             }
         }
