@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=78 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=82 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/primary.ttf" id="1_vhynu"]
 [ext_resource type="FontFile" uid="uid://g3iia37ktbw7" path="res://meta/fonts/secondary.ttf" id="2_5e7fv"]
+[ext_resource type="Texture2D" uid="uid://cijhb62fqk50l" path="res://meta/icons/maximize.svg" id="3_5e7fv"]
 
 [sub_resource type="FontVariation" id="FontVariation_q1op7"]
 base_font = ExtResource("1_vhynu")
@@ -675,6 +676,31 @@ corner_radius_bottom_left = 8
 shadow_color = Color(0, 0, 0, 0.2509804)
 shadow_size = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l36rt"]
+bg_color = Color(0.6, 0.6, 0.6, 0.11764706)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+expand_margin_top = 6.0
+expand_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1u036"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jks6h"]
+bg_color = Color(0, 0.34509805, 0.67058825, 0.38039216)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.34509805, 0.67058825, 1)
+corner_radius_top_left = 99
+corner_radius_top_right = 99
+corner_radius_bottom_right = 99
+corner_radius_bottom_left = 99
+expand_margin_top = 6.0
+expand_margin_bottom = 6.0
+
 [resource]
 Button/colors/font_color = Color(0.875, 0.875, 0.875, 1)
 Button/colors/font_disabled_color = Color(0.875, 0.875, 0.875, 0.5)
@@ -839,3 +865,10 @@ nPanelToast/base_type = &"Panel"
 nPanelToast/styles/panel = SubResource("StyleBoxFlat_76424")
 nRichTextThin/base_type = &"RichTextLabel"
 nRichTextThin/fonts/normal_font = ExtResource("1_vhynu")
+nWindowMaximizeButton/base_type = &"Button"
+nWindowMaximizeButton/constants/align_to_largest_stylebox = 1
+nWindowMaximizeButton/icons/icon = ExtResource("3_5e7fv")
+nWindowMaximizeButton/styles/focus = SubResource("StyleBoxFlat_l36rt")
+nWindowMaximizeButton/styles/hover = SubResource("StyleBoxFlat_l36rt")
+nWindowMaximizeButton/styles/normal = SubResource("StyleBoxEmpty_1u036")
+nWindowMaximizeButton/styles/pressed = SubResource("StyleBoxFlat_jks6h")

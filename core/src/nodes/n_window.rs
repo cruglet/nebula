@@ -1,7 +1,8 @@
-use godot::obj::WithUserSignals;
+use godot::classes::control::LayoutPreset;
+use godot::obj::{NewAlloc, WithBaseField, WithUserSignals};
 use godot::prelude::*;
 use godot::global::{Key, HorizontalAlignment, VerticalAlignment};
-use godot::classes::{Control, PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, control::{FocusMode, SizeFlags}};
+use godot::classes::{Control, PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, Button, control::{FocusMode, SizeFlags}};
 
 use crate::utils::singleton::Singleton;
 
@@ -70,6 +71,9 @@ struct NebulaWindow {
     /// Initial position offset for the window.
     #[export] start_origin: Vector2,
 
+    /// Whether the window can go fullscreen
+    #[export] can_fullscreen: bool,
+
     /// If true, pressing Escape will close the window.
     #[export] close_on_escape: bool,
 
@@ -80,7 +84,12 @@ struct NebulaWindow {
     #[export] screen_fx: ScreenFX,
 
     scene_origin: Option<Gd<Node>>,
+    fullscreen_on: bool,
+    original_size: Vector2,
+    original_position: Vector2,
 
+    vbox: Gd<VBoxContainer>,
+    fullscreen_button: Gd<Button>,
     base: Base<PanelContainer>
 }
 
@@ -94,6 +103,7 @@ impl IPanelContainer for NebulaWindow {
             border_margin: 4,
             show_animation: ShowAnimation::ScaleInCenter,
             hide_animation: HideAnimation::ScaleOutCenter,
+            can_fullscreen: false,
             animation_in_speed: 0.25,
             animation_out_speed: 0.25,
             close_on_escape: true,
@@ -102,6 +112,12 @@ impl IPanelContainer for NebulaWindow {
             scene_origin: None,
             
             start_origin: Vector2 { x: 0.0, y: 0.0 },
+            fullscreen_on: false,
+            original_size: Vector2::ZERO,
+            original_position: Vector2::ZERO,
+
+            vbox: VBoxContainer::new_alloc(),
+            fullscreen_button: Button::new_alloc(),
             base
         }
     }
@@ -113,8 +129,11 @@ impl IPanelContainer for NebulaWindow {
 
         self.signals().hide_request().connect_self(Self::on_hide_request);
         self.base_mut().set_focus_mode(FocusMode::ALL);
+        self.base_mut().set_h_size_flags(SizeFlags::SHRINK_BEGIN);
+        self.base_mut().set_v_size_flags(SizeFlags::SHRINK_BEGIN);
         
-        let mut vb: Gd<VBoxContainer> = VBoxContainer::new_alloc(); 
+        let mut vb: Gd<VBoxContainer> = VBoxContainer::new_alloc();
+        vb.set_anchors_preset(LayoutPreset::FULL_RECT);
 
         let mut l: Gd<Label> = Label::new_alloc();
         l.set_text(&self.title_text);
@@ -124,9 +143,27 @@ impl IPanelContainer for NebulaWindow {
         l.set_custom_minimum_size(Vector2 {x: 0.0, y: (self.title_text_size + self.title_margin * 2) as f32});
         vb.add_child(&l);
 
+        if self.can_fullscreen {
+            let mut cb: Gd<Button> = Button::new_alloc();
+            cb.set_anchors_preset(LayoutPreset::CENTER_RIGHT);
+            cb.set_offset(Side::LEFT, -43.0);
+            cb.set_offset(Side::RIGHT, -19.0);
+            cb.set_offset(Side::TOP, -12.0);
+            cb.set_custom_minimum_size(Vector2 { x: 0.0, y: 22.0 });
+            cb.set_theme_type_variation("nWindowMaximizeButton");
+            cb.set_toggle_mode(true);
+            
+            let self_ref = self.to_gd();
+            cb.signals().toggled().connect_other(&self_ref, NebulaWindow::on_fullscreen_toggled);
+
+            self.fullscreen_button = cb.to_godot();
+            
+            l.add_child(&cb);
+        }
+
         let mut c: Gd<MarginContainer> = MarginContainer::new_alloc();
-        c.set_h_size_flags(SizeFlags::EXPAND);
-        c.set_v_size_flags(SizeFlags::EXPAND);
+        c.set_h_size_flags(SizeFlags::EXPAND_FILL);
+        c.set_v_size_flags(SizeFlags::EXPAND_FILL);
         c.add_theme_constant_override("margin_left", self.border_margin);
         c.add_theme_constant_override("margin_right", self.border_margin);
         c.add_theme_constant_override("margin_bottom", self.border_margin);
@@ -137,12 +174,17 @@ impl IPanelContainer for NebulaWindow {
         for i in 0..self.base().get_children().len() {
             if let Some(mut node) = self.base().get_child(i as i32) {
                 node.reparent(&c);
-                if let Ok(n) = node.try_cast::<Control>() && !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
+                if let Ok(mut n) = node.try_cast::<Control>() && !n.is_connected("item_rect_changed", &Callable::from_object_method(&self_ref, "on_item_rect_changed")) {
+                        n.set_h_size_flags(SizeFlags::FILL);
+                        n.set_v_size_flags(SizeFlags::FILL);
                         n.signals().item_rect_changed().connect_other(&self_ref, NebulaWindow::on_item_rect_changed);
                 };
             };
         };
-
+    
+        self.vbox = vb.to_godot();
+        vb.set_h_size_flags(SizeFlags::SHRINK_BEGIN);
+        vb.set_v_size_flags(SizeFlags::SHRINK_BEGIN);
         self.base_mut().add_child(&vb);
 
         let mut self_ref = self.to_gd();
@@ -173,9 +215,17 @@ impl IPanelContainer for NebulaWindow {
     }
 
     fn process(&mut self, _delta: f64) {
+        if !self.fullscreen_on && self.can_fullscreen {
+            self.original_size = self.base().get_size();
+            self.original_position = self.base().get_global_position();
+        }
+
         if self.keep_centered {
-            let mut base_mut = self.base_mut();
-            NebulaWindow::reposition_to_center(&mut base_mut);
+            NebulaWindow::reposition_to_center(&mut self.base_mut());
+        }
+
+        if self.fullscreen_on {
+            self.base_mut().set_size(Singleton::get_scaled_window_size().cast_float());
         }
     }
 }
@@ -202,7 +252,9 @@ impl NebulaWindow {
     }
 
     fn on_item_rect_changed(&mut self) {
-        self.base_mut().set_size(Vector2::splat(0.0));
+        if !self.fullscreen_on {
+            self.base_mut().set_size(Vector2::splat(0.0));
+        }
     }
 
     fn animate_in(&mut self, animation: ShowAnimation) {
@@ -279,5 +331,44 @@ impl NebulaWindow {
 
     pub fn on_hide_request(&mut self) {
         self.animate_out(self.hide_animation);
+        self.fullscreen_on = false;
+        self.fullscreen_button.set_pressed_no_signal(false);
+    }
+
+    fn on_fullscreen_toggled(&mut self, toggled_on: bool) {
+        if let Ok(mut res) = Singleton::get_tree().try_cast::<SceneTree>() {
+            let base_gd = self.base().to_godot();
+            let mut tween: Gd<Tween> = res.create_tween().unwrap();
+            
+            tween.set_ease(tween::EaseType::OUT);
+            tween.set_trans(tween::TransitionType::QUINT);
+            tween.set_parallel();
+
+            if toggled_on {
+                self.original_size = base_gd.get_size();
+                self.original_position = base_gd.get_global_position();
+                self.fullscreen_on = true;
+
+                self.vbox.set_h_size_flags(SizeFlags::FILL);
+                self.vbox.set_v_size_flags(SizeFlags::FILL);
+
+                let screen_size = Singleton::get_scaled_window_size();
+                tween.tween_property(&base_gd, "global_position", &Vector2::ZERO.to_variant(), 0.3);
+                tween.tween_property(&base_gd, "size", &screen_size.cast_float().to_variant(), 0.3);
+                
+            } else {
+                self.fullscreen_on = false;
+                
+                let target_position = if self.keep_centered {
+                    let size = self.original_size;
+                    Singleton::centerize(Singleton::get_scaled_window_size(), Vector2::cast_int(size)).cast_float()
+                } else {
+                    self.original_position
+                };
+                
+                tween.tween_property(&base_gd, "global_position", &target_position.to_variant(), 0.3);
+                tween.tween_property(&base_gd, "size", &self.original_size.to_variant(), 0.3);
+            }
+        }
     }
 }
