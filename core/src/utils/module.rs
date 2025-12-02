@@ -83,7 +83,7 @@ impl IResource for Module {
             module_image: GString::new(),
             project_image: GString::new(),
             compatible_files: Array::new(),
-            export_folder: GString::from("res://build/modules"),
+            export_folder: GString::from("res://modules/"),
             _generate_mod_fn: Callable::invalid(),
             base,
         }
@@ -256,11 +256,7 @@ impl Module {
             format!("{}/", self.module_folder)
         };
 
-        let export_folder = if self.export_folder.ends_with("/") {
-            self.export_folder.to_string()
-        } else {
-            format!("{}/", self.export_folder)
-        };
+        let export_folder = self.export_folder.path_join(&self.id.to_string()).to_string() + "/build/";
 
         if DirAccess::make_dir_recursive_absolute(&export_folder) != godot::global::Error::OK {
             godot_error!("[Module Packer] Failed to create export folder: {}", export_folder);
