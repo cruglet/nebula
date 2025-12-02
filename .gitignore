@@ -5,6 +5,7 @@ core/**/*.rs.bk
 client/.import/
 client/.godot/
 client/android/
+client/modules/
 client/*.import
 client/*.log
 
