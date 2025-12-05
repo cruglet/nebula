@@ -68,5 +68,6 @@ func _after_startup_finished_animation() -> void:
 	
 	if FileAccess.file_exists("res://_local/hook.tscn"):
 		get_tree().change_scene_to_file("res://_local/hook.tscn")
+		return
 	
 	get_tree().change_scene_to_file("uid://b0vmxnd68vv2l")
