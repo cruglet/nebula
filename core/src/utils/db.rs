@@ -2,18 +2,16 @@ use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Object)]
-pub struct NebulaDB {
+pub struct DocParser {
     base: Base<Object>,
-    classes: Array<Variant>
 }
 
 
 #[godot_api]
-impl IObject for NebulaDB {
+impl IObject for DocParser {
     fn init(base: Base<Object>) -> Self {
         Self {
             base,
-            classes: Array::default()
         }
     }
 }

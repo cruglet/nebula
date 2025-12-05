@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://g3iia37ktbw7"
-path="res://.godot/imported/secondary.ttf-127aea9ef9904b0ee02048d049317a80.fontdata"
+uid="uid://ce1jwq77qf4dc"
+path="res://.godot/imported/ibm_regular.ttf-0e72053244478690237123ad1bbad6ff.fontdata"
 
 [deps]
 
-source_file="res://meta/fonts/secondary.ttf"
-dest_files=["res://.godot/imported/secondary.ttf-127aea9ef9904b0ee02048d049317a80.fontdata"]
+source_file="res://meta/fonts/mono/ibm_regular.ttf"
+dest_files=["res://.godot/imported/ibm_regular.ttf-0e72053244478690237123ad1bbad6ff.fontdata"]
 
 [params]
 
@@ -25,7 +25,7 @@ modulate_color_glyphs=false
 hinting=1
 subpixel_positioning=4
 keep_rounding_remainders=true
-oversampling=0.0
+oversampling=2.0
 Fallbacks=null
 fallbacks=[]
 Compress=null
@@ -34,7 +34,9 @@ preload=[{
 "chars": [],
 "glyphs": [],
 "name": "New Configuration",
-"size": Vector2i(16, 0)
+"size": Vector2i(16, 0),
+&"variation_embolden": 0.0,
+&"variation_opentype": {}
 }]
 language_support={}
 script_support={}

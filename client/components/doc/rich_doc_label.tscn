@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://bp8tuuq4vma6b"]
+
+[ext_resource type="Script" uid="uid://t4wb7snqsqv7" path="res://components/doc/effect/doc_desc_effect.gd" id="1_phy3e"]
+[ext_resource type="Script" uid="uid://nmq4026ghnms" path="res://components/doc/rich_doc_label.gd" id="2_wpdse"]
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_wy82v"]
+script = ExtResource("1_phy3e")
+metadata/_custom_type_script = "uid://t4wb7snqsqv7"
+
+[node name="RichDocLabel" type="RichTextLabel"]
+focus_mode = 2
+bbcode_enabled = true
+custom_effects = [SubResource("RichTextEffect_wy82v")]
+selection_enabled = true
+script = ExtResource("2_wpdse")
+metadata/RichDoc = true

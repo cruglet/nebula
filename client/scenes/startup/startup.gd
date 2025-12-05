@@ -65,4 +65,8 @@ func load_and_validate_modules() -> void:
 
 func _after_startup_finished_animation() -> void:
 	CoreSettings.apply_config()
+	
+	if FileAccess.file_exists("res://_local/hook.tscn"):
+		get_tree().change_scene_to_file("res://_local/hook.tscn")
+	
 	get_tree().change_scene_to_file("uid://b0vmxnd68vv2l")

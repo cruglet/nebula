@@ -152,6 +152,7 @@ impl IPanelContainer for NebulaWindow {
             cb.set_custom_minimum_size(Vector2 { x: 0.0, y: 22.0 });
             cb.set_theme_type_variation("nWindowMaximizeButton");
             cb.set_toggle_mode(true);
+            cb.set_z_index(1);
             cb.set_default_cursor_shape(CursorShape::POINTING_HAND);
             
             let self_ref = self.to_gd();
