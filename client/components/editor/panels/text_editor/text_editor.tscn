@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjs0c72eukt3x"]
+
+[ext_resource type="Script" uid="uid://c13lgh78awrv6" path="res://components/editor/panels/text_editor/text_editor.gd" id="1_mj5kb"]
+
+[node name="TextEditor" type="Control" node_paths=PackedStringArray("text_editor")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mj5kb")
+text_editor = NodePath("TextEditor")
+
+[node name="TextEditor" type="CodeEdit" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scroll_smooth = true
+caret_blink = true
+draw_tabs = true
+gutters_draw_line_numbers = true
+indent_automatic = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+
+[connection signal="gui_input" from="TextEditor" to="." method="_on_text_editor_gui_input"]
+[connection signal="text_changed" from="TextEditor" to="." method="_on_text_editor_text_changed"]

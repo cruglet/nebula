@@ -183,6 +183,9 @@ impl IControl for Nebula2DEditor {
         pn.add_child(&vc);
         
         for mut n in base_control.get_children().iter_shared() {
+            if n.has_meta("ui_layer") {
+                continue;
+            }
             if let Ok(mut c) = n.to_godot().try_cast::<Control>() {
                 c.set_mouse_filter(MouseFilter::IGNORE);
             }

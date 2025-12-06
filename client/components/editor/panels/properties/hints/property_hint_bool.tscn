@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dpbw6a13dchbw"]
 
-[ext_resource type="Script" uid="uid://cs1vma36skbca" path="res://components/editor/docks/properties/hints/property_hint_bool.gd" id="1_hifch"]
+[ext_resource type="Script" uid="uid://cs1vma36skbca" path="res://components/editor/panels/properties/hints/property_hint_bool.gd" id="1_hifch"]
 
 [node name="PropertyHintBool" type="PanelContainer" node_paths=PackedStringArray("property_checkbox", "property_label")]
 theme_type_variation = &"nPanelPropertyHint"

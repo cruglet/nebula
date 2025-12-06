@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dnukd56sbop6c"]
 
-[ext_resource type="Script" uid="uid://hptap2710g55" path="res://components/editor/docks/properties/property_category.gd" id="1_oc3gx"]
+[ext_resource type="Script" uid="uid://hptap2710g55" path="res://components/editor/panels/properties/property_category.gd" id="1_oc3gx"]
 
 [node name="PropertyCategory" type="PanelContainer" node_paths=PackedStringArray("category_name_label", "category_icon_rect")]
 anchors_preset = 10

@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://dwoslainqrwl6"]
 
-[ext_resource type="Script" uid="uid://bmjucki40h7lo" path="res://components/editor/docks/properties/properties_dock.gd" id="1_miujr"]
-[ext_resource type="PackedScene" uid="uid://dnukd56sbop6c" path="res://components/editor/docks/properties/property_category.tscn" id="2_y5ivy"]
-[ext_resource type="PackedScene" uid="uid://bkxtru76hpjiy" path="res://components/editor/docks/properties/property.tscn" id="3_y5ivy"]
+[ext_resource type="Script" uid="uid://bmjucki40h7lo" path="res://components/editor/panels/properties/properties_dock.gd" id="1_miujr"]
+[ext_resource type="PackedScene" uid="uid://dnukd56sbop6c" path="res://components/editor/panels/properties/property_category.tscn" id="2_y5ivy"]
+[ext_resource type="PackedScene" uid="uid://bkxtru76hpjiy" path="res://components/editor/panels/properties/property.tscn" id="3_y5ivy"]
 
 [node name="Properties" type="Panel"]
 anchors_preset = 15

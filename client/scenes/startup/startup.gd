@@ -53,7 +53,7 @@ func load_and_validate_modules() -> void:
 	
 	for module_path: String in filtered_modules:
 		var m: Module = Module.load(module_path)
-		if Singleton.get_module(m.id).entry_scene:
+		if Singleton.get_module(m.id).entry_scene: # this checks for duplicates
 			continue
 		m.set_meta(&"path", module_path)
 		Singleton.register_module(m)

@@ -1,7 +1,9 @@
-[gd_resource type="Theme" load_steps=82 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=88 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/normal/primary.ttf" id="1_5e7fv"]
+[ext_resource type="Texture2D" uid="uid://blv0vi1d3fpju" path="res://icon.svg" id="2_1u036"]
 [ext_resource type="FontFile" uid="uid://g3iia37ktbw7" path="res://meta/fonts/normal/secondary.ttf" id="2_kfw5u"]
+[ext_resource type="Texture2D" uid="uid://bqfagmo47lo4o" path="res://meta/icons/dir.svg" id="2_v2t5x"]
 [ext_resource type="Texture2D" uid="uid://cijhb62fqk50l" path="res://meta/icons/maximize.svg" id="3_5e7fv"]
 
 [sub_resource type="FontVariation" id="FontVariation_q1op7"]
@@ -91,6 +93,19 @@ shadow_offset = Vector2(0, 2)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vhynu"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5e7fv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fjdk4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ieoia"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.15294118, 0.16078432, 0.18039216, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_807qo"]
 content_margin_left = 8.0
@@ -289,13 +304,18 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_taty1"]
-bg_color = Color(0, 0.57214785, 0.8782205, 0.25)
+bg_color = Color(0, 0.34616667, 0.67, 0.47058824)
+border_color = Color(0, 0.34509805, 0.67058825, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uexy3"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
 bg_color = Color(0.15294118, 0.16078432, 0.18039216, 1)
 border_width_left = 2
 border_width_top = 2
@@ -342,6 +362,8 @@ content_margin_right = 10.0
 bg_color = Color(0.09411765, 0.09411765, 0.10980392, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6neeu"]
 
 [sub_resource type="FontVariation" id="FontVariation_74lqh"]
 base_font = ExtResource("1_5e7fv")
@@ -676,6 +698,8 @@ corner_radius_bottom_left = 8
 shadow_color = Color(0, 0, 0, 0.2509804)
 shadow_size = 8
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v7x5o"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l36rt"]
 bg_color = Color(0.6, 0.6, 0.6, 0.11764706)
 corner_radius_top_left = 999
@@ -732,6 +756,8 @@ CheckBox/styles/hover = SubResource("StyleBoxEmpty_vhynu")
 CheckBox/styles/hover_pressed = SubResource("StyleBoxEmpty_vhynu")
 CheckBox/styles/normal = SubResource("StyleBoxEmpty_vhynu")
 CheckBox/styles/pressed = SubResource("StyleBoxEmpty_vhynu")
+CodeEdit/styles/focus = SubResource("StyleBoxEmpty_fjdk4")
+CodeEdit/styles/normal = SubResource("StyleBoxFlat_ieoia")
 FileDialog/colors/file_disabled_color = Color(1, 1, 1, 0.25)
 FileDialog/colors/file_icon_color = Color(1, 1, 1, 1)
 FileDialog/colors/folder_icon_color = Color(0, 0.64705884, 1, 1)
@@ -787,6 +813,7 @@ TabContainer/styles/tab_focus = SubResource("StyleBoxEmpty_v2t5x")
 TabContainer/styles/tab_hovered = SubResource("StyleBoxFlat_bl1h0")
 TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_apwxs")
 TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_vkolq")
+Tree/styles/panel = SubResource("StyleBoxEmpty_6neeu")
 Window/font_sizes/title_font_size = 16
 Window/fonts/title_font = SubResource("FontVariation_74lqh")
 Window/styles/embedded_border = SubResource("StyleBoxFlat_rewqk")
@@ -831,6 +858,8 @@ nButtonPrimary/styles/focus = SubResource("StyleBoxFlat_nhevn")
 nButtonPrimary/styles/hover = SubResource("StyleBoxFlat_m8n11")
 nButtonPrimary/styles/normal = SubResource("StyleBoxFlat_hmesj")
 nButtonPrimary/styles/pressed = SubResource("StyleBoxFlat_2f2eq")
+nIcons/icons/base_icon = ExtResource("2_1u036")
+nIcons/icons/fs_folder = ExtResource("2_v2t5x")
 nLabelSecondary/base_type = &"Label"
 nLabelSecondary/colors/font_color = Color(1, 1, 1, 0.19607843)
 nLabelSecondary/font_sizes/font_size = 16
@@ -865,6 +894,8 @@ nPanelToast/base_type = &"Panel"
 nPanelToast/styles/panel = SubResource("StyleBoxFlat_76424")
 nRichTextThin/base_type = &"RichTextLabel"
 nRichTextThin/fonts/normal_font = ExtResource("1_5e7fv")
+nTabContainerEmpty/base_type = &"TabContainer"
+nTabContainerEmpty/styles/panel = SubResource("StyleBoxEmpty_v7x5o")
 nWindowMaximizeButton/base_type = &"Button"
 nWindowMaximizeButton/constants/align_to_largest_stylebox = 1
 nWindowMaximizeButton/constants/icon_max_width = 16

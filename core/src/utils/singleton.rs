@@ -253,18 +253,27 @@ impl Singleton {
     /// of the module in the stored list.
     #[func]
     pub fn get_module(&mut self, id_or_index: Variant) -> Gd<Module> {
-        let mut index: i32 = 0;
-        if let Ok(module_id) = id_or_index.try_to::<GString>() {
-            if let Some(i) = self.loaded_modules_dict.get(module_id) {
-                index = i.try_to::<i32>().unwrap();
-            }
+        let index_opt: Option<usize> = if let Ok(module_id) = id_or_index.try_to::<GString>() {
+            self.loaded_modules_dict
+                .get(module_id)
+                .and_then(|v| v.try_to::<i32>().ok())
+                .map(|i| i as usize)
         } else if let Ok(module_index) = id_or_index.try_to::<i32>() {
-            index = module_index;
+            if module_index >= 0 {
+                Some(module_index as usize)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if let Some(index) = index_opt {
+            if let Some(module) = self.loaded_modules_arr.get(index) {
+                return module.to_godot();
+            }
         }
 
-        if let Some(module) = self.loaded_modules_arr.get(index as usize) {
-            return module.to_godot();
-        }
         Module::new()
     }
 
