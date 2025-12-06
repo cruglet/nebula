@@ -170,23 +170,23 @@ impl IControl for Nebula2DEditor {
     }
 
     fn ready(&mut self) {
-        let mut base_control = self.base_mut().to_godot();
+        let mut base_control = self.base_mut().to_godot_owned();
         
         let mut pn: Gd<Panel> = Panel::new_alloc();
-        self.editor_panel = pn.to_godot();
+        self.editor_panel = pn.to_godot_owned();
         pn.set_anchors_preset(LayoutPreset::FULL_RECT);
         pn.set_mouse_filter(MouseFilter::IGNORE);
         pn.set_clip_contents(true);
         
         let vc: Gd<Control> = Control::new_alloc();
-        self.editor_control = vc.to_godot();
+        self.editor_control = vc.to_godot_owned();
         pn.add_child(&vc);
         
         for mut n in base_control.get_children().iter_shared() {
             if n.has_meta("ui_layer") {
                 continue;
             }
-            if let Ok(mut c) = n.to_godot().try_cast::<Control>() {
+            if let Ok(mut c) = n.to_godot_owned().try_cast::<Control>() {
                 c.set_mouse_filter(MouseFilter::IGNORE);
             }
             if !Engine::singleton().is_editor_hint() {
@@ -199,21 +199,21 @@ impl IControl for Nebula2DEditor {
         
         let shader = Singleton::singleton().bind_mut().get_shader(Singleton::SHADER_EDITOR_2D_GRID);
         let mut material = ShaderMaterial::new_gd();
-        self.editor_shader_material = material.to_godot();
+        self.editor_shader_material = material.to_godot_owned();
         material.set_shader(&shader);
         pn.set_material(&material);
 
-        let highlighted_obj_c = self.editor_highlighted_objects_container.to_godot();
+        let highlighted_obj_c = self.editor_highlighted_objects_container.to_godot_owned();
         self.base_mut().add_child(&highlighted_obj_c);
         
         self.selection_panel.set_mouse_filter(MouseFilter::IGNORE);
-        let mut selection_panel = self.selection_panel.to_godot();
+        let mut selection_panel = self.selection_panel.to_godot_owned();
         pn.add_child(&selection_panel);
         selection_panel.set_meta("ignore_select", &true.to_variant());
         selection_panel.hide();
         
         self.selected_objects_panel.set_mouse_filter(MouseFilter::IGNORE);
-        let mut selected_objects_panel = self.selected_objects_panel.to_godot();
+        let mut selected_objects_panel = self.selected_objects_panel.to_godot_owned();
         pn.add_child(&selected_objects_panel);
         selected_objects_panel.set_meta("ignore_select", &true.to_variant());
         selected_objects_panel.hide();
@@ -232,10 +232,10 @@ impl IControl for Nebula2DEditor {
     }
 
 	fn gui_input(&mut self, event: Gd<InputEvent>) {
-		let mut vref = self.editor_control.to_godot();
+		let mut vref = self.editor_control.to_godot_owned();
 
 		// Mouse motion
-		if let Ok(e) = event.to_godot().try_cast::<InputEventMouseMotion>() {
+		if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseMotion>() {
 			let ctrl = Input::singleton().is_key_pressed(Key::CTRL);
 
 			if e.get_button_mask() == MouseButtonMask::MIDDLE {
@@ -322,7 +322,7 @@ impl IControl for Nebula2DEditor {
 		}
 
 		// Mouse button press/release
-		else if let Ok(e) = event.to_godot().try_cast::<InputEventMouseButton>() {
+		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseButton>() {
 			if e.is_pressed() {
 				if e.get_button_index() == MouseButton::LEFT {
 					// Begin drag
@@ -387,12 +387,12 @@ impl IControl for Nebula2DEditor {
 		}
 
 		// Touch Panning
-		else if let Ok(e) = event.to_godot().try_cast::<InputEventPanGesture>() {
+		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventPanGesture>() {
 			self.editor_global_position += e.get_delta() * 35.0;
 		}
 
 		// Touch/trackpad magnify gesture zooming
-		else if let Ok(e) = event.to_godot().try_cast::<InputEventMagnifyGesture>() {
+		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMagnifyGesture>() {
 			let mouse_pos = e.get_position();
 			let zoom_factor = e.get_factor();
 
@@ -601,7 +601,7 @@ impl Nebula2DEditor {
         let rect = rect_op.unwrap();
 
         let children = self.editor_control.get_children();
-        let base = self.base().to_godot();
+        let base = self.base().to_godot_owned();
         let highlight_style = base.get_theme_stylebox_ex("object_preselect_box")
             .theme_type("Nebula2DEditor")
             .done();
@@ -668,8 +668,8 @@ impl Nebula2DEditor {
 
 
     fn update_selection_panel_bounds(&mut self) {
-        let mut sop = self.selected_objects_panel.to_godot();
-        let sp = self.selection_panel.to_godot();
+        let mut sop = self.selected_objects_panel.to_godot_owned();
+        let sp = self.selection_panel.to_godot_owned();
         let sp_local_rect = self.rect_to_local(sp.get_rect());
         self.update_highlight_panels(Some(sp_local_rect));
 
@@ -703,12 +703,12 @@ impl Nebula2DEditor {
         let pos = Vector2::new(min_x, min_y);
         let size = Vector2::new(max_x - min_x, max_y - min_y);
 
-        let base = self.base().to_godot();
+        let base = self.base().to_godot_owned();
         let selected_style = base.get_theme_stylebox_ex("selected_objects_box")
             .theme_type("Nebula2DEditor")
             .done();
 
-        let local_rect = Rect2 { position: pos, size: size };
+        let local_rect = Rect2 { position: pos, size };
         let global_rect = self.rect_to_global(local_rect);
 
         self.selected_objects_panel.set_position(global_rect.position);
@@ -719,9 +719,9 @@ impl Nebula2DEditor {
     
     
     fn reload_theme(&mut self) {
-        let mut shader_material = self.editor_shader_material.to_godot();
-        let base = self.base().to_godot();
-        let mut selection_panel = self.selection_panel.to_godot();
+        let mut shader_material = self.editor_shader_material.to_godot_owned();
+        let base = self.base().to_godot_owned();
+        let mut selection_panel = self.selection_panel.to_godot_owned();
         
         let background_color = base.get_theme_color_ex("background_color").theme_type("Nebula2DEditor").done();
         let major_color = base.get_theme_color_ex("major_color").theme_type("Nebula2DEditor").done();
@@ -777,7 +777,7 @@ impl Nebula2DEditor {
         // This updates the bound nodes
         for (c, local_pos) in self.editor_bound_objects.iter_mut() {
             let global_pos = *local_pos * self.zoom_amount - self.editor_global_position;
-            c.to_godot().set_position(global_pos);
+            c.to_godot_owned().set_position(global_pos);
         }
 
         self.update_selection_panel_bounds();

@@ -30,10 +30,10 @@ impl ModuleRequest {
     /// Emitted when metadata for a module is successfully fetched.
     ///
     /// Parameters:
-    /// - `metadata`: Dictionary containing the module's metadata.
+    /// - `metadata`: VarDictionary containing the module's metadata.
     /// - `source_url`: Raw URL of the module file.
     /// - `module_size`: Size of the module file in bytes.
-    #[signal] fn metadata_fetched(metadata: Dictionary, source_url: GString, module_size: i64);
+    #[signal] fn metadata_fetched(metadata: VarDictionary, source_url: GString, module_size: i64);
 
     /// Emitted when a module preview image is successfully fetched.
     ///
@@ -115,7 +115,7 @@ impl ModuleRequest {
                 continue;
             }
             // module
-            ModuleRequest::request_module(line, &root, request_instance.to_godot());
+            ModuleRequest::request_module(line, &root, request_instance.to_godot_owned());
         }
     }
 
@@ -158,12 +158,12 @@ impl ModuleRequest {
         let request_instance: Gd<ModuleRequest> = http_ref.get_meta("request_instance").try_to().expect("This should not hit");
         let raw_url: GString = http_ref.get_meta("raw_module_url").to_string().to_godot();
         let root: GString = http_ref.get_meta("module_root").to_string().to_godot();
-        let mut data: Dictionary = Dictionary::new();
+        let mut data: VarDictionary = VarDictionary::new();
 
-        if let Ok(metadata) = bytes_to_var_with_objects(&body).try_to::<Dictionary>() {
+        if let Ok(metadata) = bytes_to_var_with_objects(&body).try_to::<VarDictionary>() {
             if metadata.contains_key("name") && metadata.contains_key("description") {
                 let module_size: i64 = ModuleRequest::get_file_size_from_headers(headers).unwrap();
-                request_instance.signals().metadata_fetched().emit(&metadata.to_godot(), &raw_url, module_size);
+                request_instance.signals().metadata_fetched().emit(metadata.to_godot(), &raw_url, module_size);
                 data = metadata;
             } else {return};
         };

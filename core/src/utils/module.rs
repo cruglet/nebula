@@ -95,27 +95,27 @@ impl IResource for Module {
         }
 
         if property == StringName::from("id") {
-            self.id = value.to_string().to_lowercase().replace(" ", "_").into();
+            self.id = value.to_string().to_lowercase().replace(" ", "_").to_godot_owned();
             return true;
         }
 
         if property == StringName::from("group") {
-            self.group = value.to_string().to_lowercase().replace(" ", "_").into();
+            self.group = value.to_string().to_lowercase().replace(" ", "_").to_godot_owned();
             return true;
         }
 
         if property == StringName::from("entry_scene") && FileAccess::file_exists(&value.to_string()) {
-            self.entry_scene = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            self.entry_scene = ResourceUid::singleton().call("ensure_path", &[value]).to_string().to_godot_owned();
             return true;
         }
 
         if property == StringName::from("project_image") && FileAccess::file_exists(&value.to_string()) {
-            self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            self.project_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().to_godot_owned();
             return true;
         }
 
         if property == StringName::from("module_image") && FileAccess::file_exists(&value.to_string()) {
-            self.module_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().into();
+            self.module_image = ResourceUid::singleton().call("ensure_path", &[value]).to_string().to_godot_owned();
             return true;
         }
         
@@ -161,7 +161,7 @@ impl Module {
         let file: Option<Gd<FileAccess>> = FileAccess::open(&path.to_string(), ModeFlags::READ);
         let meta_size: u32;
         let meta_bytes: PackedByteArray;
-        let pck_meta: Dictionary;
+        let pck_meta: VarDictionary;
 
         if let Some(mut f) = file {
             meta_size = f.get_32();
@@ -201,7 +201,7 @@ impl Module {
 
     /// Returns the module's ID.
     pub fn get_module_id(&self) -> GString {
-        self.id.to_godot()
+        self.id.to_godot_owned()
     }
 
     /// Generates the `.nmod` file for this module, packing all files in the module folder.
@@ -288,7 +288,7 @@ impl Module {
             return;
         }
 
-        let mut metadata = Dictionary::new();
+        let mut metadata = VarDictionary::new();
         metadata.set("name", Variant::from(self.name.to_string()));
         metadata.set("description", Variant::from(self.description.to_string()));
         metadata.set("authors", Variant::from(self.authors.clone()));
@@ -376,7 +376,7 @@ impl Module {
                 self.add_files_recursive(root, &full_path, files);
             } else {
                 let rel_path = full_path.trim_start_matches(root).trim_start_matches('/').to_string();
-                files.push(rel_path.into());
+                files.push(rel_path.to_godot_owned());
             }
         }
 

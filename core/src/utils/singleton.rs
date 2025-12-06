@@ -6,14 +6,14 @@ use crate::utils::module::Module;
 #[derive(GodotClass)]
 #[class(base=Node)]
 pub(crate) struct Singleton {
-    loaded_modules_dict: Dictionary,
+    loaded_modules_dict: VarDictionary,
     loaded_modules_arr: Array<Gd<Module>>,
     pub loaded_project_path: GString,
     /// The UI Layer responsible for displaying global UI, such as global windows & toast notifications.
     #[var] pub ui_canvas_layer: Gd<CanvasLayer>,
     screen_canvas_layer: Gd<CanvasLayer>,
     screen_blur_rect: Gd<ColorRect>,
-    loaded_shaders_dict: Dictionary,
+    loaded_shaders_dict: VarDictionary,
     base: Base<Node>
 }
 
@@ -21,7 +21,7 @@ pub(crate) struct Singleton {
 #[godot_api]
 impl INode for Singleton {
     fn init(base: Base<Node>) -> Self {
-        let mut loaded_shaders_dict = Dictionary::new();
+        let mut loaded_shaders_dict = VarDictionary::new();
 
         let mut blur_shader: Gd<Shader> = Shader::new_gd();
         blur_shader.set_code(Self::SHADER_BLUR_CODE);
@@ -33,7 +33,7 @@ impl INode for Singleton {
         loaded_shaders_dict.set(Singleton::SHADER_EDITOR_2D_GRID, editor_2d_grid_shader);
 
         Self {
-            loaded_modules_dict: Dictionary::new(),
+            loaded_modules_dict: VarDictionary::new(),
             loaded_modules_arr: Array::new(),
             loaded_project_path: GString::new(),
             ui_canvas_layer: CanvasLayer::new_alloc(),
@@ -44,15 +44,15 @@ impl INode for Singleton {
         }
     }
     fn ready(&mut self) {
-        let mut ui_canvas = self.ui_canvas_layer.to_godot();
+        let mut ui_canvas = self.ui_canvas_layer.to_godot_owned();
         ui_canvas.set_layer(10);
         self.base_mut().add_child(&ui_canvas);
 
-        let mut screen_canvas = self.screen_canvas_layer.to_godot();
+        let mut screen_canvas = self.screen_canvas_layer.to_godot_owned();
         screen_canvas.set_layer(5);
         self.base_mut().add_child(&screen_canvas);
 
-        let mut scr_blur_rect = self.screen_blur_rect.to_godot();
+        let mut scr_blur_rect = self.screen_blur_rect.to_godot_owned();
         scr_blur_rect.set_anchors_preset(LayoutPreset::FULL_RECT);
         scr_blur_rect.notify(ControlNotification::RESIZED);
         scr_blur_rect.hide();
@@ -118,7 +118,7 @@ impl Singleton {
 
         let shader_mat = self.screen_blur_rect.get_material().unwrap().try_cast::<ShaderMaterial>().unwrap();
 
-        let mut rect = self.screen_blur_rect.to_godot();
+        let mut rect = self.screen_blur_rect.to_godot_owned();
         
         if let Some(mut blur_in_tween) = self.base_mut().create_tween() {
             blur_in_tween.tween_property(&shader_mat, "shader_parameter/blur_amount", &0.0.to_variant(), fade_out_time);
@@ -137,10 +137,10 @@ impl Singleton {
         let mut notification_panel: Gd<PanelContainer> = PanelContainer::new_alloc();
         notification_panel.set_custom_minimum_size(Vector2 { x: 400.0, y: 70.0 });
         notification_panel.set_theme_type_variation(&StringName::from("nPanelNotification"));
-        let panel_ref = notification_panel.to_godot();
+        let panel_ref = notification_panel.to_godot_owned();
         notification_panel.signals().gui_input().connect(move |event| {
             if let Ok(e) = event.try_cast::<InputEventMouseButton>() && e.get_button_index() == MouseButton::LEFT && e.is_pressed() {
-                Singleton::animate_notification_out(panel_ref.to_godot());
+                Singleton::animate_notification_out(panel_ref.to_godot_owned());
             }
         });
 
@@ -185,7 +185,7 @@ impl Singleton {
         let pos = notification_panel.get_position();
         notification_panel.set_position(Vector2 { x: pos.x, y: 30.0 });
 
-        let mut canvas_layer = self.ui_canvas_layer.to_godot();
+        let mut canvas_layer = self.ui_canvas_layer.to_godot_owned();
         canvas_layer.add_child(&notification_panel);
 
         let notification_time_tween_op: Option<Gd<Tween>> = self.base_mut().create_tween();
@@ -193,10 +193,10 @@ impl Singleton {
         if let Some(mut notification_tween) = notification_time_tween_op {
             notification_tween.tween_property(&notification_progress_bar, "value",&NOTIFICATION_TIME.to_variant(), NOTIFICATION_TIME.into());
             notification_tween.signals().finished().connect({
-            let panel_ref = notification_panel.to_godot();
+            let panel_ref = notification_panel.to_godot_owned();
             move || {
                 if panel_ref.is_instance_valid() {
-                    Singleton::animate_notification_out(panel_ref.to_godot());
+                    Singleton::animate_notification_out(panel_ref.to_godot_owned());
                 }
             }
         });
@@ -270,7 +270,7 @@ impl Singleton {
 
         if let Some(index) = index_opt {
             if let Some(module) = self.loaded_modules_arr.get(index) {
-                return module.to_godot();
+                return module.to_godot_owned();
             }
         }
 
@@ -298,7 +298,7 @@ impl Singleton {
     /// Returns the list of all currently registered/loaded modules.
     #[func]
     pub fn get_modules(&mut self) -> Array<Gd<Module>> {
-        self.loaded_modules_arr.to_godot()
+        self.loaded_modules_arr.to_godot_owned()
     }
 
     /// Returns a list of all module id's in the order that the modules are registered in.
@@ -312,15 +312,15 @@ impl Singleton {
     }
 
     pub fn singleton() -> Gd<Self> {
-        Engine::singleton().get_singleton(&Self::class_name().to_string_name()).unwrap().cast::<Self>()
+        Engine::singleton().get_singleton(&Self::class_id().to_string_name()).unwrap().cast::<Self>()
     }
 
     pub fn register(&self) {
-        Engine::singleton().register_singleton(&Self::class_name().to_string_name(), &self.to_gd());
+        Engine::singleton().register_singleton(&Self::class_id().to_string_name(), &self.to_gd());
     }
 
     pub fn unregister(&mut self) {
-        Engine::singleton().unregister_singleton(&Self::class_name().to_string_name());
+        Engine::singleton().unregister_singleton(&Self::class_id().to_string_name());
     }
 
     pub fn get_tree() -> Gd<SceneTree> {

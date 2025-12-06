@@ -29,7 +29,7 @@ impl ProjectData {
     /// Returns the path to the currently loaded project file.
     #[func]
     fn get_path() -> GString {
-        Singleton::singleton().bind_mut().loaded_project_path.to_godot()
+        Singleton::singleton().bind_mut().loaded_project_path.to_godot_owned()
     }
 
     /// Assigns the currently loaded project file to [param path].

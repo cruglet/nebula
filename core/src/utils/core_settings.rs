@@ -33,10 +33,10 @@ impl CoreSettings {
     #[constant] pub const SETTING_MODULE_LIST: i32 = 2;
     const MAX: i32 = 3;
 
-    /// Returns the default configuration values as a Dictionary.
+    /// Returns the default configuration values as a VarDictionary.
     #[func]
-    fn get_defaults() -> Dictionary {
-        let mut data: Dictionary = Dictionary::new();
+    fn get_defaults() -> VarDictionary {
+        let mut data: VarDictionary = VarDictionary::new();
 
         data.set(CoreSettings::SETTING_UI_SCALE, DisplayServer::singleton().screen_get_scale());
         data.set(CoreSettings::SETTING_PROJECT_LIST, Array::<GString>::new());
@@ -69,7 +69,7 @@ impl CoreSettings {
 
     /// Checks if the configuration file exists and is valid.
     ///
-    /// Returns `true` if `user://core.cfg` exists and contains a valid Dictionary.
+    /// Returns `true` if `user://core.cfg` exists and contains a valid VarDictionary.
     #[func]
     fn exists() -> bool {
         if !FileAccess::file_exists(&CoreSettings::get_path()) {
@@ -99,7 +99,7 @@ impl CoreSettings {
     pub fn get(key: i32) -> Variant {
         let mut val: Variant = CoreSettings::get_defaults().get_or_nil(key.to_godot());
 
-        let data: Dictionary = CoreSettings::_get_data();
+        let data: VarDictionary = CoreSettings::_get_data();
         if data.contains_key(key.to_godot()) {
             val = data.get_or_nil(key.to_godot());
         }
@@ -116,7 +116,7 @@ impl CoreSettings {
     /// Returns `true` if the setting was stored successfully.
     #[func]
     pub fn set(key: i32, value: Variant) -> bool {
-        let mut data: Dictionary = Self::_get_data();
+        let mut data: VarDictionary = Self::_get_data();
 
         data.set(key, value);
 
@@ -166,8 +166,8 @@ impl CoreSettings {
         true
     }
 
-    pub fn _get_data() -> Dictionary {
-        let mut data: Dictionary = Dictionary::new();
+    pub fn _get_data() -> VarDictionary {
+        let mut data: VarDictionary = VarDictionary::new();
 
         if CoreSettings::exists() {
             let file: Gd<FileAccess> = FileAccess::open(&CoreSettings::get_path(), ModeFlags::READ).unwrap();

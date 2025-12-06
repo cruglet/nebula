@@ -42,7 +42,7 @@ impl QuickActions {
 
     fn _load_image(path: GString) -> Option<Gd<ImageTexture>> {
         let mut img = Image::new_gd();
-        let img_path: GString = ResourceUid::singleton().call("ensure_path", &[path.to_variant()]).to_string().into();
+        let img_path: GString = ResourceUid::singleton().call("ensure_path", &[path.to_variant()]).to_string().to_godot_owned();
         let extension: GString = img_path.get_extension();
 
         if !FileAccess::file_exists(&img_path) {
@@ -52,11 +52,11 @@ impl QuickActions {
 
         let img_buffer = &FileAccess::get_file_as_bytes(&img_path);
 
-        if extension.eq(&"svg".to_godot()) {
+        if extension.eq(&"svg".to_godot_owned()) {
             img.load_svg_from_buffer(img_buffer);
-        } else if extension.eq(&"png".to_godot()) {
+        } else if extension.eq(&"png".to_godot_owned()) {
             img.load_png_from_buffer(img_buffer);
-        } else if extension.eq(&"jpg".to_godot()) || extension.eq(&"jpeg".to_godot()) {
+        } else if extension.eq(&"jpg".to_godot_owned()) || extension.eq(&"jpeg".to_godot()) {
             img.load_jpg_from_buffer(img_buffer);
         }
 
