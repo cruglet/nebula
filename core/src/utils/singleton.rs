@@ -131,9 +131,13 @@ impl Singleton {
     /// Makes a notification appear for a short amount of time. Useful for alerting the user towards an error
     /// or an important piece of information.
     #[func]
-    pub fn send_notification(&mut self, title: GString, description: GString) {
-        const NOTIFICATION_TIME: f32 = 4.5;
-
+    pub fn send_notification(
+        &mut self,
+        title: GString,
+        description: GString,
+        #[opt(default = 4.5)] time: f32,
+        #[opt(default = true)] show_progress: bool,
+        ) {
         let mut notification_panel: Gd<PanelContainer> = PanelContainer::new_alloc();
         notification_panel.set_custom_minimum_size(Vector2 { x: 400.0, y: 70.0 });
         notification_panel.set_theme_type_variation(&StringName::from("nPanelNotification"));
@@ -171,9 +175,12 @@ impl Singleton {
         main_vbox.add_child(&filler);
 
         let mut notification_progress_bar: Gd<ProgressBar> = ProgressBar::new_alloc();
-        notification_progress_bar.set_max(NOTIFICATION_TIME.into());
+        notification_progress_bar.set_max(time.into());
         notification_progress_bar.set_show_percentage(false);
         notification_progress_bar.set_custom_minimum_size(Vector2 { x: 0.0, y: 3.0 });
+        if !show_progress {
+            notification_progress_bar.hide();
+        }
         main_vbox.add_child(&notification_progress_bar);
 
         // signal on timeout
@@ -191,7 +198,7 @@ impl Singleton {
         let notification_time_tween_op: Option<Gd<Tween>> = self.base_mut().create_tween();
 
         if let Some(mut notification_tween) = notification_time_tween_op {
-            notification_tween.tween_property(&notification_progress_bar, "value",&NOTIFICATION_TIME.to_variant(), NOTIFICATION_TIME.into());
+            notification_tween.tween_property(&notification_progress_bar, "value",&time.to_variant(), time.into());
             notification_tween.signals().finished().connect({
             let panel_ref = notification_panel.to_godot_owned();
             move || {
