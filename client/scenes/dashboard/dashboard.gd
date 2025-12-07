@@ -6,6 +6,8 @@ extends Panel
 @export var tab_button_container: TabButtonContainer
 @export var animation_player: AnimationPlayer
 @export var modules_button: IconSidebarButton
+@export var projects: Panel
+@export var modules: Panel
 
 
 func _ready() -> void:
@@ -35,3 +37,12 @@ func _on_modules_updates_cleared() -> void:
 
 func _on_info_button_pressed() -> void:
 	NebulaInfoWindow.get_instance().show()
+
+
+
+func _on_content_visibility_changed() -> void:
+	if projects.is_visible_in_tree():
+		DiscordRPC.details = "Browsing projects..."
+	elif modules.is_visible_in_tree():
+		DiscordRPC.details = "Exploring modules..."
+	DiscordRPC.refresh()

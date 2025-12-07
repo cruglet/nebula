@@ -57,6 +57,7 @@ func refresh_project_list() -> void:
 		child.hide()
 		child.queue_free()
 	var project_list: Array = CoreSettings.get(CoreSettings.SETTING_PROJECT_LIST)
+	project_list.reverse()
 	for project_path: String in project_list:
 		var project_file: FileAccess = FileAccess.open(project_path, FileAccess.READ)
 		var project_data: Dictionary = project_file.get_var(true)
@@ -89,6 +90,7 @@ func _on_open_project_request(item: ProjectItem) -> void:
 		push_error("Could not find module!")
 		return
 	
+	DiscordRPC.details = "Working on \"%s\"" % item.project_name
 	get_tree().change_scene_to_file(module.entry_scene)
 
 
@@ -130,6 +132,7 @@ func _on_new_project_create_request(path: String, module: Module) -> void:
 	
 	ProjectData.set_path(path)
 	
+	DiscordRPC.details = "Working on \"%s\"" % new_project_handler.get_project_name()
 	get_tree().change_scene_to_file(module.entry_scene)
 
 
@@ -197,3 +200,11 @@ func _on_search_line_edit_text_changed(new_text: String) -> void:
 		child.visible = child.matches(new_text)
 	
 	update_project_count()
+
+
+func _on_new_project_window_visibility_changed() -> void:
+	if new_project_window.visible:
+		DiscordRPC.details = "Creating a project..."
+	else:
+		DiscordRPC.details = "Browsing projects..."
+	DiscordRPC.refresh()

@@ -74,7 +74,7 @@ _data = {
 &"reveal_dashboard": SubResource("Animation_ha5bl")
 }
 
-[node name="Dashboard" type="Panel" node_paths=PackedStringArray("content_container", "screen_label", "tab_button_container", "animation_player", "modules_button")]
+[node name="Dashboard" type="Panel" node_paths=PackedStringArray("content_container", "screen_label", "tab_button_container", "animation_player", "modules_button", "projects", "modules")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -87,6 +87,8 @@ screen_label = NodePath("ScreenLabel")
 tab_button_container = NodePath("TabButtonContainer")
 animation_player = NodePath("AnimationPlayer")
 modules_button = NodePath("TabButtonContainer/ModulesButton")
+projects = NodePath("Content/Projects")
+modules = NodePath("Content/Modules")
 
 [node name="Content" type="Control" parent="."]
 layout_mode = 1
@@ -225,7 +227,9 @@ libraries = {
 }
 
 [connection signal="switch_screen_request" from="Content/Projects" to="." method="_on_project_list_switch_screen_request"]
+[connection signal="visibility_changed" from="Content/Projects" to="." method="_on_content_visibility_changed"]
 [connection signal="updates_available" from="Content/Modules" to="." method="_on_modules_updates_available"]
 [connection signal="updates_cleared" from="Content/Modules" to="." method="_on_modules_updates_cleared"]
+[connection signal="visibility_changed" from="Content/Modules" to="." method="_on_content_visibility_changed"]
 [connection signal="pressed" from="InfoContainer/InfoButton" to="." method="_on_info_button_pressed"]
 [connection signal="selection_changed" from="TabButtonContainer" to="." method="_on_tab_button_container_selection_changed"]

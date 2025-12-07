@@ -276,6 +276,7 @@ text = "Remove"
 [connection signal="pressed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
 [connection signal="text_changed" from="MarginContainer/ProjectList/MarginContainer/VBoxContainer/HBoxContainer/SearchLineEdit" to="." method="_on_search_line_edit_text_changed"]
 [connection signal="file_selected" from="ImportProjectDialog" to="." method="_on_import_project_dialog_file_selected"]
+[connection signal="visibility_changed" from="NewProjectWindow" to="." method="_on_new_project_window_visibility_changed"]
 [connection signal="cancel_pressed" from="NewProjectWindow/NewProject" to="." method="_on_new_project_cancel_pressed"]
 [connection signal="create_request" from="NewProjectWindow/NewProject" to="." method="_on_new_project_create_request"]
 [connection signal="switch_to_module_request" from="NewProjectWindow/NewProject" to="." method="_on_new_project_switch_to_module_request"]

@@ -36,6 +36,7 @@ func _ready() -> void:
 
 func _after_startup_animation() -> void:
 	load_and_validate_modules()
+	update_rpc()
 	animation_player.play(&"startup_finished")
 
 
@@ -61,6 +62,19 @@ func load_and_validate_modules() -> void:
 	
 	CoreSettings.set(CoreSettings.SETTING_MODULE_LIST, final_modules)
 
+
+func update_rpc() -> void:
+	DiscordRPC.app_id = 1325183818084126810
+	DiscordRPC.details = "Initializing..."
+	DiscordRPC.large_image = "icon_vector"
+	DiscordRPC.large_image_text = "v" + Nebula.get_version_string()
+	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system())
+	DiscordRPC.refresh()
+	
+	if DiscordRPC.get_is_discord_working():
+		print_rich("[color=green]Hooked onto Discord!")
+	else:
+		print_rich("[color=red]Could not hook onto Discord!")
 
 
 func _after_startup_finished_animation() -> void:
