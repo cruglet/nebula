@@ -83,11 +83,18 @@ struct NebulaWindow {
     /// Optional screen effects when window is visible.
     #[export] screen_fx: ScreenFX,
 
+    /// Buttons that when pressed will close the window and emit "canceled" signal.
+    #[export] close_buttons: Array<Gd<Button>>,
+
+    /// Buttons that when pressed will close the window and emit "confirmed" signal.
+    #[export] confirm_buttons: Array<Gd<Button>>,
+
     scene_origin: Option<Gd<Node>>,
     fullscreen_on: bool,
     original_size: Vector2,
     original_position: Vector2,
 
+    title_label: Gd<Label>,
     vbox: Gd<VBoxContainer>,
     fullscreen_button: Gd<Button>,
     base: Base<PanelContainer>
@@ -109,6 +116,8 @@ impl IPanelContainer for NebulaWindow {
             close_on_escape: true,
             keep_centered: true,
             screen_fx: ScreenFX::Blur,
+            close_buttons: Array::new(),
+            confirm_buttons: Array::new(),
             scene_origin: None,
             
             start_origin: Vector2 { x: 0.0, y: 0.0 },
@@ -116,6 +125,7 @@ impl IPanelContainer for NebulaWindow {
             original_size: Vector2::ZERO,
             original_position: Vector2::ZERO,
 
+            title_label: Label::new_alloc(),
             vbox: VBoxContainer::new_alloc(),
             fullscreen_button: Button::new_alloc(),
             base
@@ -141,6 +151,7 @@ impl IPanelContainer for NebulaWindow {
         l.set_vertical_alignment(VerticalAlignment::CENTER);
         l.add_theme_font_size_override("font_size", self.title_text_size);
         l.set_custom_minimum_size(Vector2 {x: 0.0, y: (self.title_text_size + self.title_margin * 2) as f32});
+        self.title_label = l.to_godot_owned();
         vb.add_child(&l);
 
         if self.can_fullscreen {
@@ -168,6 +179,27 @@ impl IPanelContainer for NebulaWindow {
             l.add_child(&cb);
         }
 
+        for i in 0..self.close_buttons.len() {
+            if let Some(mut button) = self.close_buttons.get(i) {
+                let self_ref = self.to_gd();
+                let callable = Callable::from_fn("on_close_button_pressed", move |_args: &[&Variant]| {
+                    self_ref.clone().call_deferred("_handle_close_button", &[]);
+                    Variant::nil()
+                });
+                button.connect("pressed", &callable);
+            }
+        }
+
+        for i in 0..self.confirm_buttons.len() {
+            if let Some(mut button) = self.confirm_buttons.get(i) {
+                let self_ref = self.to_gd();
+                let callable = Callable::from_fn("on_confirm_button_pressed", move |_args: &[&Variant]| {
+                    self_ref.clone().call_deferred("_handle_confirm_button", &[]);
+                    Variant::nil()
+                });
+                button.connect("pressed", &callable);
+            }
+        }
 
         let mut c: Gd<MarginContainer> = MarginContainer::new_alloc();
         c.set_h_size_flags(SizeFlags::EXPAND_FILL);
@@ -251,6 +283,14 @@ impl NebulaWindow {
     #[signal]
     fn hide_request();
 
+    /// Emitted when a close button is pressed.
+    #[signal]
+    fn canceled();
+
+    /// Emitted when a confirm button is pressed.
+    #[signal]
+    fn confirmed();
+
     /// Shows the window with the configured animation.
     #[func]
     fn show(&mut self) {
@@ -299,6 +339,12 @@ impl NebulaWindow {
 
             self.base_mut().grab_focus();
         };
+    }
+
+
+    #[func]
+    fn set_header_text(&mut self, text: GString) {
+        self.title_label.set_text(&text);
     }
 
     fn animate_out(&mut self, animation: HideAnimation) {
@@ -381,5 +427,17 @@ impl NebulaWindow {
                 tween.tween_property(&base_gd, "size", &self.original_size.to_variant(), 0.3);
             }
         }
+    }
+
+    #[func]
+    fn _handle_close_button(&mut self) {
+        self.signals().canceled().emit();
+        self.signals().hide_request().emit();
+    }
+
+    #[func]
+    fn _handle_confirm_button(&mut self) {
+        self.signals().confirmed().emit();
+        self.signals().hide_request().emit();
     }
 }

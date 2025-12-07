@@ -133,4 +133,14 @@ impl Nebula {
         }
         0
     }
+
+    #[func]
+    fn get_reserved_extensions() -> PackedStringArray {
+        PackedStringArray::from(
+            vec![
+            "nproj".to_godot(),
+            "nmod".to_godot(),
+            ]
+        )
+    }
 }
