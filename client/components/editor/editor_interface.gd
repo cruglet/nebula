@@ -255,4 +255,5 @@ class NebulaEditorDock:
 
 
 func _on_button_pressed() -> void:
+	NebulaInfoWindow.in_dashboard = false
 	NebulaInfoWindow.get_instance().show()

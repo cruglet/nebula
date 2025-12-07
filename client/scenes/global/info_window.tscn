@@ -3,10 +3,11 @@
 [ext_resource type="Script" uid="uid://cf1wyh30ivg5j" path="res://scenes/global/info_window.gd" id="1_6h7qx"]
 [ext_resource type="Texture2D" uid="uid://q1ttkq5m0nx5" path="res://meta/images/boot_logo.svg" id="1_hagbc"]
 
-[node name="InfoWindow" type="NebulaWindow" node_paths=PackedStringArray("version_label")]
+[node name="InfoWindow" type="NebulaWindow" node_paths=PackedStringArray("version_label", "project_list_button")]
 title_text = "About Nebula"
 script = ExtResource("1_6h7qx")
 version_label = NodePath("PanelContainer/VBoxContainer/CenterContainer/TextureRect/VersionLabel")
+project_list_button = NodePath("PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer/ProjectListButton")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(520, 80)
@@ -48,9 +49,22 @@ layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 10
 
-[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer2"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 layout_mode = 2
 text = "Cruglet, 2025"
 
+[node name="ProjectListButton" type="Button" parent="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Back to Project List"
+
 [node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer/ProjectListButton" to="." method="_on_project_list_button_pressed"]
