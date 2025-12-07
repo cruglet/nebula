@@ -98,6 +98,8 @@ func _get_file_icon(file_name: String) -> Texture2D:
 			return get_theme_icon("AudioStreamPlayer", "EditorIcons")
 		"glb", "gltf", "obj":
 			return get_theme_icon("MeshInstance3D", "EditorIcons")
+		"txt", "json", "md":
+			return get_theme_icon(&"fs_file_text", &"nIcons")
 		"nproj":
 			return get_theme_icon(&"base_icon", &"nIcons")
 		_:
@@ -107,5 +109,10 @@ func _get_file_icon(file_name: String) -> Texture2D:
 func _on_item_activated() -> void:
 	var item: TreeItem = filesystem_tree.get_selected()
 	var path: String = item.get_metadata(0)
-	if path != "":
+	if path == "":
+		return
+		
+	if DirAccess.dir_exists_absolute(path):
+		item.collapsed = not item.collapsed
+	else:
 		file_open_request.emit(path)

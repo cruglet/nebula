@@ -16,14 +16,22 @@ func _ready() -> void:
 	font_size = text_editor.get_theme_default_font_size()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN and not changes_made and file_path:
+		var file_text: String = FileAccess.get_file_as_string(file_path)
+		if file_text != text_editor.text: 
+			Singleton.send_notification("Changes found", "There were some changes found in this file, updating to disk...")
+			text_editor.text = file_text
+
+
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("save"):
+	if event.is_action_pressed("save") and is_visible_in_tree():
 		changes_made = false
 		
 		var file: FileAccess = FileAccess.open(file_path, FileAccess.WRITE)
 		if file.store_string(text_editor.text):
 			unsaved.emit(false)
-			Singleton.send_notification("Saved file", "Changes have been saved!")
+			Singleton.send_notification("Saved file", "Changes have been saved!", 1.5)
 		else:
 			Singleton.send_notification("Error saving file", "The file could not be written to.")
 

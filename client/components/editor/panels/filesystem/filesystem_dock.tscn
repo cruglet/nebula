@@ -1,8 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bc2m8a8pmx73i"]
+[gd_scene load_steps=2 format=3 uid="uid://bc2m8a8pmx73i"]
 
 [ext_resource type="Script" uid="uid://2x2njn3m8tje" path="res://components/editor/panels/filesystem/filesystem_dock.gd" id="1_oufa8"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oufa8"]
 
 [node name="FilesystemDock" type="Panel" node_paths=PackedStringArray("filesystem_tree", "empty_filesystem_label")]
 anchors_preset = 15
@@ -11,20 +9,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_oufa8")
-filesystem_tree = NodePath("FilesystemTree")
+filesystem_tree = NodePath("MarginContainer/FilesystemTree")
 empty_filesystem_label = NodePath("EmptyFilesystemLabel")
 
-[node name="FilesystemTree" type="Tree" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/h_separation = 6
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="FilesystemTree" type="Tree" parent="MarginContainer"]
+layout_mode = 2
 theme_override_constants/icon_max_width = 18
-theme_override_styles/focus = SubResource("StyleBoxEmpty_oufa8")
-hide_root = true
 
 [node name="EmptyFilesystemLabel" type="Label" parent="."]
 visible = false

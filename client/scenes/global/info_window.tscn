@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://doh2gawt7opik"]
+
+[ext_resource type="Script" uid="uid://cf1wyh30ivg5j" path="res://scenes/global/info_window.gd" id="1_6h7qx"]
+[ext_resource type="Texture2D" uid="uid://q1ttkq5m0nx5" path="res://meta/images/boot_logo.svg" id="1_hagbc"]
+
+[node name="InfoWindow" type="NebulaWindow" node_paths=PackedStringArray("version_label")]
+title_text = "About Nebula"
+script = ExtResource("1_6h7qx")
+version_label = NodePath("PanelContainer/VBoxContainer/CenterContainer/TextureRect/VersionLabel")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(520, 80)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/VBoxContainer/CenterContainer"]
+custom_minimum_size = Vector2(240, 120)
+layout_mode = 2
+texture = ExtResource("1_hagbc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VersionLabel" type="Label" parent="PanelContainer/VBoxContainer/CenterContainer/TextureRect"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 74.0
+offset_right = 138.0
+offset_bottom = 98.0
+theme_type_variation = &"nLabelSecondary"
+text = "<version>"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "Cruglet, 2025"
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2

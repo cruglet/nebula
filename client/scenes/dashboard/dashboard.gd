@@ -31,3 +31,7 @@ func _on_modules_updates_available() -> void:
 
 func _on_modules_updates_cleared() -> void:
 	modules_button.hide_notification_badge()
+
+
+func _on_info_button_pressed() -> void:
+	NebulaInfoWindow.get_instance().show()

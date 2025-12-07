@@ -68,6 +68,7 @@ class NebulaEditorDock:
 	signal tab_close_request
 	
 	var auto_close_tabs: bool = true
+	var tab_close_display_policy: TabBar.CloseButtonDisplayPolicy = TabBar.CLOSE_BUTTON_SHOW_NEVER
 	
 	var _ref: Control
 	var _tc: TabContainer
@@ -85,13 +86,25 @@ class NebulaEditorDock:
 	
 	
 	func add_scene(scene: PackedScene, name: String = "", refocus: bool = true) -> Node:
-		if name != "" and _find_tab_by_title(name) >= 0:
-			return null
+		var existing: int = -1
+		if name != "":
+			existing = _find_tab_by_title(name)
+			if existing >= 0:
+				_tc.current_tab = existing
+				return null
+		
 		var node: Node = scene.instantiate()
 		return add_node(node, name, refocus)
 	
 	
+	
 	func add_node(node: Node, name: String = "", refocus: bool = true) -> Node:
+		if name != "":
+			var existing: int = _find_tab_by_title(name)
+			if existing >= 0:
+				_tc.current_tab = existing
+				return null
+		
 		# ensure a unique internal node name so '.' in titles doesn't break things
 		node.name = "_tab_%s" % str(node.get_instance_id())
 		_tc.add_child(node)
@@ -101,12 +114,11 @@ class NebulaEditorDock:
 		
 		var idx: int = _tc.get_child_count() - 1
 		
-		# set the visible tab title independently of the node name
 		if name == "":
 			name = node.name
 		_tc.set_tab_title(idx, name)
 		
-		if node.has_signal("unsaved"):
+		if node.has_signal(&"unsaved"):
 			node.unsaved.connect(_on_node_unsaved.bind(node))
 		
 		if refocus:
@@ -114,6 +126,7 @@ class NebulaEditorDock:
 		
 		_refresh()
 		return node
+	
 	
 	
 	func set_empty_scene(scene: PackedScene, name: String = "<empty>") -> void:
@@ -197,22 +210,25 @@ class NebulaEditorDock:
 	func _refresh() -> void:
 		var children: Array[Node] = []
 		var total: int = _tc.get_child_count()
+		_tc.get_tab_bar().tab_close_display_policy = tab_close_display_policy
+		
 		for i: int in total:
 			var n: Node = _tc.get_child(i)
 			if not n.is_queued_for_deletion():
 				children.append(n)
-	
+		
 		if children.size() == 0 and _empty_scene:
 			_tc.add_child(_empty_scene)
+			_tc.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_NEVER
 			_ref.show()
-	
+		
 		elif children.size() == 0 and not _empty_scene:
 			_ref.hide()
-	
+		
 		elif children.size() > 1 and _empty_scene in _tc.get_children():
 			_tc.remove_child(_empty_scene)
 			_ref.show()
-	
+		
 		if get_tab_count() > 0:
 			_ref.show()
 		else:
@@ -226,3 +242,7 @@ class NebulaEditorDock:
 			if tab_title == title:
 				return i
 		return -1
+
+
+func _on_button_pressed() -> void:
+	NebulaInfoWindow.get_instance().show()

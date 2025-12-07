@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0qfd8wovs2p1"]
+[gd_scene load_steps=3 format=3 uid="uid://c0qfd8wovs2p1"]
 
 [ext_resource type="Script" uid="uid://byox4wv1bl6jq" path="res://components/editor/editor_interface.gd" id="1_s2wbl"]
+[ext_resource type="Texture2D" uid="uid://b1l8alx48r1po" path="res://meta/icons/title_bar_logo.svg" id="2_k4asc"]
 
 [node name="EditorInterface" type="Control" node_paths=PackedStringArray("_main_dock_node", "_main_dock_tab_container", "_secondary_dock_node", "_secondary_dock_tab_container", "_menu_bar")]
 layout_mode = 3
@@ -14,7 +15,7 @@ _main_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/
 _main_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/MainDock/TabContainer")
 _secondary_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock")
 _secondary_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock/TabContainer")
-_menu_bar = NodePath("PanelContainer/VBoxContainer/TopMarginContainer/MenuBar")
+_menu_bar = NodePath("PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer/MenuBar")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -29,12 +30,28 @@ layout_mode = 2
 
 [node name="TopMarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
 theme_override_constants/margin_bottom = 3
 
-[node name="MenuBar" type="MenuBar" parent="PanelContainer/VBoxContainer/TopMarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TopMarginContainer"]
 layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"nButtonIconFlat"
+icon = ExtResource("2_k4asc")
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(2, 0)
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="MenuBar" type="MenuBar" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 
 [node name="PrimaryMarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
@@ -124,3 +141,5 @@ theme_override_font_sizes/font_size = 10
 text = "--"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer/Button" to="." method="_on_button_pressed"]

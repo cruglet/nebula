@@ -120,8 +120,8 @@ grow_vertical = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
-offset_top = 9.0
-offset_bottom = 45.0
+offset_top = 11.0
+offset_bottom = 43.0
 grow_horizontal = 2
 
 [node name="LSpace" type="Control" parent="InfoContainer"]
@@ -130,8 +130,6 @@ layout_mode = 2
 
 [node name="InfoButton" type="Button" parent="InfoContainer"]
 layout_mode = 2
-focus_mode = 0
-mouse_filter = 2
 theme_type_variation = &"nButtonIconFlat"
 theme_override_constants/icon_max_width = 110
 theme_override_constants/align_to_largest_stylebox = 1
@@ -229,4 +227,5 @@ libraries = {
 [connection signal="switch_screen_request" from="Content/Projects" to="." method="_on_project_list_switch_screen_request"]
 [connection signal="updates_available" from="Content/Modules" to="." method="_on_modules_updates_available"]
 [connection signal="updates_cleared" from="Content/Modules" to="." method="_on_modules_updates_cleared"]
+[connection signal="pressed" from="InfoContainer/InfoButton" to="." method="_on_info_button_pressed"]
 [connection signal="selection_changed" from="TabButtonContainer" to="." method="_on_tab_button_container_selection_changed"]
