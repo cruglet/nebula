@@ -121,6 +121,9 @@ class NebulaEditorDock:
 		if node.has_signal(&"unsaved"):
 			node.unsaved.connect(_on_node_unsaved.bind(node))
 		
+		if node.has_signal(&"instance_renamed"):
+			node.instance_renamed.connect(_on_node_renamed.bind(node))
+		
 		if refocus:
 			_tc.current_tab = idx
 		
@@ -191,6 +194,13 @@ class NebulaEditorDock:
 	func _on_node_unsaved(status: bool, node: Node) -> void:
 		_unsaved_tabs[node] = status
 		_update_tab_title(node)
+	
+	
+	func _on_node_renamed(new_name: String, node: Node) -> void:
+		var idx: int = node.get_index()
+		if idx < 0 or idx >= _tc.get_tab_count():
+			return
+		_tc.set_tab_title(idx, new_name)
 	
 	
 	func _update_tab_title(node: Node) -> void:

@@ -2,6 +2,7 @@ class_name NebulaTextEditor
 extends Control
 
 signal unsaved(status: bool)
+signal instance_renamed(new_name: String)
 
 @export var text_editor: CodeEdit
 var font_size: int = 12
@@ -69,3 +70,9 @@ func _update_text() -> void:
 func _on_text_editor_text_changed() -> void:
 	changes_made = true
 	unsaved.emit(true)
+
+
+func _on_file_moved(old_path: String, new_path: String) -> void:
+	if old_path == file_path:
+		file_path = new_path
+		instance_renamed.emit(new_path.get_file())
