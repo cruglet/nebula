@@ -40,6 +40,8 @@ layout_mode = 2
 [node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"nButtonIconFlat"
+theme_override_constants/icon_max_width = 110
+theme_override_constants/align_to_largest_stylebox = 1
 icon = ExtResource("2_k4asc")
 
 [node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer"]
