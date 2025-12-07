@@ -18,8 +18,9 @@ func _ready() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN and not changes_made and file_path:
-		var file_text: String = FileAccess.get_file_as_string(file_path)
-		if file_text != text_editor.text: 
+		var file_text: String = FileAccess.get_file_as_string(file_path).replace("\r", "")
+		var editor_text: String = text_editor.text.replace("\r", "")
+		if file_text != editor_text: 
 			Singleton.send_notification("Changes found", "There were some changes found in this file, updating to disk...")
 			text_editor.text = file_text
 

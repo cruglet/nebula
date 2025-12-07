@@ -17,6 +17,11 @@ func _ready() -> void:
 	filesystem_tree.item_activated.connect(_on_item_activated)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
+		refresh()
+
+
 func refresh() -> void:
 	filesystem_tree.clear()
 	var dir: DirAccess = DirAccess.open(root)
