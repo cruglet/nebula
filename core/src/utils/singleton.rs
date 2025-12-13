@@ -362,6 +362,14 @@ impl Singleton {
         Vector2i { x: window_size.x / 2, y: window_size.y / 2 }
     }
 
+
+    pub fn get_scale_factor() -> f32 {
+        if let Some(w) = Singleton::get_tree().get_root() {
+            return w.get_content_scale_factor();
+        }
+        return 1.0
+    }
+
     pub fn centerize(container_size: Vector2i, rect_size: Vector2i) -> Vector2i {
         let center = Vector2i {x: container_size.x / 2, y: container_size.y / 2};
         let offset = Vector2i {x: rect_size.x / 2, y: rect_size.y / 2};
@@ -411,22 +419,21 @@ void fragment() {
 const SHADER_EDITOR_2D_GRID_CODE: &'static str = r#"
 shader_type canvas_item;
 uniform float zoom = 1.0;
+uniform float scale_factor = 1.0;
 uniform vec2 minor_spacing = vec2(32.0, 32.0);
 uniform vec2 major_spacing = vec2(256.0, 256.0);
-uniform float minor_line_width = 1.0; // in pixels
-uniform float major_line_width = 2.0; // in pixels
-uniform int grid_pattern = 1; // 0 = none, 1 = lines, 2 = dots
+uniform float minor_line_width = 1.0;
+uniform float major_line_width = 2.0;
+uniform int grid_pattern = 1;
 uniform bool fade_minor = true;
 uniform bool fade_major = false;
 uniform vec4 grid_minor : source_color = vec4(0.2, 0.2, 0.2, 0.5);
 uniform vec2 grid_offset = vec2(0.0);
 uniform vec4 grid_major : source_color = vec4(0.2, 0.2, 0.2, 1.0);
 uniform vec2 position = vec2(0.0);
-// Dots
-uniform float dot_minor_radius_px = 2.0; // minor dot radius in pixels
-uniform float dot_major_radius_px = 4.0; // major dot radius in pixels
-uniform int dot_major_step = 4;    // every Nth dot will be major
-// Bounds
+uniform float dot_minor_radius_px = 2.0;
+uniform float dot_major_radius_px = 4.0;
+uniform int dot_major_step = 4;
 uniform bool draw_grid_outside_bounds = false;
 uniform float bound_left = -1000.0;
 uniform float bound_right = 1000.0;
@@ -436,54 +443,44 @@ uniform vec4 bound_outside_color : source_color = vec4(0.0, 0.0, 0.0, 0.5);
 uniform vec4 background_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
 
 void fragment() {
-    vec2 world_pos = (FRAGCOORD.xy + position) / zoom;
+    vec2 scaled_fragcoord = FRAGCOORD.xy / scale_factor;
+    vec2 world_pos = (scaled_fragcoord + position) / zoom;
     vec2 minor_uv = ((world_pos + grid_offset) / vec2(minor_spacing.x, minor_spacing.y));
     vec2 major_uv = ((world_pos + grid_offset) / vec2(major_spacing.x, major_spacing.y));
     vec2 minor_cell = fract(minor_uv);
     vec2 major_cell = fract(major_uv);
     
-    // Start with background color
     vec4 col = background_color;
     
-    // Check out-of-bounds and set background accordingly
     bool out_of_bounds = (world_pos.x < bound_left || world_pos.x > bound_right ||
                           world_pos.y < -bound_top || world_pos.y > -bound_bottom);
     
-    // Set background: either normal background or out-of-bounds background
     col = out_of_bounds ? bound_outside_color : background_color;
     
-    // Only draw grid if we're inside bounds OR if draw_grid_outside_bounds is true
     if (!out_of_bounds || draw_grid_outside_bounds) {
-        // Determine fade factors for grid lines
         float minor_alpha = fade_minor ? smoothstep(0.3, 0.8, zoom) : 1.0;
         float major_alpha = fade_major ? smoothstep(0.3, 0.8, zoom) : 1.0;
         
-        // ----- Line grid -----
         if (grid_pattern == 1) {
             vec2 minor_thickness = vec2(minor_line_width / zoom) / vec2(minor_spacing.x, minor_spacing.y);
             vec2 major_thickness = vec2(major_line_width / zoom) / vec2(major_spacing.x, major_spacing.y);
             
-            // Minor lines (horizontal + vertical combined)
             float minor_x = step(minor_cell.x, minor_thickness.x);
             float minor_y = step(minor_cell.y, minor_thickness.y);
             float minor_mask = max(minor_x, minor_y);
             if (minor_mask > 0.0) {
-                // Apply consistent fade everywhere - draw over background
                 float alpha = fade_minor ? minor_alpha : 1.0;
                 col = mix(col, grid_minor, grid_minor.a * alpha);
             }
             
-            // Major lines drawn over minor lines
             float major_x = step(major_cell.x, major_thickness.x);
             float major_y = step(major_cell.y, major_thickness.y);
             float major_mask = max(major_x, major_y);
             if (major_mask > 0.0) {
-                // Apply consistent fade everywhere - draw over background
                 float alpha = fade_major ? major_alpha : 1.0;
                 col = mix(col, grid_major, grid_major.a * alpha);
             }
         }
-        // ----- Dot grid -----
         else if (grid_pattern == 2) {
             float dot_minor_radius = dot_minor_radius_px / zoom;
             float dot_major_radius = dot_major_radius_px / zoom;

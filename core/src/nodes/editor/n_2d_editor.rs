@@ -231,45 +231,45 @@ impl IControl for Nebula2DEditor {
         self.reload_theme();
     }
 
-	fn gui_input(&mut self, event: Gd<InputEvent>) {
-		let mut vref = self.editor_control.to_godot_owned();
+    fn gui_input(&mut self, event: Gd<InputEvent>) {
+        let mut vref = self.editor_control.to_godot_owned();
+        let scale_factor = Singleton::get_scale_factor();
 
-		// Mouse motion
-		if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseMotion>() {
-			let ctrl = Input::singleton().is_key_pressed(Key::CTRL);
+        // Mouse motion
+        if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseMotion>() {
+            let ctrl = Input::singleton().is_key_pressed(Key::CTRL);
 
-			if e.get_button_mask() == MouseButtonMask::MIDDLE {
-				if ctrl {
-					// Ctrl + Middle drag → zoom at anchor
-					if let Some(anchor) = self.ctrl_zoom_anchor {
-						let dy = -e.get_relative().y;
-						if dy.abs() > 0.0 {
-							let zoom_factor = 1.0 + dy * 0.01;
+            if e.get_button_mask() == MouseButtonMask::MIDDLE {
+                if ctrl {
+                    // Ctrl + Middle drag -> zoom at anchor
+                    if let Some(anchor) = self.ctrl_zoom_anchor {
+                        let dy = -e.get_relative().y;
+                        if dy.abs() > 0.0 {
+                            let zoom_factor = 1.0 + dy * 0.01;
 
-							let old_zoom = self.zoom_amount;
-							let new_zoom = (old_zoom * zoom_factor)
-								.clamp(self.zoom_minimum, self.zoom_maximum);
+                            let old_zoom = self.zoom_amount;
+                            let new_zoom = (old_zoom * zoom_factor)
+                                .clamp(self.zoom_minimum, self.zoom_maximum);
 
-							if (new_zoom - old_zoom).abs() > 0.001 {
-								let world_point = (anchor + self.editor_global_position) / old_zoom;
+                            if (new_zoom - old_zoom).abs() > 0.001 {
+                                let world_point = (anchor + self.editor_global_position) / old_zoom;
 
-								self.xset_zoom_amount(new_zoom);
-								vref.set_scale(Vector2::splat(new_zoom));
+                                self.xset_zoom_amount(new_zoom);
+                                vref.set_scale(Vector2::splat(new_zoom));
 
                                 self.editor_global_position = world_point * new_zoom - anchor;
-							}
-						}
-					}
-				} else {
-					// Normal panning
-					self.editor_global_position -= e.get_relative();
+                            }
+                        }
+                    }
+                } else {
+                    // Normal panning
+                    self.editor_global_position -= e.get_relative();
                     
-					// Warp mouse if enabled
-					if self.warp_mouse {
-						let viewport = vref.get_viewport().unwrap();
+                    // Warp mouse if enabled
+                    if self.warp_mouse {
+                        let viewport = vref.get_viewport().unwrap();
                         let viewport_rect = viewport.get_visible_rect();
 
-                        // Convert mouse pos from local -> global
                         let mut mouse_pos = vref.get_global_mouse_position();
                         let mut warped = false;
 
@@ -292,131 +292,130 @@ impl IControl for Nebula2DEditor {
                         if warped {
                             Input::singleton().warp_mouse(mouse_pos);
                         }
+                    }
+                }
+            }
 
-					}
-				}
-			}
+            // Dragging update
+            if e.get_button_mask() == MouseButtonMask::LEFT
+                && self.enable_drag_selection
+            {
+                if let Some(start) = self.drag_start {
+                    self.drag_current = Some(e.get_position());
+                    let current = self.drag_current.unwrap();
+                    let rect = Rect2::new(start, current - start).abs();
+                    
+                    let local_rect = self.rect_to_local(rect);
 
-			// Dragging update
-			if e.get_button_mask() == MouseButtonMask::LEFT
-				&& self.enable_drag_selection
-				&& let Some(start) = self.drag_start
-			{
-				self.drag_current = Some(e.get_position());
-				let current = self.drag_current.unwrap();
-				let rect = Rect2::new(start, current - start).abs();
-				
-				// Convert to local/editor coordinates
-				let local_rect = self.rect_to_local(rect);
+                    self.selection_panel.show();
+                    self.selection_panel.set_position(rect.position);
+                    self.selection_panel.set_size(rect.size);
 
-				// Show drag rectangle
-				self.selection_panel.show();
-				self.selection_panel.set_position(rect.position);
-				self.selection_panel.set_size(rect.size);
+                    self.update_highlight_panels(Some(local_rect));
 
-				// Update individual highlight panels
-				self.update_highlight_panels(Some(local_rect));
+                    self.signals().selection_dragged().emit(local_rect);
+                }
+            }
+        }
 
-				self.signals().selection_dragged().emit(local_rect);
-			}
-		}
+        // Mouse button press/release
+        else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseButton>() {
+            if e.is_pressed() {
+                if e.get_button_index() == MouseButton::LEFT {
+                    let pos = e.get_position();
+                    self.drag_start = Some(pos);
+                    self.drag_current = Some(pos);
+                } else if e.get_button_index() == MouseButton::MIDDLE {
+                    if Input::singleton().is_key_pressed(Key::CTRL) {
+                        self.ctrl_zoom_anchor = Some(e.get_position());
+                    }
+                }
+            } else if e.get_button_index() == MouseButton::LEFT {
+                if let (Some(start), Some(end)) = (self.drag_start, self.drag_current) {
+                    let rect = Rect2::new(start, end - start).abs();
+                    let local_rect = self.rect_to_local(rect);
 
-		// Mouse button press/release
-		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseButton>() {
-			if e.is_pressed() {
-				if e.get_button_index() == MouseButton::LEFT {
-					// Begin drag
-					let pos = e.get_position();
-					self.drag_start = Some(pos);
-					self.drag_current = Some(pos);
-				} else if e.get_button_index() == MouseButton::MIDDLE {
-					// If ctrl held, capture zoom anchor
-					if Input::singleton().is_key_pressed(Key::CTRL) {
-						self.ctrl_zoom_anchor = Some(e.get_position());
-					}
-				}
-			} else if e.get_button_index() == MouseButton::LEFT {
-				// End drag
-				if let (Some(start), Some(end)) = (self.drag_start, self.drag_current) {
-					let rect = Rect2::new(start, end - start).abs();
-					let local_rect = self.rect_to_local(rect);
-
-					self.signals().selection_drag_finished().emit(local_rect);
+                    self.signals().selection_drag_finished().emit(local_rect);
                     let selected_objects = Array::from_iter(self.selected_objects.iter().cloned());
                     self.signals().selection_updated().emit(&selected_objects);
 
-					// Hide drag rectangle
-					self.selection_panel.hide();
+                    self.selection_panel.hide();
                     self.update_highlight_panels(None);
-					self.selection_panel.set_size(Vector2::ZERO);
-				}
+                    self.selection_panel.set_size(Vector2::ZERO);
+                }
 
-				self.drag_start = None;
-				self.drag_current = None;
-			} else if e.get_button_index() == MouseButton::MIDDLE {
-				self.ctrl_zoom_anchor = None;
-			}
+                self.drag_start = None;
+                self.drag_current = None;
+            } else if e.get_button_index() == MouseButton::MIDDLE {
+                self.ctrl_zoom_anchor = None;
+            }
 
-			if e.is_pressed() {
-				if e.get_button_index() != MouseButton::WHEEL_UP
-					&& e.get_button_index() != MouseButton::WHEEL_DOWN
-				{
-					return;
-				}
+            if e.is_pressed() {
+                if e.get_button_index() != MouseButton::WHEEL_UP
+                    && e.get_button_index() != MouseButton::WHEEL_DOWN
+                {
+                    return;
+                }
 
-				let zoom_factor = match e.get_button_index() {
-					MouseButton::WHEEL_UP => 1.0 + self.zoom_step,
-					MouseButton::WHEEL_DOWN => 1.0 / (1.0 + self.zoom_step),
-					_ => return,
-				};
+                let zoom_factor = match e.get_button_index() {
+                    MouseButton::WHEEL_UP => 1.0 + self.zoom_step,
+                    MouseButton::WHEEL_DOWN => 1.0 / (1.0 + self.zoom_step),
+                    _ => return,
+                };
 
-				let mouse_pos = e.get_position();
+                let mouse_pos = e.get_position();
 
-				let world_point = (mouse_pos + self.editor_global_position) / self.zoom_amount;
+                let world_point = (mouse_pos + self.editor_global_position) / self.zoom_amount;
 
-				let old_zoom = self.zoom_amount;
-				let new_zoom = (old_zoom * zoom_factor).clamp(self.zoom_minimum, self.zoom_maximum);
+                let old_zoom = self.zoom_amount;
+                let new_zoom = (old_zoom * zoom_factor).clamp(self.zoom_minimum, self.zoom_maximum);
 
-				if (new_zoom - old_zoom).abs() > 0.001 {
-					self.xset_zoom_amount(new_zoom);
-					vref.set_scale(Vector2::splat(new_zoom));
+                if (new_zoom - old_zoom).abs() > 0.001 {
+                    self.xset_zoom_amount(new_zoom);
+                    vref.set_scale(Vector2::splat(new_zoom));
 
-					self.editor_global_position = world_point * new_zoom - mouse_pos;
-				}
-			}
-		}
+                    self.editor_global_position = world_point * new_zoom - mouse_pos;
+                }
+            }
+        }
 
-		// Touch Panning
-		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventPanGesture>() {
-			self.editor_global_position += e.get_delta() * 35.0;
-		}
+        // Touch Panning
+        else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventPanGesture>() {
+            self.editor_global_position += e.get_delta() * 35.0;
+        }
 
-		// Touch/trackpad magnify gesture zooming
-		else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMagnifyGesture>() {
-			let mouse_pos = e.get_position();
-			let zoom_factor = e.get_factor();
+        // Touch/trackpad magnify gesture zooming
+        else if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMagnifyGesture>() {
+            let mouse_pos = e.get_position();
+            let zoom_factor = e.get_factor();
 
-			let old_zoom = self.zoom_amount;
-			let new_zoom = (old_zoom * zoom_factor).clamp(self.zoom_minimum, self.zoom_maximum);
+            let old_zoom = self.zoom_amount;
+            let new_zoom = (old_zoom * zoom_factor).clamp(self.zoom_minimum, self.zoom_maximum);
 
-			if (new_zoom - old_zoom).abs() > 0.001 {
-				let world_point = (mouse_pos + self.editor_global_position) / old_zoom;
+            if (new_zoom - old_zoom).abs() > 0.001 {
+                let world_point = (mouse_pos + self.editor_global_position) / old_zoom;
 
-				self.xset_zoom_amount(new_zoom);
-				vref.set_scale(Vector2::splat(new_zoom));
+                self.xset_zoom_amount(new_zoom);
+                vref.set_scale(Vector2::splat(new_zoom));
 
                 self.editor_global_position = world_point * new_zoom - mouse_pos;
-			}
-		}
+            }
+        }
 
         let global_pos = self.base().get_global_position();
-		self.clamp_editor_global_position();
-		self.editor_shader_material
-			.set_shader_parameter("position", &(self.editor_global_position - global_pos).to_variant());
-		self.editor_shader_material
-			.set_shader_parameter("zoom", &self.zoom_amount.to_variant());
-		vref.set_position(-self.editor_global_position);
-	}
+        self.clamp_editor_global_position();
+        
+        self.editor_shader_material
+            .set_shader_parameter("position", &(self.editor_global_position - global_pos).to_variant());
+        self.editor_shader_material
+            .set_shader_parameter("zoom", &self.zoom_amount.to_variant());
+        self.editor_shader_material
+            .set_shader_parameter("scale_factor", &scale_factor.to_variant());
+        
+        vref.set_position(-self.editor_global_position);
+    }
+
+
 
     fn get_property_list(&mut self) -> Vec<PropertyInfo> {
         let mut props = Vec::new();
@@ -562,11 +561,14 @@ impl Nebula2DEditor {
 
     /// Primarily internal, handles updaing the backend shader for the editor when it is updated.
     #[func] pub fn _update_shader(&mut self) {
+        let scale_factor = Singleton::get_scale_factor();
         let global_pos: Vector2 = self.base().get_global_position();
         let mat = &mut self.editor_shader_material;
+        
         mat.set_shader_parameter("position", &Variant::from(self.editor_global_position - global_pos));
         mat.set_shader_parameter("grid_offset", &Variant::from(self.grid_offset));
         mat.set_shader_parameter("zoom", &Variant::from(self.zoom_amount));
+        mat.set_shader_parameter("scale_factor", &Variant::from(scale_factor));
         mat.set_shader_parameter("grid_pattern", &Variant::from(self.grid_pattern));
         
         mat.set_shader_parameter("major_spacing", &Variant::from(self.grid_major_spacing));
@@ -587,7 +589,7 @@ impl Nebula2DEditor {
         mat.set_shader_parameter("dot_major_radius_px", &Variant::from(self.grid_dot_major_radius));
         mat.set_shader_parameter("dot_minor_radius_px", &Variant::from(self.grid_dot_minor_radius));
         mat.set_shader_parameter("dot_major_step", &Variant::from(self.grid_dot_major_step));
-    }        
+    } 
 
 
     fn update_highlight_panels(&mut self, rect_op: Option<Rect2>) {
