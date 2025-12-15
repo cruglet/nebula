@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=97 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=103 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/normal/primary.ttf" id="1_5e7fv"]
 [ext_resource type="Texture2D" uid="uid://blv0vi1d3fpju" path="res://icon.svg" id="2_1u036"]
@@ -304,6 +304,13 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u7n3j"]
+bg_color = Color(0.15294118, 0.16078432, 0.18039216, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_taty1"]
 bg_color = Color(0, 0.34616667, 0.67, 0.47058824)
 border_color = Color(0, 0.34509805, 0.67058825, 1)
@@ -371,6 +378,37 @@ content_margin_right = 10.0
 bg_color = Color(0.09411765, 0.09411765, 0.10980392, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vkolq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w73n5"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.09411765, 0.09411765, 0.10980392, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bl1h0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eowhe"]
+content_margin_left = 8.0
+bg_color = Color(0, 0.37896404, 0.73250645, 0.4862745)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.38039216, 0.73333335, 0.4862745)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cgrt8"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_if7so"]
 
@@ -851,7 +889,7 @@ Nebula2DEditor/styles/selected_objects_box = SubResource("StyleBoxFlat_6neeu")
 Nebula2DEditor/styles/selection_box = SubResource("StyleBoxFlat_v7x5o")
 NebulaWindow/styles/panel = SubResource("StyleBoxFlat_xv4hg")
 Panel/styles/panel = SubResource("StyleBoxFlat_u64fg")
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_u64fg")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_u7n3j")
 PopupMenu/styles/hover = SubResource("StyleBoxFlat_taty1")
 PopupMenu/styles/panel = SubResource("StyleBoxFlat_uexy3")
 PopupMenu/styles/separator = SubResource("StyleBoxLine_v2t5x")
@@ -867,6 +905,9 @@ TabContainer/styles/tab_focus = SubResource("StyleBoxEmpty_v2t5x")
 TabContainer/styles/tab_hovered = SubResource("StyleBoxFlat_bl1h0")
 TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_apwxs")
 TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_vkolq")
+TooltipLabel/styles/focus = SubResource("StyleBoxEmpty_vkolq")
+TooltipLabel/styles/normal = SubResource("StyleBoxFlat_w73n5")
+TooltipPanel/styles/panel = SubResource("StyleBoxEmpty_bl1h0")
 Tree/colors/children_hl_line_color = Color(0.2509804, 0.26666668, 0.30980393, 1)
 Tree/colors/parent_hl_line_color = Color(0.2509804, 0.26666668, 0.30980393, 1)
 Tree/colors/relationship_line_color = Color(0.24940968, 0.2664052, 0.3088822, 1)
@@ -876,6 +917,8 @@ Tree/constants/h_separation = 6
 Tree/constants/inner_item_margin_bottom = 2
 Tree/constants/inner_item_margin_left = 6
 Tree/constants/inner_item_margin_top = 2
+Tree/styles/cursor = SubResource("StyleBoxFlat_eowhe")
+Tree/styles/cursor_unfocused = SubResource("StyleBoxEmpty_cgrt8")
 Tree/styles/focus = SubResource("StyleBoxEmpty_if7so")
 Tree/styles/hovered = SubResource("StyleBoxFlat_pwln5")
 Tree/styles/hovered_selected = SubResource("StyleBoxFlat_jmfb7")
