@@ -5,22 +5,31 @@ extends Control
 signal main_tab_close_request
 
 @export_group("Internal")
+@export var _menu_bar: MenuBar
+
 @export_subgroup("Main Dock")
 @export var _main_dock_node: Control
 @export var _main_dock_tab_container: TabContainer
-@export var _secondary_dock_node: Control
-@export var _secondary_dock_tab_container: TabContainer
-@export var _menu_bar: MenuBar
+
+@export_subgroup("Top Right Dock") 
+@export var _top_right_dock_node: Control
+@export var _top_right_dock_tab_container: TabContainer
+
+@export_subgroup("Bottom Right Dock")
+@export var _bottom_right_dock_node: Control
+@export var _bottom_right_dock_tab_container: TabContainer
 
 
 var _main_dock: NebulaEditorDock
-var _secondary_dock: NebulaEditorDock
+var _top_right_dock: NebulaEditorDock
+var _bottom_right_dock: NebulaEditorDock
 var _menu_items: Dictionary#[StringName, Dictionary]
 
 
 func _ready() -> void:
 	get_main_dock()
-	get_secondary_dock()
+	get_top_right_dock()
+	get_bottom_right_dock()
 
 
 func create_menu_item(menu: StringName, item: String, callback: Callable) -> void:
@@ -58,10 +67,16 @@ func get_main_dock() -> NebulaEditorDock:
 	return _main_dock
 
 
-func get_secondary_dock() -> NebulaEditorDock:
-	if !_secondary_dock:
-		_secondary_dock = NebulaEditorDock.new(_secondary_dock_node, _secondary_dock_tab_container)
-	return _secondary_dock
+func get_top_right_dock() -> NebulaEditorDock:
+	if !_top_right_dock:
+		_top_right_dock = NebulaEditorDock.new(_top_right_dock_node, _top_right_dock_tab_container)
+	return _top_right_dock
+
+
+func get_bottom_right_dock() -> NebulaEditorDock:
+	if !_bottom_right_dock:
+		_bottom_right_dock = NebulaEditorDock.new(_bottom_right_dock_node, _bottom_right_dock_tab_container)
+	return _bottom_right_dock
 
 
 class NebulaEditorDock:

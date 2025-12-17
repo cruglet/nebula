@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://byox4wv1bl6jq" path="res://components/editor/editor_interface.gd" id="1_s2wbl"]
 [ext_resource type="Texture2D" uid="uid://b1l8alx48r1po" path="res://meta/icons/title_bar_logo.svg" id="2_k4asc"]
 
-[node name="EditorInterface" type="Control" node_paths=PackedStringArray("_main_dock_node", "_main_dock_tab_container", "_secondary_dock_node", "_secondary_dock_tab_container", "_menu_bar")]
+[node name="EditorInterface" type="Control" node_paths=PackedStringArray("_menu_bar", "_main_dock_node", "_main_dock_tab_container", "_top_right_dock_node", "_top_right_dock_tab_container", "_bottom_right_dock_node", "_bottom_right_dock_tab_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,11 +11,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_s2wbl")
+_menu_bar = NodePath("PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer/MenuBar")
 _main_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/MainDock")
 _main_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/MainDock/TabContainer")
-_secondary_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock")
-_secondary_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock/TabContainer")
-_menu_bar = NodePath("PanelContainer/VBoxContainer/TopMarginContainer/HBoxContainer/MenuBar")
+_top_right_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/TopRightDock")
+_top_right_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/TopRightDock/VSplitContainer/TabContainer")
+_bottom_right_dock_node = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/BottomRightDock")
+_bottom_right_dock_tab_container = NodePath("PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/BottomRightDock/VSplitContainer/TabContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 0
@@ -71,19 +73,47 @@ size_flags_vertical = 3
 theme_override_constants/separation = 0
 split_offset = 200
 
-[node name="RightDock" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+
+[node name="TopRightDock" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 3
 theme_type_variation = &"nPanelSecondary"
 
-[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/RightDock"]
-layout_direction = 2
+[node name="VSplitContainer" type="VSplitContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/TopRightDock"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/TopRightDock/VSplitContainer"]
+layout_direction = 2
+layout_mode = 2
+theme_type_variation = &"nTabContainerEmpty"
+drag_to_rearrange_enabled = true
+
+[node name="BottomRightDock" type="Control" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"nPanelSecondary"
+
+[node name="VSplitContainer" type="VSplitContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/BottomRightDock"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer/PrimaryMarginContainer/HSplitContainer/VSplitContainer/BottomRightDock/VSplitContainer"]
+layout_direction = 2
+layout_mode = 2
 theme_type_variation = &"nTabContainerEmpty"
 drag_to_rearrange_enabled = true
 
