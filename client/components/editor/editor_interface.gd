@@ -11,7 +11,7 @@ signal main_tab_close_request
 @export var _main_dock_node: Control
 @export var _main_dock_tab_container: TabContainer
 
-@export_subgroup("Top Right Dock") 
+@export_subgroup("Top Right Dock")
 @export var _top_right_dock_node: Control
 @export var _top_right_dock_tab_container: TabContainer
 
@@ -32,6 +32,7 @@ var _drop_indicators: Dictionary = {}
 var _potential_drag_node: Node = null
 var _potential_drag_dock: NebulaEditorDock = null
 var _drag_start_pos: Vector2 = Vector2.ZERO
+var _hidden_docks_during_drag: Array[NebulaEditorDock] = []
 
 
 func _ready() -> void:
@@ -125,7 +126,7 @@ func _get_dock_at_position(pos: Vector2) -> NebulaEditorDock:
 	var docks: Array[NebulaEditorDock] = [_main_dock, _top_right_dock, _bottom_right_dock]
 	
 	for dock: NebulaEditorDock in docks:
-		if dock and dock._ref.visible:
+		if dock:
 			var rect: Rect2 = Rect2(dock._ref.global_position, dock._ref.size)
 			if rect.has_point(pos):
 				return dock
@@ -137,22 +138,20 @@ func _update_drop_indicators(mouse_pos: Vector2) -> void:
 	var target_dock: NebulaEditorDock = _get_dock_at_position(mouse_pos)
 	
 	for dock: NebulaEditorDock in [_main_dock, _top_right_dock, _bottom_right_dock]:
-		if dock != target_dock and dock in _drop_indicators:
+		if dock in _drop_indicators:
 			var indicator: ColorRect = _drop_indicators[dock]
 			if is_instance_valid(indicator):
-				indicator.queue_free()
-			_drop_indicators.erase(dock)
-	
-	if target_dock and target_dock != _dragging_from_dock and not target_dock.fixed:
-		if target_dock not in _drop_indicators:
-			var indicator: ColorRect = ColorRect.new()
-			indicator.color = Color(0.3, 0.5, 1.0, 0.4)
-			indicator.position = target_dock._ref.global_position - global_position
-			indicator.size = target_dock._ref.size
-			indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			indicator.z_index = 100
-			add_child(indicator)
-			_drop_indicators[target_dock] = indicator
+				indicator.position = dock._ref.global_position - global_position
+				indicator.size = dock._ref.size
+				
+				if dock == target_dock and not dock.fixed and dock != _dragging_from_dock:
+					indicator.color = Color(0.3, 0.5, 1.0, 0.4)
+				elif dock.fixed:
+					indicator.color = Color(1.0, 0.3, 0.3, 0.15)
+				elif dock == _dragging_from_dock:
+					indicator.color = Color(0.5, 0.5, 0.5, 0.2)
+				else:
+					indicator.color = Color(0.5, 0.5, 0.5, 0.2)
 
 
 func _update_cursor(mouse_pos: Vector2) -> void:
@@ -172,6 +171,31 @@ func _clear_drop_indicators() -> void:
 	_drop_indicators.clear()
 
 
+func _show_all_dock_indicators() -> void:
+	_clear_drop_indicators()
+	
+	_hidden_docks_during_drag.clear()
+	for dock: NebulaEditorDock in [_main_dock, _top_right_dock, _bottom_right_dock]:
+		if dock and not dock._ref.visible:
+			dock._ref.show()
+			_hidden_docks_during_drag.append(dock)
+	
+	for dock: NebulaEditorDock in [_main_dock, _top_right_dock, _bottom_right_dock]:
+		if dock:
+			var indicator: ColorRect = ColorRect.new()
+			if dock.fixed:
+				indicator.color = Color(1.0, 0.3, 0.3, 0.15)
+			else:
+				indicator.color = Color(0.5, 0.5, 0.5, 0.2)
+			
+			indicator.position = dock._ref.global_position - global_position
+			indicator.size = dock._ref.size
+			indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			indicator.z_index = 100
+			add_child(indicator)
+			_drop_indicators[dock] = indicator
+
+
 func _start_potential_drag(node: Node, dock: NebulaEditorDock, start_pos: Vector2) -> void:
 	if dock.fixed:
 		return
@@ -189,6 +213,7 @@ func _start_drag(node: Node, dock: NebulaEditorDock) -> void:
 	_dragging_from_dock = dock
 	_potential_drag_node = null
 	_potential_drag_dock = null
+	_show_all_dock_indicators()
 
 
 func _end_drag() -> void:
@@ -196,6 +221,11 @@ func _end_drag() -> void:
 	_dragging_from_dock = null
 	_clear_drop_indicators()
 	mouse_default_cursor_shape = Control.CURSOR_ARROW
+	
+	for dock: NebulaEditorDock in _hidden_docks_during_drag:
+		if dock:
+			dock._refresh()
+	_hidden_docks_during_drag.clear()
 
 
 func _on_button_pressed() -> void:
@@ -366,6 +396,7 @@ class NebulaEditorDock:
 		_hidden_tabs.erase(transfer_node)
 		_bound_nodes.erase(transfer_node)
 		
+		transfer_node.set_meta(&"dock", target_dock)
 		target_dock.add_node(transfer_node, tab_title, true)
 		
 		if is_unsaved:
