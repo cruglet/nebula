@@ -256,6 +256,8 @@ func _drop_data_fw(at_position: Vector2, data: Variant) -> void:
 		if dir:
 			var error: int = dir.rename(source_path, new_path)
 			if error == OK:
+				if DirAccess.dir_exists_absolute(new_path):
+					update_collapsed_paths_after_rename(source_path, new_path)
 				drag_drop_completed.emit(source_path, new_path)
 	
 	refresh()
@@ -293,3 +295,18 @@ func _collect_selected_items(item: TreeItem, selected: Array) -> void:
 	while child:
 		_collect_selected_items(child, selected)
 		child = child.get_next()
+
+
+func update_collapsed_paths_after_rename(old_path: String, new_path: String) -> void:
+	var paths_to_update: Array = []
+	
+	for path: String in _collapsed_paths.keys():
+		if path == old_path or path.begins_with(old_path + "/"):
+			paths_to_update.append(path)
+	
+	for path: String in paths_to_update:
+		var collapsed_state: bool = _collapsed_paths[path]
+		_collapsed_paths.erase(path)
+		
+		var updated_path: String = new_path + path.substr(old_path.length())
+		_collapsed_paths[updated_path] = collapsed_state

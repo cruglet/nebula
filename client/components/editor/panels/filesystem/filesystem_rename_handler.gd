@@ -11,6 +11,7 @@ signal folder_created(path: String)
 @export var extension_edit: LineEdit
 @export var error_label: RichTextLabel
 @export var confirm_button: Button
+@export var tree_handler: FilesystemTreeHandler
 
 enum Mode { RENAME_FILE, RENAME_FOLDER, CREATE_FOLDER }
 
@@ -147,6 +148,9 @@ func _handle_rename_folder() -> void:
 		_show_error("Failed to rename: Error code %d" % error)
 		return
 	
+	if tree_handler:
+		tree_handler.update_collapsed_paths_after_rename(_target_path, new_path)
+	
 	file_renamed.emit(_target_path, new_path)
 	dialog.hide()
 
@@ -202,7 +206,6 @@ func _on_text_changed(_new_text: String) -> void:
 		_show_error(validation.error)
 		return
 	
-	# Check for existing files/folders
 	var new_name: String = filename if _current_mode == Mode.RENAME_FOLDER else "%s.%s" % [filename, extension]
 	var base_dir: String = _target_path.get_base_dir() if _current_mode != Mode.CREATE_FOLDER else _target_path
 	var new_path: String = base_dir.path_join(new_name)

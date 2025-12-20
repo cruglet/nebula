@@ -22,7 +22,7 @@ delete_label = NodePath("DeleteDialog/PanelContainer/MarginContainer/VBoxContain
 
 [node name="Handlers" type="Node" parent="."]
 
-[node name="RenameHandler" type="Node" parent="Handlers" node_paths=PackedStringArray("dialog", "line_edit", "dot_label", "extension_edit", "error_label", "confirm_button")]
+[node name="RenameHandler" type="Node" parent="Handlers" node_paths=PackedStringArray("dialog", "line_edit", "dot_label", "extension_edit", "error_label", "confirm_button", "tree_handler")]
 script = ExtResource("2_d2h48")
 dialog = NodePath("../../RenameDialog")
 line_edit = NodePath("../../RenameDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/FilenameEdit")
@@ -30,6 +30,7 @@ dot_label = NodePath("../../RenameDialog/PanelContainer/MarginContainer/VBoxCont
 extension_edit = NodePath("../../RenameDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ExtensionEdit")
 error_label = NodePath("../../RenameDialog/PanelContainer/MarginContainer/VBoxContainer/ErrorLabel")
 confirm_button = NodePath("../../RenameDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/RenameButton")
+tree_handler = NodePath("../TreeHandler")
 
 [node name="TreeHandler" type="Control" parent="Handlers" node_paths=PackedStringArray("tree", "empty_label")]
 layout_mode = 3
