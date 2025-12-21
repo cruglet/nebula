@@ -1,6 +1,11 @@
 class_name NebulaEditorInterface
 extends Control
 
+const VALID_HOVER_COLOR: Color = Color(0.3, 0.5, 1.0, 0.4)
+const VALID_COLOR: Color = Color(0.5, 0.5, 0.5, 0.2)
+const INVALID_COLOR: Color = Color(1.0, 0.3, 0.3, 0.15)
+const SOURCE_COLOR: Color = Color(0.466, 0.466, 0.466, 0.1)
+
 @warning_ignore("unused_signal")
 signal main_tab_close_request
 
@@ -145,13 +150,13 @@ func _update_drop_indicators(mouse_pos: Vector2) -> void:
 				indicator.size = dock._ref.size
 				
 				if dock == target_dock and not dock.fixed and dock != _dragging_from_dock:
-					indicator.color = Color(0.3, 0.5, 1.0, 0.4)
+					indicator.color = VALID_HOVER_COLOR
 				elif dock.fixed:
-					indicator.color = Color(1.0, 0.3, 0.3, 0.15)
+					indicator.color = INVALID_COLOR
 				elif dock == _dragging_from_dock:
-					indicator.color = Color(0.5, 0.5, 0.5, 0.2)
+					indicator.color = SOURCE_COLOR
 				else:
-					indicator.color = Color(0.5, 0.5, 0.5, 0.2)
+					indicator.color = VALID_COLOR
 
 
 func _update_cursor(mouse_pos: Vector2) -> void:
@@ -273,7 +278,7 @@ class NebulaEditorDock:
 				_tc.current_tab = existing
 				return null
 		
-		var node: Node = scene.instantiate()
+		var node: Node = scene.duplicate().instantiate()
 		return add_node(node, name, refocus)
 	
 	

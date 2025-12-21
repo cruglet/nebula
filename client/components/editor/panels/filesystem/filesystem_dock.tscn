@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bc2m8a8pmx73i"]
+[gd_scene load_steps=6 format=3 uid="uid://bc2m8a8pmx73i"]
 
 [ext_resource type="Script" uid="uid://2x2njn3m8tje" path="res://components/editor/panels/filesystem/filesystem_dock.gd" id="1_oufa8"]
 [ext_resource type="Script" uid="uid://dpc0pxekjg0wx" path="res://components/editor/panels/filesystem/filesystem_rename_handler.gd" id="2_d2h48"]
 [ext_resource type="Script" uid="uid://c6crvn1vocend" path="res://components/editor/panels/filesystem/filesystem_tree_handler.gd" id="3_1uqpv"]
 [ext_resource type="Script" uid="uid://cysu1bc1uqr0u" path="res://components/editor/panels/filesystem/filesystem_context_handler.gd" id="4_1uqpv"]
+[ext_resource type="Script" uid="uid://6l2dwbjtk64m" path="res://components/editor/panels/filesystem/filesystem_undo_redo_handler.gd" id="5_gcbs3"]
 
 [node name="FilesystemDock" type="Panel" node_paths=PackedStringArray("filesystem_tree", "empty_filesystem_label", "tree_handler", "context_handler", "rename_dialog_handler", "delete_dialog", "delete_label")]
 anchors_preset = 15
@@ -43,6 +44,9 @@ empty_label = NodePath("../../EmptyFilesystemLabel")
 [node name="ContextHandler" type="Node" parent="Handlers" node_paths=PackedStringArray("tree")]
 script = ExtResource("4_1uqpv")
 tree = NodePath("../../MarginContainer/FilesystemTree")
+
+[node name="UndoRedo" type="Node" parent="Handlers"]
+script = ExtResource("5_gcbs3")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

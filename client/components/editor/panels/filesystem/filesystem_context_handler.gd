@@ -65,6 +65,11 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 		if not is_read_only:
 			_popup.clear()
 			_popup.add_item("Add Folder", ContextOption.ADD_FOLDER)
+			
+			if _clipboard_path != "":
+				_popup.add_separator()
+				_popup.add_item("Paste", ContextOption.PASTE)
+			
 			_popup.position = Vector2i(pos)
 			_popup.popup()
 		return
@@ -82,6 +87,7 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 	
 	var has_multiple: bool = _context_selected_paths.size() > 1
 	var is_protected: bool = is_item_protected(path)
+	var is_root: bool = path == root_path
 	
 	_popup.clear()
 	
@@ -106,14 +112,17 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 				var delete_text: String = "Delete %d items" % _context_selected_paths.size() if has_multiple else "Delete"
 				_popup.add_item(delete_text, ContextOption.DELETE)
 			
-			if not has_multiple and not is_protected:
+			if _context_selected_paths.size() > 0:
 				_popup.add_separator()
-				_popup.add_item("Cut", ContextOption.CUT)
-				_popup.add_item("Copy", ContextOption.COPY)
+				var cut_text: String = "Cut %d items" % _context_selected_paths.size() if has_multiple else "Cut"
+				var copy_text: String = "Copy %d items" % _context_selected_paths.size() if has_multiple else "Copy"
+				_popup.add_item(cut_text, ContextOption.CUT)
+				_popup.add_item(copy_text, ContextOption.COPY)
 	
-	if _clipboard_path != "" and not is_read_only and not has_multiple and not is_protected:
-		_popup.add_separator()
-		_popup.add_item("Paste", ContextOption.PASTE)
+	if _clipboard_path != "" and not is_read_only and not has_multiple:
+		if is_root or DirAccess.dir_exists_absolute(path):
+			_popup.add_separator()
+			_popup.add_item("Paste", ContextOption.PASTE)
 	
 	if _popup.item_count == 0:
 		return
@@ -139,26 +148,41 @@ func _on_popup_id_pressed(id: int) -> void:
 			if not paths.is_empty():
 				delete_requested.emit(paths)
 		ContextOption.CUT: 
-			if not is_item_protected(_context_path):
-				_cut(_context_path)
+			var paths: Array[String] = []
+			for path: String in _context_selected_paths:
+				if not is_item_protected(path):
+					paths.append(path)
+			if not paths.is_empty():
+				_cut(paths)
 		ContextOption.COPY: 
-			if not is_item_protected(_context_path):
-				_copy(_context_path)
+			var paths: Array[String] = []
+			for path: String in _context_selected_paths:
+				if not is_item_protected(path):
+					paths.append(path)
+			if not paths.is_empty():
+				_copy(paths)
 		ContextOption.PASTE: 
-			if not is_item_protected(_context_path):
-				paste_requested.emit(_context_path)
+			paste_requested.emit(_context_path)
 		ContextOption.ADD_FOLDER: 
 			_add_folder(_context_path)
 
 
-func _cut(path: String) -> void:
-	_clipboard_path = path
+func _cut(paths: Array[String]) -> void:
+	_clipboard_path = ""
 	_clipboard_is_cut = true
+	if paths.size() == 1:
+		_clipboard_path = paths[0]
+	else:
+		_clipboard_path = JSON.stringify(paths)
 
 
-func _copy(path: String) -> void:
-	_clipboard_path = path
+func _copy(paths: Array[String]) -> void:
+	_clipboard_path = ""
 	_clipboard_is_cut = false
+	if paths.size() == 1:
+		_clipboard_path = paths[0]
+	else:
+		_clipboard_path = JSON.stringify(paths)
 
 
 func _add_folder(path: String) -> void:
@@ -167,8 +191,19 @@ func _add_folder(path: String) -> void:
 
 
 func get_clipboard_info() -> Dictionary:
+	var paths: Array[String] = []
+	
+	if _clipboard_path.begins_with("["):
+		var parsed: Variant = JSON.parse_string(_clipboard_path)
+		if parsed is Array:
+			for item: Variant in parsed:
+				if item is String:
+					paths.append(item)
+	elif _clipboard_path != "":
+		paths.append(_clipboard_path)
+	
 	return {
-		"path": _clipboard_path,
+		"paths": paths,
 		"is_cut": _clipboard_is_cut
 	}
 
