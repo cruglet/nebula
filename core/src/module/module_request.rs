@@ -4,8 +4,8 @@ use godot::classes::{HttpRequest, RegEx};
 use godot::classes::{http_client::Method, object::ConnectFlags};
 use godot::global::bytes_to_var_with_objects;
 
-use crate::utils::git::Git;
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::git::Git;
+use crate::runtime::utils::singleton::Singleton;
 
 /// Handles fetching module metadata and preview images from remote repositories.
 ///

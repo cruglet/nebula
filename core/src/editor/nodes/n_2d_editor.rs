@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use godot::{classes::{control::{LayoutPreset, MouseFilter}, Control, Engine, IControl, Input, InputEvent, InputEventMagnifyGesture, InputEventMouseButton, InputEventMouseMotion, InputEventPanGesture, Panel, ShaderMaterial}, global::{Key, MouseButton}, meta::PropertyInfo, obj::{NewAlloc, WithBaseField}, prelude::*};
 use godot::global::MouseButtonMask;
 
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::singleton::Singleton;
 
 /// 2D editor editor control for Nebula.
 ///

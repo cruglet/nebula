@@ -1,8 +1,9 @@
 use godot::prelude::*;
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::singleton::Singleton;
 
-mod utils;
-mod nodes;
+pub mod runtime;
+pub mod editor;
+pub mod module;
 
 struct NebulaCore;
 

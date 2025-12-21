@@ -1,6 +1,6 @@
 use godot::{classes::{control::{LayoutPreset, SizeFlags}, notify::ControlNotification, tween::{EaseType, TransitionType}, CanvasLayer, ColorRect, Control, Engine, InputEventMouseButton, Label, MarginContainer, PanelContainer, ProgressBar, Shader, ShaderMaterial, Tween, VBoxContainer}, global::MouseButton, prelude::*};
 
-use crate::utils::module::Module;
+use crate::module::Module;
 
 /// Global singleton class that handles the global runtime of Nebula.
 #[derive(GodotClass)]

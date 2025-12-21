@@ -4,7 +4,7 @@ use godot::prelude::*;
 use godot::global::{Key, HorizontalAlignment, VerticalAlignment};
 use godot::classes::{Control, PanelContainer, IPanelContainer, MarginContainer, Tween, SceneTree, tween, InputEvent, InputEventKey, VBoxContainer, Label, Button, control::{FocusMode, SizeFlags}};
 
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::singleton::Singleton;
 
 #[derive(GodotConvert, Var, Export, Clone, Copy)]
 #[godot(via = i32)]

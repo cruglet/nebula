@@ -1,6 +1,6 @@
 use godot::{classes::{file_access::ModeFlags, DirAccess, DisplayServer, FileAccess, Window}, prelude::*};
 
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::singleton::Singleton;
 
 /// Manages core configuration settings for the application.
 ///

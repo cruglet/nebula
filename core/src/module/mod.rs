@@ -1,3 +1,5 @@
+pub mod module_request;
+
 use godot::prelude::*;
 use godot::classes::file_access::ModeFlags;
 use godot::classes::{DirAccess, FileAccess, PckPacker, ProjectSettings, Resource, ResourceUid, Os};

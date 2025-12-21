@@ -1,6 +1,6 @@
 use godot::prelude::*;
 
-use crate::utils::singleton::Singleton;
+use crate::runtime::utils::singleton::Singleton;
 
 /// Helper class for managing a project's settings & data.
 #[allow(dead_code)]
