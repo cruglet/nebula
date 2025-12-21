@@ -38,6 +38,7 @@ var _potential_drag_node: Node = null
 var _potential_drag_dock: NebulaEditorDock = null
 var _drag_start_pos: Vector2 = Vector2.ZERO
 var _hidden_docks_during_drag: Array[NebulaEditorDock] = []
+var _drag_indicators_shown: bool = false
 
 
 func _ready() -> void:
@@ -107,7 +108,7 @@ func _input(event: InputEvent) -> void:
 				var mouse_pos: Vector2 = get_global_mouse_position()
 				var target_dock: NebulaEditorDock = _get_dock_at_position(mouse_pos)
 				
-				if target_dock and target_dock != _dragging_from_dock and not target_dock.fixed:
+				if target_dock and target_dock != _dragging_from_dock and not target_dock.fixed and _drag_indicators_shown:
 					_dragging_from_dock.switch_dock(target_dock, _dragging_tab)
 				
 				_end_drag()
@@ -124,7 +125,22 @@ func _input(event: InputEvent) -> void:
 		
 		if _dragging_tab:
 			var mouse_pos: Vector2 = get_global_mouse_position()
-			_update_drop_indicators(mouse_pos)
+			_check_if_off_tabbar(mouse_pos)
+			if _drag_indicators_shown:
+				_update_drop_indicators(mouse_pos)
+
+
+func _check_if_off_tabbar(mouse_pos: Vector2) -> void:
+	if not _dragging_from_dock:
+		return
+	
+	var tab_bar: TabBar = _dragging_from_dock._tc.get_tab_bar()
+	var tab_bar_rect: Rect2 = Rect2(tab_bar.global_position, tab_bar.size)
+	var is_over_tabbar: bool = tab_bar_rect.has_point(mouse_pos)
+	
+	if not is_over_tabbar and not _drag_indicators_shown:
+		_show_all_dock_indicators()
+		_drag_indicators_shown = true
 
 
 func _get_dock_at_position(pos: Vector2) -> NebulaEditorDock:
@@ -218,12 +234,13 @@ func _start_drag(node: Node, dock: NebulaEditorDock) -> void:
 	_dragging_from_dock = dock
 	_potential_drag_node = null
 	_potential_drag_dock = null
-	_show_all_dock_indicators()
+	_drag_indicators_shown = false
 
 
 func _end_drag() -> void:
 	_dragging_tab = null
 	_dragging_from_dock = null
+	_drag_indicators_shown = false
 	_clear_drop_indicators()
 	mouse_default_cursor_shape = Control.CURSOR_ARROW
 	
@@ -244,7 +261,7 @@ class NebulaEditorDock:
 	
 	var auto_close_tabs: bool = true
 	var hide_tabs_on_hidden: bool = true
-	var hide_on_empty: bool = false
+	var hide_on_empty: bool = true
 	var tab_close_display_policy: TabBar.CloseButtonDisplayPolicy = TabBar.CLOSE_BUTTON_SHOW_NEVER
 	var fixed: bool = false
 	
