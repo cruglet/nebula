@@ -4,6 +4,7 @@ use crate::runtime::utils::singleton::Singleton;
 pub mod runtime;
 pub mod editor;
 pub mod module;
+pub mod io;
 
 struct NebulaCore;
 
