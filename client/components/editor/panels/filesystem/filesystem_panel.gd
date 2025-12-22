@@ -1,4 +1,4 @@
-class_name NebulaFilesystemDock
+class_name NebulaFilesystemPanel
 extends Panel
 
 signal file_open_request(path: String)

@@ -4,10 +4,10 @@ extends Node
 signal action_performed()
 
 var _undo_redo: UndoRedo = UndoRedo.new()
-var _filesystem_dock: NebulaFilesystemDock
+var _filesystem_dock: NebulaFilesystemPanel
 
 
-func _init(dock: NebulaFilesystemDock) -> void:
+func _init(dock: NebulaFilesystemPanel) -> void:
 	_filesystem_dock = dock
 
 
