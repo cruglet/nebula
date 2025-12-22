@@ -1,4 +1,4 @@
-use std::{fs::{File, OpenOptions}, io::{Read, Seek, SeekFrom, Write}, sync::{Mutex, RwLock}};
+use std::{fs::{File, OpenOptions}, io::{Read, Seek, SeekFrom, Write}, sync::{Arc, Mutex, RwLock}};
 
 pub trait ByteSource: Send + Sync {
     fn len(&self) -> u64;
@@ -8,12 +8,9 @@ pub trait ByteSource: Send + Sync {
 
 
 
-
 pub struct MemoryByteSource {
     data: RwLock<Vec<u8>>,
 }
-
-
 impl MemoryByteSource {
     pub fn new() -> Self {
         Self {
@@ -27,7 +24,6 @@ impl MemoryByteSource {
         }
     }
 }
-
 impl ByteSource for MemoryByteSource {
     fn read_range(&self, offset: u64, size: usize) -> std::io::Result<Vec<u8>> {
         let data = self.data.read().unwrap();
@@ -61,13 +57,10 @@ impl ByteSource for MemoryByteSource {
 }
 
 
-
-
 pub struct DiskFileSource {
     file: Mutex<File>,
     size: u64,
 }
-
 impl DiskFileSource {
     pub fn new(path: &str) -> std::io::Result<Self> {
         let mut file = OpenOptions::new()
@@ -84,7 +77,6 @@ impl DiskFileSource {
         })
     }
 }
-
 impl ByteSource for DiskFileSource {
     fn len(&self) -> u64 { self.size }
     
@@ -103,5 +95,47 @@ impl ByteSource for DiskFileSource {
         file.write_all(data)?;
         file.flush()?;
         Ok(())
+    }
+}
+
+
+pub struct SubrangeSource {
+    parent: Arc<dyn ByteSource>,
+    offset: u64,
+    size: u64,
+}
+impl SubrangeSource {
+    pub fn new(parent: Arc<dyn ByteSource>, offset: u64, size: u64) -> Self {
+        Self { parent, offset, size }
+    }
+}
+impl ByteSource for SubrangeSource {
+    fn len(&self) -> u64 {
+        self.size
+    }
+
+    fn read_range(&self, offset: u64, size: usize) -> std::io::Result<Vec<u8>> {
+        if offset >= self.size {
+            return Ok(Vec::new());
+        }
+
+        let max_size = (self.size - offset) as usize;
+        let clamped = size.min(max_size);
+
+        self.parent.read_range(self.offset + offset, clamped)
+    }
+
+    fn write_range(&self, offset: u64, data: &[u8]) -> std::io::Result<()> {
+        if offset >= self.size {
+            return Ok(());
+        }
+
+        let max_size = (self.size - offset) as usize;
+        let clamped = data.len().min(max_size);
+
+        self.parent.write_range(
+            self.offset + offset,
+            &data[..clamped],
+        )
     }
 }

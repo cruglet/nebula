@@ -456,13 +456,29 @@ impl NebulaBuffer {
     ///     - `2b` -> 2 signed bytes
     ///     - `3f` -> 3 floats
     ///   - Padding can also be repeated: `4x` skips 4 bytes.
-    /// [br]
-    /// - **Example**:
+    /// [br][br]
+    /// **Example**:
     /// ```gdscript
+    /// # Binary layout (little-endian):
+    /// # offset 0: u32   magic
+    /// # offset 4: u16   version
+    /// # offset 6: u8    flags
+    /// # offset 7: pad   (1 byte)
+    /// # offset 8: f32   position_x
+    /// # offset 12: f32  position_y
+    /// 
     /// var buf = NebulaBuffer.from_file("res://data.bin")
-    /// # Reads 5 * u8, 2 * i8, 1 * u16, 3 * f32
-    /// var values = buf.unpack("5Bx2bH3f")
+    /// 
+    /// var values = buf.unpack("<IHBx2f")
+    /// 
+    /// var magic = values[0] # u32
+    /// var version = values[1] # u16
+    /// var flags = values[2] # u8
+    /// var position_x = values[3] # f32
+    /// var position_y = values[4] # f32
     /// ```
+    /// The buffer cursor is advanced by 16 bytes total:
+    /// `4 + 2 + 1 + 1 (padding) + 4 + 4`.
     /// - Advances the buffer cursor automatically for all types, including padding.
     /// - Returns an `Array` containing the unpacked values in order.
     /// - Any unknown format character will log an error and stop unpacking.
@@ -518,59 +534,131 @@ impl NebulaBuffer {
         out
     }
 
-
-    #[func] pub fn store_u8(&mut self, value: u8) { self.write_u8_impl(value); }
-    #[func] pub fn store_i8(&mut self, value: i8) { self.write_u8_impl(value as u8); }
-
-    #[func] pub fn store_u16(&mut self, value: u16) {
-        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
-        self.write_bytes_impl(&bytes);
-    }
-
-    #[func] pub fn store_i16(&mut self, value: i16) { self.store_u16(value as u16); }
-
-    #[func] pub fn store_u32(&mut self, value: u32) {
-        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
-        self.write_bytes_impl(&bytes);
-    }
-
-    #[func] pub fn store_i32(&mut self, value: i32) { self.store_u32(value as u32); }
-
-    #[func] pub fn store_u64(&mut self, value: u64) {
-        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
-        self.write_bytes_impl(&bytes);
-    }
-
-    #[func] pub fn store_i64(&mut self, value: i64) { self.store_u64(value as u64); }
-
-    #[func] pub fn store_f32(&mut self, value: f32) { self.store_u32(value.to_bits()); }
-    #[func] pub fn store_f64(&mut self, value: f64) { self.store_u64(value.to_bits()); }
+    #[func] 
+    /// Writes an unsigned byte at the current cursor position
+    /// and advances the cursor.
+    pub fn store_u8(&mut self, value: u8) { self.write_u8_impl(value); }
+    
+    #[func]
+    /// Writes a signed byte at the current cursor position
+    /// and advances the cursor.
+    pub fn store_i8(&mut self, value: i8) { self.write_u8_impl(value as u8); }
 
     #[func]
-    pub fn store_string_ascii(&mut self, s: GString) {
+    /// Writes a 16-bit unsigned integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_u16(&mut self, value: u16) {
+        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
+        self.write_bytes_impl(&bytes);
+    }
+
+    #[func]
+    /// Writes a 16-bit signed integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_i16(&mut self, value: i16) { self.store_u16(value as u16); }
+
+    #[func]
+    /// Writes a 32-bit unsigned integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_u32(&mut self, value: u32) {
+        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
+        self.write_bytes_impl(&bytes);
+    }
+
+    #[func]
+    /// Writes a 32-bit signed integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_i32(&mut self, value: i32) { self.store_u32(value as u32); }
+
+    #[func]
+    /// Writes a 64-bit unsigned integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_u64(&mut self, value: u64) {
+        let bytes = if self.big_endian { value.to_be_bytes() } else { value.to_le_bytes() };
+        self.write_bytes_impl(&bytes);
+    }
+
+    #[func]
+    /// Writes a 64-bit signed integer using the current endianness
+    /// and advances the cursor.
+    pub fn store_i64(&mut self, value: i64) { self.store_u64(value as u64); }
+
+    #[func]
+    /// Writes a 32-bit floating-point number and advances the cursor.
+    pub fn store_f32(&mut self, value: f32) { self.store_u32(value.to_bits()); }
+
+    #[func]
+    /// Writes a 64-bit floating-point number and advances the cursor.
+    pub fn store_f64(&mut self, value: f64) { self.store_u64(value.to_bits()); }
+
+    #[func]
+    /// Writes an ASCII string to the buffer and advances the cursor.
+    ///
+    /// If `escape` is `true`, a null terminator (`\0`) is written after
+    /// the string.  
+    /// If `escape` is `false` (default), no terminator is written.
+    ///
+    /// This method does not perform any character validation; bytes are
+    /// written exactly as provided by the string.
+    pub fn store_string_ascii(
+        &mut self,
+        s: GString,
+        #[opt(default = false)] escape: bool,
+    ) {
         let s_str = s.to_string();
         let bytes = s_str.as_bytes();
         self.write_bytes_impl(bytes);
-        self.write_u8_impl(0);
+        if escape {
+            self.write_u8_impl(0);
+        }
     }
 
+
     #[func]
-    pub fn store_string_utf8(&mut self, s: GString) {
+    /// Writes a UTF-8 encoded string to the buffer and advances the cursor.
+    ///
+    /// If `escape` is `true`, a null terminator (`\0`) is written after
+    /// the string.  
+    /// If `escape` is `false` (default), no terminator is written.
+    ///
+    /// The string is written as raw UTF-8 bytes.
+    pub fn store_string_utf8(
+        &mut self,
+        s: GString,
+        #[opt(default = false)] escape: bool,
+    ) {
         let s_str = s.to_string();
         let bytes = s_str.as_bytes();
         self.write_bytes_impl(bytes);
-        self.write_u8_impl(0);
+        if escape {
+            self.write_u8_impl(0);
+        }
     }
 
-    #[func]
-    pub fn store_string_utf16(&mut self, s: GString) {
+
+   #[func]
+    /// Writes a UTF-16 encoded string to the buffer and advances the cursor.
+    ///
+    /// Each UTF-16 code unit is written using the current endianness.
+    ///
+    /// If `escape` is `true`, a UTF-16 null terminator (`0x0000`) is written
+    /// after the string.  
+    /// If `escape` is `false` (default), no terminator is written.
+    pub fn store_string_utf16(
+        &mut self,
+        s: GString,
+        #[opt(default = false)] escape: bool,
+    ) {
         let s_str = s.to_string();
         let units: Vec<u16> = s_str.encode_utf16().collect();
         for u in units {
             self.store_u16(u);
         }
-        self.store_u16(0);
+        if escape {
+            self.store_u16(0);
+        }
     }
+
 
 
     #[func]
@@ -581,7 +669,7 @@ impl NebulaBuffer {
 
     #[func]
     /// Packs multiple values into the buffer according to a format string.
-    /// Format codes are the same as [method unpack], but values are taken from the input [VarArray].
+    /// Format codes are the same as [method unpack], but values are taken from the input [Array].
     pub fn pack(&mut self, format: GString, values: VarArray) {
         let fmt = format.to_string();
         let mut chars = fmt.chars().peekable();
