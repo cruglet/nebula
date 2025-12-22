@@ -1,1 +1,1 @@
-cargo build --target-dir ..\client\bin
+cargo build --target-dir ..\bin

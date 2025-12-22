@@ -15,7 +15,7 @@ client/.godot/
 client/.mono/metadata/
 client/*.mono
 
-client/bin/
+bin/
 
 client/*.godot
 client/*.tmp
