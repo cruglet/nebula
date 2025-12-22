@@ -1,6 +1,6 @@
 use godot::{classes::ProjectSettings, prelude::*};
 use std::{ops::Range, sync::Arc};
-use crate::io::bytesource::{ByteSource, DiskFileSource};
+use crate::io::bytesource::{ByteSource, DiskFileSource, MemoryByteSource};
 
 type BoxedByteSource = Arc<dyn ByteSource + Send + Sync + 'static>;
 
@@ -14,7 +14,7 @@ type BoxedByteSource = Arc<dyn ByteSource + Send + Sync + 'static>;
 pub struct NebulaBuffer {
     #[var] 
     /// Determines the endianness used for multi-byte reads.
-    /// `false` = little-endian, `true` = big-endian.
+    /// `false` = little-endian (Default), `true` = big-endian.
     big_endian: bool,
 
     offset: usize,
@@ -28,11 +28,13 @@ pub struct NebulaBuffer {
 #[godot_api]
 impl IRefCounted for NebulaBuffer {
     fn init(base: Base<RefCounted>) -> Self {
+        let memory_source = Arc::new(MemoryByteSource::new()) as BoxedByteSource;
+
         Self {
             big_endian: false,
             offset: 0,
-            source: None,
-            range: 0..0,
+            source: Some(memory_source.clone()),
+            range: 0..memory_source.len(),
             base,
         }
     }
@@ -139,6 +141,12 @@ impl NebulaBuffer {
     /// Returns the current buffer offset.
     pub fn get_offset(&self) -> i32 {
         self.offset as i32
+    }
+
+    #[func]
+    /// Returns `true` if the cursor has reached the end of the buffer.
+    pub fn at_end(&self) -> bool {
+        self.abs_pos() >= self.range.end
     }
 
     #[func]
