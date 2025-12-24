@@ -454,7 +454,9 @@ impl Clone for WbfsFs {
     }
 }
 
+
 #[derive(GodotClass)]
+/// Class used to instantiate and work with files using the Wii Backup Filesystem format (wbfs).
 #[class(base=RefCounted)]
 pub struct WBFS {
     #[base]
@@ -472,6 +474,8 @@ impl IRefCounted for WBFS {
 #[godot_api]
 impl WBFS {
     #[func]
+    /// Opens a WBFS file from the given path and returns a `WBFS` instance.
+    /// Logs an error and returns `null` if the file cannot be opened or is invalid.
     pub fn open(path: GString) -> Option<Gd<WBFS>> {
         let path = ProjectSettings::singleton().globalize_path(&path).to_string();
         let disk = match DiskFileSource::new(&path) {
@@ -497,6 +501,14 @@ impl WBFS {
     }
 
     #[func]
+    /// Returns `true` if this WBFS instance contains a valid disc and filesystem data.
+    /// Returns `false` if the WBFS instance was not successfully loaded or is empty.
+    pub fn is_valid(&self) -> bool {
+        self.fs.is_some()
+    }
+
+    #[func]
+    /// Returns the root directory of the WBFS file as a [NebulaDir].
     pub fn to_dir(&self) -> Gd<NebulaDir> {
         match &self.fs {
             Some(fs) => NebulaDir::new(fs.clone(), String::new()),
@@ -505,6 +517,7 @@ impl WBFS {
     }
 
     #[func]
+    /// Returns the full name of the game contained in this WBFS file.
     pub fn get_name(&self) -> GString {
         match &self.fs {
             Some(fs) => fs.get_name().to_godot(),
@@ -513,10 +526,127 @@ impl WBFS {
     }
 
     #[func]
+    /// Returns the disc ID of the game (e.g., `RM8E01`).
     pub fn get_id(&self) -> GString {
         match &self.fs {
             Some(fs) => fs.get_id().to_godot(),
             None => GString::new(),
         }
+    }
+
+    #[func]
+    /// Returns the universal ID of the disc, where the region character is replaced with `x`.
+    pub fn get_universal_id(&self) -> GString {
+        let Some(fs) = &self.fs else {
+            return GString::new();
+        };
+
+        let mut id = fs.get_id().to_string();
+        if id.len() >= 4 {
+            id.replace_range(3..4, "x");
+        }
+
+        id.to_godot()
+    }
+
+    #[func]
+    /// Returns the region code of the disc as a single character string.
+    ///
+    /// The region codes are as follows:
+    /// - `D` => German
+    /// - `E` => USA
+    /// - `F` => France
+    /// - `I` => Italy
+    /// - `J` => Japan
+    /// - `K` => Korea
+    /// - `P` => PAL
+    /// - `R` => Russia
+    /// - `S` => Spanish
+    /// - `T` => Taiwan
+    /// - `U` => Australia
+    /// - `X` => Unknown or invalid
+    ///
+    /// Returns `X` if the WBFS instance is invalid or the disc ID is too short.
+    pub fn get_region_code(&self) -> GString {
+        let Some(fs) = &self.fs else {
+            return "X".to_godot();
+        };
+
+        let id = fs.get_id();
+        if id.len() < 4 {
+            return "X".to_godot();
+        }
+
+        let region_char = id.chars().nth(3).unwrap_or('X');
+        region_char.to_string().to_godot()
+    }
+
+
+    #[func]
+    /// Returns the full name of the disc region (e.g., "USA").
+    /// Returns "Unknown" if the region is invalid.
+    pub fn get_region_string(&self) -> GString {
+        match self.get_region_code().to_string().as_str() {
+            "D" => "German",
+            "E" => "USA",
+            "F" => "France",
+            "I" => "Italy",
+            "J" => "Japan",
+            "K" => "Korea",
+            "P" => "PAL",
+            "R" => "Russia",
+            "S" => "Spanish",
+            "T" => "Taiwan",
+            "U" => "Australia",
+            _ => "Unknown",
+        }
+        .to_godot()
+    }
+
+    #[func]
+    /// Returns the disc number (for multi-disc games) as an integer.
+    /// Returns 0 if invalid or unavailable.
+    pub fn get_disc_number(&self) -> i32 {
+        let Some(fs) = &self.fs else {
+            return 0;
+        };
+
+        let id = fs.get_id();
+        if id.len() < 6 {
+            return 0;
+        }
+
+        match id.chars().nth(5) {
+            Some(c) if c.is_ascii_digit() => c.to_digit(10).unwrap_or(0) as i32,
+            _ => 0,
+        }
+    }
+
+    #[func]
+    /// Returns the total size of all files in the WBFS disc in bytes.
+    pub fn get_used_size(&self) -> i64 {
+        let Some(fs) = &self.fs else {
+            return 0;
+        };
+
+        fs.filesystem.values()
+            .map(|entry| entry.size as i64)
+            .sum()
+    }
+
+    #[func]
+    /// Returns the 2-character publisher code from the disc ID (e.g., "RM").
+    /// Returns an empty string if the ID is too short.
+    pub fn get_publisher_code(&self) -> GString {
+        let Some(fs) = &self.fs else {
+            return GString::new();
+        };
+
+        let id = fs.get_id();
+        if id.len() < 2 {
+            return GString::new();
+        }
+
+        id.chars().take(2).collect::<String>().to_godot()
     }
 }
