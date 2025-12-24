@@ -20,11 +20,11 @@ signal paste_requested(target_path: String)
 var _popup: PopupMenu
 var _context_path: String = ""
 var _context_selected_paths: Array[String] = []
-var _clipboard_path: String = ""
+var _clipboard_paths: Array[String] = []
 var _clipboard_is_cut: bool = false
 
 var is_read_only: bool = false
-var root_path: String = ""
+var root_dir: NebulaDir = null
 
 
 func _ready() -> void:
@@ -56,17 +56,19 @@ func _on_tree_gui_input(event: InputEvent) -> void:
 			tree.accept_event()
 
 
-
 func _show_menu(item: TreeItem, pos: Vector2) -> void:
+	if not root_dir:
+		return
+	
 	_context_selected_paths.clear()
 	
 	if item == null:
-		_context_path = root_path
+		_context_path = root_dir.get_path()
 		if not is_read_only:
 			_popup.clear()
 			_popup.add_item("Add Folder", ContextOption.ADD_FOLDER)
 			
-			if _clipboard_path != "":
+			if not _clipboard_paths.is_empty():
 				_popup.add_separator()
 				_popup.add_item("Paste", ContextOption.PASTE)
 			
@@ -87,7 +89,7 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 	
 	var has_multiple: bool = _context_selected_paths.size() > 1
 	var is_protected: bool = is_item_protected(path)
-	var is_root: bool = path == root_path
+	var is_root: bool = path == root_dir.get_path()
 	
 	_popup.clear()
 	
@@ -119,8 +121,8 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 				_popup.add_item(cut_text, ContextOption.CUT)
 				_popup.add_item(copy_text, ContextOption.COPY)
 	
-	if _clipboard_path != "" and not is_read_only and not has_multiple:
-		if is_root or DirAccess.dir_exists_absolute(path):
+	if not _clipboard_paths.is_empty() and not is_read_only and not has_multiple:
+		if is_root or root_dir.dir_exists(path):
 			_popup.add_separator()
 			_popup.add_item("Paste", ContextOption.PASTE)
 	
@@ -128,7 +130,6 @@ func _show_menu(item: TreeItem, pos: Vector2) -> void:
 		return
 	
 	_popup.position = Vector2i(pos)
-	
 	_popup.popup()
 
 
@@ -168,53 +169,39 @@ func _on_popup_id_pressed(id: int) -> void:
 
 
 func _cut(paths: Array[String]) -> void:
-	_clipboard_path = ""
+	_clipboard_paths = paths.duplicate()
 	_clipboard_is_cut = true
-	if paths.size() == 1:
-		_clipboard_path = paths[0]
-	else:
-		_clipboard_path = JSON.stringify(paths)
 
 
 func _copy(paths: Array[String]) -> void:
-	_clipboard_path = ""
+	_clipboard_paths = paths.duplicate()
 	_clipboard_is_cut = false
-	if paths.size() == 1:
-		_clipboard_path = paths[0]
-	else:
-		_clipboard_path = JSON.stringify(paths)
 
 
 func _add_folder(path: String) -> void:
-	var parent_dir: String = path if DirAccess.dir_exists_absolute(path) else path.get_base_dir()
+	if not root_dir:
+		return
+	
+	var parent_dir: String = path if root_dir.dir_exists(path) else path.get_base_dir()
 	add_folder_requested.emit(parent_dir)
 
 
 func get_clipboard_info() -> Dictionary:
-	var paths: Array[String] = []
-	
-	if _clipboard_path.begins_with("["):
-		var parsed: Variant = JSON.parse_string(_clipboard_path)
-		if parsed is Array:
-			for item: Variant in parsed:
-				if item is String:
-					paths.append(item)
-	elif _clipboard_path != "":
-		paths.append(_clipboard_path)
-	
 	return {
-		"paths": paths,
+		"paths": _clipboard_paths,
 		"is_cut": _clipboard_is_cut
 	}
 
 
 func clear_clipboard() -> void:
-	_clipboard_path = ""
+	_clipboard_paths.clear()
 	_clipboard_is_cut = false
 
 
 func is_item_protected(path: String) -> bool:
-	return path == root_path or path.get_extension() in Nebula.get_reserved_extensions()
+	if not root_dir:
+		return true
+	return path == root_dir.get_path() or path.get_extension() in Nebula.get_reserved_extensions()
 
 
 func _get_selected_items() -> Array:

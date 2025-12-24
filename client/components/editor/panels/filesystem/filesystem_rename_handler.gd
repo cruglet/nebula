@@ -17,6 +17,7 @@ enum Mode { RENAME_FILE, RENAME_FOLDER, CREATE_FOLDER }
 
 var _current_mode: Mode
 var _target_path: String = ""
+var root_dir: NebulaDir = null
 
 
 func _ready() -> void:
@@ -86,6 +87,17 @@ func _reset_validation() -> void:
 	confirm_button.disabled = false
 
 
+func _get_relative_path(absolute_path: String) -> String:
+	if not root_dir:
+		return absolute_path
+	var root_path: String = root_dir.get_path()
+	if absolute_path.begins_with(root_path + "/"):
+		return absolute_path.substr(root_path.length() + 1)
+	elif absolute_path == root_path:
+		return ""
+	return absolute_path
+
+
 func _on_confirmed() -> void:
 	match _current_mode:
 		Mode.RENAME_FILE:
@@ -97,6 +109,9 @@ func _on_confirmed() -> void:
 
 
 func _handle_rename_file() -> void:
+	if not root_dir:
+		return
+	
 	var filename: String = line_edit.text if line_edit.text else line_edit.placeholder_text
 	var extension: String = extension_edit.text if extension_edit.text else extension_edit.placeholder_text
 	
@@ -108,17 +123,19 @@ func _handle_rename_file() -> void:
 	var new_filename: String = "%s.%s" % [filename, extension]
 	var new_path: String = _target_path.get_base_dir().path_join(new_filename)
 	
-	if new_path != _target_path and (FileAccess.file_exists(new_path) or DirAccess.dir_exists_absolute(new_path)):
+	var rel_target: String = _get_relative_path(_target_path)
+	var rel_new: String = _get_relative_path(new_path)
+	
+	if new_path != _target_path and (root_dir.file_exists(rel_new) or root_dir.dir_exists(rel_new)):
 		_show_error("A file or folder with that name already exists")
 		return
 	
-	if not FileAccess.file_exists(_target_path):
+	if not root_dir.file_exists(rel_target):
 		_show_error("Source file no longer exists")
 		return
 	
-	var error: int = DirAccess.rename_absolute(_target_path, new_path)
-	if error != OK:
-		_show_error("Failed to rename: Error code %d" % error)
+	if not root_dir.rename_path(rel_target, rel_new):
+		_show_error("Failed to rename file")
 		return
 	
 	file_renamed.emit(_target_path, new_path)
@@ -126,6 +143,9 @@ func _handle_rename_file() -> void:
 
 
 func _handle_rename_folder() -> void:
+	if not root_dir:
+		return
+	
 	var foldername: String = line_edit.text if line_edit.text else line_edit.placeholder_text
 	
 	var validation: Dictionary = _validate_filename(foldername, "")
@@ -135,17 +155,19 @@ func _handle_rename_folder() -> void:
 	
 	var new_path: String = _target_path.get_base_dir().path_join(foldername)
 	
-	if new_path != _target_path and DirAccess.dir_exists_absolute(new_path):
+	var rel_target: String = _get_relative_path(_target_path)
+	var rel_new: String = _get_relative_path(new_path)
+	
+	if new_path != _target_path and root_dir.dir_exists(rel_new):
 		_show_error("A folder with that name already exists")
 		return
 	
-	if not DirAccess.dir_exists_absolute(_target_path):
+	if not root_dir.dir_exists(rel_target):
 		_show_error("Source folder no longer exists")
 		return
 	
-	var error: int = DirAccess.rename_absolute(_target_path, new_path)
-	if error != OK:
-		_show_error("Failed to rename: Error code %d" % error)
+	if not root_dir.rename_path(rel_target, rel_new):
+		_show_error("Failed to rename folder")
 		return
 	
 	if tree_handler:
@@ -156,6 +178,9 @@ func _handle_rename_folder() -> void:
 
 
 func _handle_create_folder() -> void:
+	if not root_dir:
+		return
+	
 	var foldername: String = line_edit.text if line_edit.text else line_edit.placeholder_text
 	
 	var validation: Dictionary = _validate_filename(foldername, "")
@@ -164,14 +189,14 @@ func _handle_create_folder() -> void:
 		return
 	
 	var new_path: String = _target_path.path_join(foldername)
+	var rel_new: String = _get_relative_path(new_path)
 	
-	if DirAccess.dir_exists_absolute(new_path):
+	if root_dir.dir_exists(rel_new):
 		_show_error("A folder with that name already exists")
 		return
 	
-	var error: int = DirAccess.make_dir_absolute(new_path)
-	if error != OK:
-		_show_error("Failed to create folder: Error code %d" % error)
+	if not root_dir.create_dir(rel_new):
+		_show_error("Failed to create folder")
 		return
 	
 	folder_created.emit(new_path)
@@ -194,6 +219,9 @@ func _validate_filename(filename: String, extension: String) -> Dictionary:
 
 
 func _on_text_changed(_new_text: String) -> void:
+	if not root_dir:
+		return
+	
 	var filename: String = line_edit.text if line_edit.text else line_edit.placeholder_text
 	var extension: String = ""
 	
@@ -210,11 +238,14 @@ func _on_text_changed(_new_text: String) -> void:
 	var base_dir: String = _target_path.get_base_dir() if _current_mode != Mode.CREATE_FOLDER else _target_path
 	var new_path: String = base_dir.path_join(new_name)
 	
-	if _current_mode != Mode.CREATE_FOLDER and new_path != _target_path and (FileAccess.file_exists(new_path) or DirAccess.dir_exists_absolute(new_path)):
+	var rel_target: String = _get_relative_path(_target_path)
+	var rel_new: String = _get_relative_path(new_path)
+	
+	if _current_mode != Mode.CREATE_FOLDER and new_path != _target_path and (root_dir.file_exists(rel_new) or root_dir.dir_exists(rel_new)):
 		_show_error("A file or folder with that name already exists")
 		return
 	
-	if _current_mode == Mode.CREATE_FOLDER and DirAccess.dir_exists_absolute(new_path):
+	if _current_mode == Mode.CREATE_FOLDER and root_dir.dir_exists(rel_new):
 		_show_error("A folder with that name already exists")
 		return
 	

@@ -1,7 +1,7 @@
 class_name NebulaFilesystemPanel
 extends Panel
 
-signal file_open_request(path: String)
+signal file_open_request(path: String, file: NebulaFile)
 signal file_renamed(original_path: String, new_path: String)
 
 @export_group("Internal")
@@ -17,14 +17,26 @@ signal file_renamed(original_path: String, new_path: String)
 @export var delete_dialog: NebulaWindow
 @export var delete_label: RichTextLabel
 
-var root: String = "":
+var root_dir: NebulaDir = null:
 	set(r):
-		root = r
+		root_dir = r
 		if tree_handler:
-			tree_handler.root_path = r
-			tree_handler.set_root(r)
+			tree_handler.root_dir = r
+			tree_handler.set_root_from_dir(r)
+			if filesystem_tree:
+				var root_item: TreeItem = filesystem_tree.get_root()
+				if root_item:
+					_collapse_all_children(root_item)
 		if context_handler:
-			context_handler.root_path = r
+			context_handler.root_dir = r
+		if rename_dialog_handler:
+			rename_dialog_handler.root_dir = r
+
+
+var read_only: bool = false:
+	set(value):
+		read_only = value
+		_update_read_only_state()
 
 var _pending_delete_path: String = ""
 var _pending_delete_paths: Array[String] = []
@@ -37,10 +49,11 @@ func _ready() -> void:
 	_connect_signals()
 	
 	focus_mode = Control.FOCUS_CLICK
+	_update_read_only_state()
 
 
 func _input(event: InputEvent) -> void:
-	if not has_focus():
+	if not has_focus() or read_only:
 		return
 	
 	if event.is_action_pressed("ui_copy") or event.is_action_pressed("copy"):
@@ -62,7 +75,8 @@ func _notification(what: int) -> void:
 func _connect_signals() -> void:
 	if tree_handler:
 		tree_handler.item_activated.connect(_on_item_activated)
-		tree_handler.drag_drop_completed.connect(_on_drag_drop_completed)
+		if not read_only:
+			tree_handler.drag_drop_completed.connect(_on_drag_drop_completed)
 	
 	if context_handler:
 		context_handler.rename_requested.connect(_on_rename_requested)
@@ -81,6 +95,13 @@ func _connect_signals() -> void:
 		filesystem_tree.focus_entered.connect(_on_tree_focus_entered)
 
 
+func _update_read_only_state() -> void:
+	if tree_handler:
+		tree_handler.is_read_only = read_only
+	if context_handler:
+		context_handler.is_read_only = read_only
+
+
 func _on_tree_focus_entered() -> void:
 	grab_focus()
 
@@ -95,23 +116,34 @@ func _notify_file_renamed(original_path: String, new_path: String) -> void:
 
 
 func _on_item_activated(path: String, is_directory: bool) -> void:
-	if not is_directory:
-		file_open_request.emit(path)
+	if not is_directory and root_dir:
+		var file: NebulaFile = root_dir.get_file(path)
+		if file:
+			file_open_request.emit(path, file)
 
 
 func _on_drag_drop_completed(source_path: String, target_path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	_undo_redo.add_drag_drop_action(source_path, target_path)
 	file_renamed.emit(source_path, target_path)
 
 
 func _on_rename_requested(path: String) -> void:
-	if DirAccess.dir_exists_absolute(path):
+	if read_only or not root_dir:
+		return
+	
+	if root_dir.dir_exists(path):
 		rename_dialog_handler.show_rename_folder(path)
 	else:
 		rename_dialog_handler.show_rename_file(path)
 
 
 func _on_delete_requested(paths: Array[String]) -> void:
+	if read_only or not root_dir:
+		return
+	
 	_pending_delete_paths = paths
 	_pending_delete_path = ""
 	
@@ -122,11 +154,13 @@ func _on_delete_requested(paths: Array[String]) -> void:
 		delete_dialog.set_header_text("Delete Multiple Items")
 	else:
 		var path: String = paths[0]
-		var is_dir: bool = DirAccess.dir_exists_absolute(path)
+		var is_dir: bool = root_dir.dir_exists(path)
 		delete_label.text = "Are you sure you want to delete \"%s\"?" % path.get_file()
 		
-		if is_dir and DirAccess.get_files_at(path).size() > 0:
-			delete_label.text += "\n\n[i](All content in this folder will also be deleted!)[/i]"
+		if is_dir:
+			var dir: NebulaDir = root_dir.get_dir(path)
+			if dir and dir.get_files().size() > 0:
+				delete_label.text += "\n\n[i](All content in this folder will also be deleted!)[/i]"
 		
 		delete_dialog.set_header_text("Delete %s" % ("Folder" if is_dir else "File"))
 	
@@ -134,10 +168,16 @@ func _on_delete_requested(paths: Array[String]) -> void:
 
 
 func _on_add_folder_requested(parent_path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	rename_dialog_handler.show_create_folder(parent_path)
 
 
 func _on_paste_requested(target_path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	_perform_paste(target_path)
 
 
@@ -157,6 +197,9 @@ func _handle_copy_action() -> void:
 
 
 func _handle_cut_action() -> void:
+	if read_only:
+		return
+	
 	var selected_items: Array = _get_selected_tree_items()
 	if selected_items.is_empty():
 		return
@@ -172,8 +215,11 @@ func _handle_cut_action() -> void:
 
 
 func _handle_paste_action() -> void:
+	if read_only or not root_dir:
+		return
+	
 	var selected_items: Array = _get_selected_tree_items()
-	var target_path: String = root
+	var target_path: String = ""
 	
 	if not selected_items.is_empty():
 		target_path = selected_items[0].get_metadata(0)
@@ -201,6 +247,9 @@ func _collect_selected_tree_items(item: TreeItem, selected: Array) -> void:
 
 
 func _perform_paste(target_path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	var clipboard: Dictionary = context_handler.get_clipboard_info()
 	if not clipboard.has("paths"):
 		return
@@ -208,12 +257,11 @@ func _perform_paste(target_path: String) -> void:
 	var source_paths: Array = clipboard.paths
 	var is_cut: bool = clipboard.is_cut
 	
-	
 	if source_paths.is_empty():
 		return
 	
 	var target_dir: String = target_path
-	if not DirAccess.dir_exists_absolute(target_path):
+	if not root_dir.dir_exists(target_path):
 		target_dir = target_path.get_base_dir()
 	
 	for source_path: String in source_paths:
@@ -230,16 +278,13 @@ func _perform_paste(target_path: String) -> void:
 		new_path = _get_unique_path(new_path)
 		
 		if is_cut:
-			var dir: DirAccess = DirAccess.open(source_path.get_base_dir())
-			if dir:
-				var error: int = dir.rename(source_path, new_path)
-				if error == OK:
-					_undo_redo.add_paste_action(source_path, new_path, true)
-					file_renamed.emit(source_path, new_path)
-				else:
-					push_error("Failed to move: Error %d" % error)
+			if root_dir.rename_path(source_path, new_path):
+				_undo_redo.add_paste_action(source_path, new_path, true)
+				file_renamed.emit(source_path, new_path)
+			else:
+				push_error("Failed to move: " + source_path)
 		else:
-			if DirAccess.dir_exists_absolute(source_path):
+			if root_dir.dir_exists(source_path):
 				_copy_directory(source_path, new_path)
 			else:
 				_copy_file(source_path, new_path)
@@ -253,17 +298,26 @@ func _perform_paste(target_path: String) -> void:
 
 
 func _on_file_renamed(original_path: String, new_path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	_undo_redo.add_rename_action(original_path, new_path)
 	file_renamed.emit(original_path, new_path)
 	refresh()
 
 
 func _on_folder_created(path: String) -> void:
+	if read_only or not root_dir:
+		return
+	
 	_undo_redo.add_create_folder_action(path)
 	refresh()
 
 
 func _on_delete_confirmed() -> void:
+	if read_only or not root_dir:
+		return
+	
 	if not _pending_delete_paths.is_empty():
 		_undo_redo.add_delete_action(_pending_delete_paths)
 		for path: String in _pending_delete_paths:
@@ -278,59 +332,81 @@ func _on_delete_confirmed() -> void:
 
 
 func _delete_recursive(path: String) -> void:
-	if DirAccess.dir_exists_absolute(path):
-		var dir: DirAccess = DirAccess.open(path)
-		if dir == null:
+	if not root_dir:
+		return
+	
+	if root_dir.dir_exists(path):
+		var dir: NebulaDir = root_dir.get_dir(path)
+		if not dir:
 			push_error("Failed to open directory: " + path)
 			return
 		
-		dir.list_dir_begin()
-		var file_name: String = dir.get_next()
+		var entries: PackedStringArray = dir.get_entries()
+		for entry: String in entries:
+			var is_dir: bool = entry.ends_with("/")
+			var entry_name: String = entry.trim_suffix("/")
+			var full_path: String = path.path_join(entry_name)
+			_delete_recursive(full_path)
 		
-		while file_name != "":
-			if file_name != "." and file_name != "..":
-				var full_path: String = path.path_join(file_name)
-				_delete_recursive(full_path)
-			file_name = dir.get_next()
-		
-		dir.list_dir_end()
-		
-		DirAccess.remove_absolute(path)
+		root_dir.remove_dir(path)
 	else:
-		DirAccess.remove_absolute(path)
+		root_dir.remove_file(path)
 
 
 func _copy_file(source: String, target: String) -> void:
-	var dir: DirAccess = DirAccess.open(source.get_base_dir())
-	if dir:
-		dir.copy(source, target)
+	if not root_dir:
+		return
+	
+	var source_file: NebulaFile = root_dir.get_file(source)
+	if not source_file:
+		push_error("Source file not found: " + source)
+		return
+	
+	var buffer: NebulaBuffer = source_file.get_buffer()
+	if not buffer:
+		push_error("Failed to get buffer from source file: " + source)
+		return
+	
+	var target_file: NebulaFile = root_dir.create_file(target)
+	if not target_file:
+		push_error("Failed to create target file: " + target)
+		return
+	
+	target_file.set_buffer(buffer)
 
 
 func _copy_directory(source: String, target: String) -> void:
-	DirAccess.make_dir_absolute(target)
+	if not root_dir:
+		return
 	
-	var dir: DirAccess = DirAccess.open(source)
-	if dir:
-		dir.list_dir_begin()
-		var entry: String = dir.get_next()
+	if not root_dir.create_dir(target):
+		push_error("Failed to create target directory: " + target)
+		return
+	
+	var source_dir: NebulaDir = root_dir.get_dir(source)
+	if not source_dir:
+		push_error("Source directory not found: " + source)
+		return
+	
+	var entries: PackedStringArray = source_dir.get_entries()
+	
+	for entry: String in entries:
+		var is_dir: bool = entry.ends_with("/")
+		var entry_name: String = entry.trim_suffix("/")
+		var source_path: String = source.path_join(entry_name)
+		var target_path: String = target.path_join(entry_name)
 		
-		while entry != "":
-			if entry != "." and entry != "..":
-				var source_path: String = source.path_join(entry)
-				var target_path: String = target.path_join(entry)
-				
-				if DirAccess.dir_exists_absolute(source_path):
-					_copy_directory(source_path, target_path)
-				else:
-					_copy_file(source_path, target_path)
-			
-			entry = dir.get_next()
-		
-		dir.list_dir_end()
+		if is_dir:
+			_copy_directory(source_path, target_path)
+		else:
+			_copy_file(source_path, target_path)
 
 
 func _get_unique_path(path: String) -> String:
-	if not FileAccess.file_exists(path) and not DirAccess.dir_exists_absolute(path):
+	if not root_dir:
+		return path
+	
+	if not root_dir.file_exists(path) and not root_dir.dir_exists(path):
 		return path
 	
 	var base_dir: String = path.get_base_dir()
@@ -341,7 +417,7 @@ func _get_unique_path(path: String) -> String:
 	var counter: int = 1
 	var new_path: String = path
 	
-	while FileAccess.file_exists(new_path) or DirAccess.dir_exists_absolute(new_path):
+	while root_dir.file_exists(new_path) or root_dir.dir_exists(new_path):
 		if extension:
 			new_path = base_dir.path_join("%s_%d.%s" % [base_name, counter, extension])
 		else:
@@ -349,3 +425,11 @@ func _get_unique_path(path: String) -> String:
 		counter += 1
 	
 	return new_path
+
+
+func _collapse_all_children(item: TreeItem) -> void:
+	var child: TreeItem = item.get_first_child()
+	while child:
+		child.collapsed = true
+		_collapse_all_children(child)
+		child = child.get_next()

@@ -331,7 +331,7 @@ class NebulaEditorDock:
 		if refocus:
 			_queued_active = node
 			_tc.current_tab = idx
-			_tc.get_tree().process_frame.connect(_clear_queued_active, CONNECT_ONE_SHOT)
+			_tc.get_tree().process_frame.connect(_clear_queued_active, CONNECT_REFERENCE_COUNTED)
 		
 		_refresh()
 		return node
@@ -462,6 +462,8 @@ class NebulaEditorDock:
 			count += 1
 		return count
 	
+	func focus_tab(tab: int) -> void:
+		_tc.current_tab = clampi(tab, -1, _tc.get_tab_count() - 1)
 	
 	func get_active_node() -> Node:
 		if _queued_active:

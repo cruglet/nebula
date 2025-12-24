@@ -7,8 +7,9 @@ var _undo_redo: UndoRedo = UndoRedo.new()
 var _filesystem_dock: NebulaFilesystemPanel
 
 
-func _init(dock: NebulaFilesystemPanel) -> void:
-	_filesystem_dock = dock
+func _init(dock: NebulaFilesystemPanel = null) -> void:
+	if dock:
+		_filesystem_dock = dock
 
 
 func _input(event: InputEvent) -> void:
