@@ -108,7 +108,7 @@ impl NebulaDir {
                 let mut out = PackedStringArray::new();
                 for s in entries.to_vec() {
                     if s.ends_with("/") {
-                        out.push(&s);
+                        out.push(&s.rstrip("/"));
                     }
                 }
                 out
