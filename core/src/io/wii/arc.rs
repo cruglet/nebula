@@ -194,27 +194,27 @@ impl NebulaFs for ArcFs {
         out
     }
 
-    fn get_files(&self) -> PackedStringArray {
-        let entries = self.get_entries("");
-        let mut out = PackedStringArray::new();
-        for s in entries.to_vec() {
-            if !s.ends_with("/") {
-                out.push(&s);
-            }
-        }
-        out
-    }
+    // fn get_files(&self) -> PackedStringArray {
+    //     let entries = self.get_entries("");
+    //     let mut out = PackedStringArray::new();
+    //     for s in entries.to_vec() {
+    //         if !s.ends_with("/") {
+    //             out.push(&s);
+    //         }
+    //     }
+    //     out
+    // }
 
-    fn get_dirs(&self) -> PackedStringArray {
-        let entries = self.get_entries("");
-        let mut out = PackedStringArray::new();
-        for s in entries.to_vec() {
-            if s.ends_with("/") {
-                out.push(&s);
-            }
-        }
-        out
-    }
+    // fn get_dirs(&self) -> PackedStringArray {
+    //     let entries = self.get_entries("");
+    //     let mut out = PackedStringArray::new();
+    //     for s in entries.to_vec() {
+    //         if s.ends_with("/") {
+    //             out.push(&s);
+    //         }
+    //     }
+    //     out
+    // }
 
     fn file_exists(&self, path: &str) -> bool {
         self.entries.iter().any(|e| !e.is_dir && e.path == path)
@@ -243,8 +243,15 @@ impl NebulaFs for ArcFs {
         }
         NebulaDir::new(Arc::new(self.clone()), path.to_string())
     }
+    
+    fn get_file_size(&self, path: &str) -> u64 {
+        self.entries
+            .iter()
+            .find(|e| !e.is_dir && e.path == path)
+            .map(|e| e.size)
+            .unwrap_or(0)
+    }
 }
-
 
 
 impl Clone for ArcFs {
@@ -262,19 +269,20 @@ impl Clone for ArcFs {
 pub struct ARC {
     #[base]
     base: Base<RefCounted>,
+    fs: Option<Arc<dyn NebulaFs>>,
 }
 
 #[godot_api]
 impl IRefCounted for ARC {
     fn init(base: Base<RefCounted>) -> Self {
-        Self { base }
+        Self { base, fs: None }
     }
 }
 
 #[godot_api]
 impl ARC {
     #[func]
-    pub fn open(path: GString) -> Option<Gd<NebulaDir>> {
+    pub fn open(path: GString) -> Option<Gd<ARC>> {
         let path = ProjectSettings::singleton().globalize_path(&path).to_string();
         let disk = match DiskFileSource::new(&path) {
             Ok(f) => f,
@@ -291,7 +299,42 @@ impl ARC {
                 return None;
             }
         };
-        let fs: Arc<dyn NebulaFs> = Arc::new(fs);
-        Some(NebulaDir::new(fs, String::new()))
+
+        let mut arc_instance = ARC::new_gd();
+        arc_instance.bind_mut().fs = Some(Arc::new(fs));
+        Some(arc_instance)
     }
+
+    #[func]
+    pub fn to_dir(&self) -> Gd<NebulaDir> {
+        match &self.fs {
+            Some(fs) => NebulaDir::new(fs.clone(), String::new()),
+            None => NebulaDir::new_gd(),
+        }
+    }
+
+    #[func]
+    pub fn from_buffer(buffer: Gd<NebulaBuffer>) -> Gd<NebulaDir> {
+        let src = {
+            let buf = buffer.bind();
+            match &buf.source {
+                Some(src) => src.clone(),
+                None => {
+                    godot_error!("ARC.from_buffer: buffer has no source");
+                    return NebulaDir::new_gd();
+                }
+            }
+        };
+
+        let fs = match ArcFs::new(src) {
+            Ok(fs) => Arc::new(fs) as Arc<dyn NebulaFs>,
+            Err(err) => {
+                godot_error!("ARC.from_buffer: invalid ARC buffer: {}", err);
+                return NebulaDir::new_gd();
+            }
+        };
+
+        NebulaDir::new(fs, String::new())
+    }
+
 }

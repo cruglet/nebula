@@ -24,6 +24,7 @@ impl IRefCounted for NebulaDir {
 #[godot_api]
 impl NebulaDir {
      #[func]
+     /// Returns a [PackedByteArray] of entries; directoreis are denoted by a "`/`" at the end.
     pub fn get_entries(&self) -> PackedStringArray {
         match &self.fs {
             Some(fs) => fs.get_entries(&self.path),
@@ -52,7 +53,16 @@ impl NebulaDir {
     #[func]
     pub fn get_files(&self) -> PackedStringArray {
         match &self.fs {
-            Some(fs) => fs.get_files(),
+            Some(fs) => {
+                let entries = fs.get_entries(&self.path);
+                let mut out = PackedStringArray::new();
+                for s in entries.to_vec() {
+                    if !s.ends_with("/") {
+                        out.push(&s);
+                    }
+                }
+                out
+            }
             None => PackedStringArray::new(),
         }
     }
@@ -76,11 +86,14 @@ impl NebulaDir {
     pub fn get_dir(&self, rel: String) -> Gd<NebulaDir> {
         match &self.fs {
             Some(fs) => {
-                let full = if self.path.is_empty() {
+                let mut full = if self.path.is_empty() {
                     rel
                 } else {
                     format!("{}/{}", self.path, rel)
                 };
+                if full.ends_with('/') {
+                    full.pop();
+                }
                 fs.get_dir(&full)
             }
             None => NebulaDir::new_gd(),
@@ -90,7 +103,16 @@ impl NebulaDir {
     #[func]
     pub fn get_dirs(&self) -> PackedStringArray {
         match &self.fs {
-            Some(fs) => fs.get_dirs(),
+            Some(fs) => {
+                let entries = fs.get_entries(&self.path);
+                let mut out = PackedStringArray::new();
+                for s in entries.to_vec() {
+                    if s.ends_with("/") {
+                        out.push(&s);
+                    }
+                }
+                out
+            }
             None => PackedStringArray::new(),
         }
     }
@@ -133,6 +155,24 @@ impl NebulaDir {
 
         self.print_files_recursive(fs.as_ref(), &self.path, filesize, indent, true);
     }
+
+    #[func]
+    /// Estimates the memory footprint of this NebulaDir instance in bytes.
+    pub fn get_footprint(&self) -> i64 {
+        use std::mem::size_of_val;
+
+        let mut size = 0;
+
+        size += size_of_val(self) as u64;
+
+        size += self.path.capacity() as u64;
+
+        if let Some(fs) = &self.fs {
+            size += size_of_val(fs) as u64;
+        }
+
+        size as i64
+    }
 }
 
 impl NebulaDir {
@@ -174,12 +214,7 @@ impl NebulaDir {
                 godot_print!("{}[F] {}", prefix, name);
                 total_size += self.print_files_recursive(fs, &full_path, filesize, indent + 1, false);
             } else {
-                let file = fs.get_file(&full_path);
-                let file_bind = file.bind();
-                let buffer = file_bind.get_buffer();
-                let buffer_bind = buffer.bind();
-                
-                let size = self.get_buffer_size(&buffer_bind);
+                let size = fs.get_file_size(&full_path);
                 total_size += size;
 
                 if filesize {
@@ -197,30 +232,6 @@ impl NebulaDir {
         }
 
         total_size
-    }
-
-    fn get_buffer_size(&self, buffer: &crate::io::buffer::NebulaBuffer) -> u64 {
-        let mut test_offset = 0u64;
-        let chunk_size = 1024 * 1024;
-        
-        loop {
-            let data = buffer.read_bytes(test_offset as i32, chunk_size as i32);
-            let read_size = data.len() as u64;
-            
-            if read_size == 0 {
-                return test_offset;
-            }
-            
-            if read_size < chunk_size {
-                return test_offset + read_size;
-            }
-            
-            test_offset += chunk_size;
-            
-            if test_offset > 1024 * 1024 * 1024 * 4 {
-                return test_offset;
-            }
-        }
     }
 
     fn humanize_size(bytes: u64) -> String {

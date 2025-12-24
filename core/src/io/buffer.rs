@@ -19,7 +19,7 @@ pub struct NebulaBuffer {
 
     offset: usize,
 
-    source: Option<BoxedByteSource>,
+    pub source: Option<BoxedByteSource>,
     range: Range<u64>,
 
     base: Base<RefCounted>,

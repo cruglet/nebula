@@ -1,4 +1,4 @@
-use godot::{classes::{control::{LayoutPreset, SizeFlags}, notify::ControlNotification, tween::{EaseType, TransitionType}, CanvasLayer, ColorRect, Control, Engine, InputEventMouseButton, Label, MarginContainer, PanelContainer, ProgressBar, Shader, ShaderMaterial, Tween, VBoxContainer}, global::MouseButton, prelude::*};
+use godot::{classes::{CanvasLayer, ColorRect, Control, Engine, FileAccess, InputEventMouseButton, Label, MarginContainer, PanelContainer, ProgressBar, Shader, ShaderMaterial, Tween, VBoxContainer, control::{LayoutPreset, SizeFlags}, file_access::ModeFlags, notify::ControlNotification, tween::{EaseType, TransitionType}}, global::MouseButton, prelude::*};
 
 use crate::module::Module;
 
@@ -82,6 +82,27 @@ impl Singleton {
         };
         godot_error!("Could not load shader!");
         Shader::new_gd()
+    }
+
+    #[func]
+    /// Checks to see if the user has the specified [param key].
+    pub fn has_key(key: GString) -> bool {
+        FileAccess::file_exists(&format!("user://keys/{}", key))
+    }
+
+    #[func]
+    /// Retrieves a key that was stored via [method store_key].
+    pub fn get_key(key: GString) -> PackedByteArray {
+        FileAccess::get_file_as_bytes(&format!("user://keys/{}", key))
+    }
+
+    #[func]
+    /// Stores a secret key that can be retrieved by [method get_key]. This is meant to handle user-provided keys
+    /// which Nebula cannot distribute.
+    pub fn store_key(key: GString, value: PackedByteArray) {
+        if let Some(mut f) = FileAccess::open(&format!("user://keys/{}", key), ModeFlags::WRITE) {
+            f.store_buffer(&value);
+        }
     }
 
     /// Returns the raw code of a Singleton shader as a String.

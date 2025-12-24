@@ -9,3 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 godot = { version = "0.4.4", features = ["register-docs"] }
 regex = "1.12.2"
+aes = "0.8"
+cbc = "0.1"
+hex = "0.4"
