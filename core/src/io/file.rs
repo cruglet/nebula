@@ -33,6 +33,25 @@ impl NebulaFile {
     }
 
     #[func]
+    /// Opens a file from the regular filesystem at the given path.
+    /// Returns a new NebulaFile instance with the file contents loaded into a buffer.
+    /// Returns an empty NebulaFile if the file cannot be read.
+    pub fn open(path: GString) -> Gd<Self> {
+        let path_str = path.to_string();
+        
+        match std::fs::read(&path_str) {
+            Ok(data) => {
+                let buffer = NebulaBuffer::from_bytes(PackedByteArray::from(data));
+                Self::from_buffer(buffer)
+            }
+            Err(e) => {
+                godot_error!("Failed to open file '{}': {}", path_str, e);
+                NebulaFile::new_gd()
+            }
+        }
+    }
+
+    #[func]
     /// Get the underlying [NebulaBuffer]
     pub fn get_buffer(&self) -> Gd<NebulaBuffer> {
         self.buffer.clone()

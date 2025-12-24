@@ -23,6 +23,11 @@ impl MemoryByteSource {
             data: RwLock::new(Vec::with_capacity(capacity)),
         }
     }
+    pub fn from_vec(data: Vec<u8>) -> Self {
+        Self {
+            data: RwLock::new(data),
+        }
+    }
 }
 impl ByteSource for MemoryByteSource {
     fn read_range(&self, offset: u64, size: usize) -> std::io::Result<Vec<u8>> {

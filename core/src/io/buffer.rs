@@ -110,6 +110,16 @@ impl NebulaBuffer {
 #[godot_api]
 impl NebulaBuffer {
     #[func]
+    pub fn from_bytes(bytes: PackedByteArray) -> Gd<NebulaBuffer> {
+        let vec = bytes.to_vec();
+        let source = Arc::new(MemoryByteSource::from_vec(vec)) as BoxedByteSource;
+        
+        let mut buf = NebulaBuffer::new_gd();
+        buf.bind_mut().set_source(source);
+        buf
+    }
+
+    #[func]
     /// Creates a [NebulaBuffer] from a file path.
     /// Returns a new buffer instance. Logs an error if the file cannot be opened.
     pub fn from_file(path: GString) -> Gd<NebulaBuffer> {
