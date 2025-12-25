@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use godot::{classes::{control::{LayoutPreset, MouseFilter}, Control, Engine, IControl, Input, InputEvent, InputEventMagnifyGesture, InputEventMouseButton, InputEventMouseMotion, InputEventPanGesture, Panel, ShaderMaterial}, global::{Key, MouseButton}, meta::PropertyInfo, obj::{NewAlloc, WithBaseField}, prelude::*};
+use godot::{classes::{control::{LayoutPreset, MouseFilter}, Control, Engine, IControl, Input, InputEvent, InputEventMagnifyGesture, InputEventMouseButton, InputEventMouseMotion, InputEventPanGesture, Node, Panel, ShaderMaterial}, global::{Key, MouseButton}, meta::PropertyInfo, obj::{NewAlloc, WithBaseField}, prelude::*};
 use godot::global::MouseButtonMask;
 
 use crate::runtime::utils::singleton::Singleton;
@@ -9,7 +9,7 @@ use crate::runtime::utils::singleton::Singleton;
 ///
 /// `Nebula2DEditor` provides a pan/zoomable canvas with optional grid overlay.
 /// Supports drag-selection, touch gestures, mouse warp, bounds clamping, and shader-based grid rendering.
-/// Useful for building level editors, map editors, or any 2D workspace within Godot.
+/// Useful for building level editors, map editors, or any general 2D workspace.
 #[derive(GodotClass)]
 #[class(base=Control, tool)]
 struct Nebula2DEditor {
@@ -99,8 +99,17 @@ struct Nebula2DEditor {
     selected_objects: HashSet<Gd<Control>>,
     selected_objects_panel: Gd<Panel>,
     
-    // Individual highlight panels during drag
     highlight_panels: Vec<Gd<Panel>>,
+    active_highlight_count: usize,
+
+    layers: HashMap<GString, Gd<Control>>,
+    layer_order: Vec<GString>,
+    
+    layer_children_cache: Vec<Gd<Control>>,
+    layer_children_dirty: bool,
+
+    last_highlight_update: std::time::Instant,
+    highlight_update_interval: std::time::Duration,
 
     base: Base<Control>,
 }
@@ -164,6 +173,16 @@ impl IControl for Nebula2DEditor {
             selected_objects: HashSet::new(),
             selected_objects_panel: Panel::new_alloc(),
             highlight_panels: vec![],
+            active_highlight_count: 0,
+
+            layers: HashMap::new(),
+            layer_order: Vec::new(),
+            
+            layer_children_cache: Vec::new(),
+            layer_children_dirty: true,
+            
+            last_highlight_update: std::time::Instant::now(),
+            highlight_update_interval: std::time::Duration::from_millis(16),
 
             base
         }
@@ -222,7 +241,7 @@ impl IControl for Nebula2DEditor {
         self.signals().mouse_entered().connect_self(move |a| {
             if selection_panel.is_visible() {
                 selection_panel.hide();
-                a.update_highlight_panels(None);
+                a.hide_all_highlights();
             }
         });
 
@@ -235,13 +254,11 @@ impl IControl for Nebula2DEditor {
         let mut vref = self.editor_control.to_godot_owned();
         let scale_factor = Singleton::get_scale_factor();
 
-        // Mouse motion
         if let Ok(e) = event.to_godot_owned().try_cast::<InputEventMouseMotion>() {
             let ctrl = Input::singleton().is_key_pressed(Key::CTRL);
 
             if e.get_button_mask() == MouseButtonMask::MIDDLE {
                 if ctrl {
-                    // Ctrl + Middle drag -> zoom at anchor
                     if let Some(anchor) = self.ctrl_zoom_anchor {
                         let dy = -e.get_relative().y;
                         if dy.abs() > 0.0 {
@@ -262,10 +279,8 @@ impl IControl for Nebula2DEditor {
                         }
                     }
                 } else {
-                    // Normal panning
                     self.editor_global_position -= e.get_relative();
                     
-                    // Warp mouse if enabled
                     if self.warp_mouse {
                         let viewport = vref.get_viewport().unwrap();
                         let viewport_rect = viewport.get_visible_rect();
@@ -296,7 +311,6 @@ impl IControl for Nebula2DEditor {
                 }
             }
 
-            // Dragging update
             if e.get_button_mask() == MouseButtonMask::LEFT
                 && self.enable_drag_selection
             {
@@ -311,7 +325,11 @@ impl IControl for Nebula2DEditor {
                     self.selection_panel.set_position(rect.position);
                     self.selection_panel.set_size(rect.size);
 
-                    self.update_highlight_panels(Some(local_rect));
+                    let now = std::time::Instant::now();
+                    if now.duration_since(self.last_highlight_update) >= self.highlight_update_interval {
+                        self.update_highlight_panels(Some(local_rect));
+                        self.last_highlight_update = now;
+                    }
 
                     self.signals().selection_dragged().emit(local_rect);
                 }
@@ -340,7 +358,7 @@ impl IControl for Nebula2DEditor {
                     self.signals().selection_updated().emit(&selected_objects);
 
                     self.selection_panel.hide();
-                    self.update_highlight_panels(None);
+                    self.hide_all_highlights();
                     self.selection_panel.set_size(Vector2::ZERO);
                 }
 
@@ -508,29 +526,187 @@ impl Nebula2DEditor {
     /// Fires whenever the editor is zoomed, and provides the current [param zoom].
     #[signal] fn editor_zoomed(zoom: f32);
 
-    /// Adds a [member Control] node to the editor's viewport.
-    #[func] pub fn add_control(&mut self, mut control: Gd<Control>) {
-        control.set_mouse_filter(MouseFilter::IGNORE);
+    /// Emitted when a layer is created.
+    #[signal] fn layer_created(layer_path: GString);
+
+    /// Emitted when a layer is renamed.
+    #[signal] fn layer_renamed(old_path: GString, new_path: GString);
+
+    /// Emitted when a layer is moved.
+    #[signal] fn layer_moved(layer_path: GString, new_index: i32);
+
+    /// Creates a new layer at the specified path. Parent layers are created automatically if they don't exist.
+    /// Returns true if the layer was created, false if it already exists.
+    #[func] pub fn create_layer(&mut self, layer_path: GString) -> bool {
+        if self.layers.contains_key(&layer_path) {
+            return false;
+        }
+
+        let path_str = layer_path.to_string();
+        let parts: Vec<&str> = path_str.split('/').filter(|s| !s.is_empty()).collect();
         
-        if !Engine::singleton().is_editor_hint() {
-            if let Some(_p) = control.get_parent() {
-                control.reparent(&self.editor_control);
-            } else {
-                self.editor_control.add_child(&control);
+        if parts.is_empty() {
+            godot_warn!("Layer path cannot be empty");
+            return false;
+        }
+
+        let mut current_path = String::new();
+        let mut parent_node = self.editor_control.to_godot_owned();
+
+        for (i, part) in parts.iter().enumerate() {
+            if i > 0 {
+                current_path.push('/');
+            }
+            current_path.push_str(part);
+            let current_gstring = GString::from(&current_path);
+
+            if !self.layers.contains_key(&current_gstring) {
+                let mut layer_node = Control::new_alloc();
+                layer_node.set_name(*part);
+                layer_node.set_mouse_filter(MouseFilter::IGNORE);
+                layer_node.set_meta("layer_node", &true.to_variant());
+                layer_node.set_meta("ignore_select", &true.to_variant());
+                
+                parent_node.add_child(&layer_node);
+                
+                self.layers.insert(current_gstring.clone(), layer_node.clone());
+                self.layer_order.push(current_gstring.clone());
+                
+                self.signals().layer_created().emit(&current_gstring);
+                self.layer_children_dirty = true;
+            }
+
+            parent_node = self.layers.get(&current_gstring).unwrap().clone();
+        }
+
+        true
+    }
+
+    /// Renames a layer from old_path to new_path. The layer maintains its position in the hierarchy.
+    #[func] pub fn rename_layer(&mut self, old_path: GString, new_path: GString) -> bool {
+        if !self.layers.contains_key(&old_path) {
+            godot_warn!("Layer '{}' does not exist", old_path);
+            return false;
+        }
+
+        if self.layers.contains_key(&new_path) {
+            godot_warn!("Layer '{}' already exists", new_path);
+            return false;
+        }
+
+        if let Some(node) = self.layers.remove(&old_path) {
+            let name = new_path.to_string();
+            let new_name = name.split('/').filter(|s| !s.is_empty()).last().unwrap_or("");
+            node.clone().set_name(new_name);
+            
+            self.layers.insert(new_path.clone(), node);
+            
+            if let Some(pos) = self.layer_order.iter().position(|x| x == &old_path) {
+                self.layer_order[pos] = new_path.clone();
+            }
+
+            self.signals().layer_renamed().emit(&old_path, &new_path);
+            self.layer_children_dirty = true;
+            return true;
+        }
+
+        false
+    }
+
+    /// Moves a layer to a new index in the scene tree ordering.
+    #[func] pub fn move_layer(&mut self, layer_path: GString, new_index: i32) -> bool {
+        if !self.layers.contains_key(&layer_path) {
+            godot_warn!("Layer '{}' does not exist", layer_path);
+            return false;
+        }
+
+        if let Some(node) = self.layers.get(&layer_path) {
+            let node_clone = node.clone();
+            
+            if let Some(mut parent) = node_clone.get_parent() {
+                parent.move_child(&node_clone, new_index);
+                self.signals().layer_moved().emit(&layer_path, new_index);
+                self.layer_children_dirty = true;
+                return true;
             }
         }
+
+        false
     }
+
+    /// Removes a layer and all its children from the editor.
+    #[func] pub fn remove_layer(&mut self, layer_path: GString) -> bool {
+        if !self.layers.contains_key(&layer_path) {
+            godot_warn!("Layer '{}' does not exist", layer_path);
+            return false;
+        }
+
+        let mut layers_to_remove = Vec::new();
+        for key in self.layers.keys() {
+            if key.to_string().starts_with(&format!("{}/", layer_path)) || key == &layer_path {
+                layers_to_remove.push(key.clone());
+            }
+        }
+
+        for key in layers_to_remove.iter() {
+            if let Some(mut node) = self.layers.remove(key) {
+                node.queue_free();
+            }
+            self.layer_order.retain(|x| x != key);
+        }
+
+        self.layer_children_dirty = true;
+        true
+    }
+
+    /// Checks if a layer exists at the given path.
+    #[func] pub fn has_layer(&self, layer_path: GString) -> bool {
+        self.layers.contains_key(&layer_path)
+    }
+
+    /// Returns an array of all layer paths in creation order.
+    #[func] pub fn get_layers(&self) -> Array<GString> {
+        Array::from_iter(self.layer_order.iter().cloned())
+    }
+
+    /// Adds a Control node to the specified layer. Creates the layer hierarchy if it doesn't exist.
+    #[func] pub fn add_object(&mut self, layer_path: GString, mut node: Gd<Control>) {
+        if !self.layers.contains_key(&layer_path) {
+            self.create_layer(layer_path.clone());
+        }
+
+        if let Some(layer_node) = self.layers.get(&layer_path) {
+            let mut layer_node_clone = layer_node.clone();
+            
+            node.set_mouse_filter(MouseFilter::IGNORE);
+            
+            if !Engine::singleton().is_editor_hint() {
+                if node.get_parent().is_some() {
+                    node.reparent(&layer_node_clone);
+                } else {
+                    layer_node_clone.add_child(&node);
+                }
+            }
+            
+            self.layer_children_dirty = true;
+        }
+    }
+
+    #[func]
+    /// Returns the Control node for the given layer path, or null if it doesn't exist.
+    pub fn get_layer(&self, layer_path: GString) -> Option<Gd<Control>> {
+        self.layers.get(&layer_path).cloned()
+    }
+
 
     /// Adds a [member Control] to the current selection.
     #[func] pub fn add_to_selection(&mut self, control: Gd<Control>) {
         self.selected_objects.insert(control);
-        self.update_selection_panel_bounds();
     }
 
     /// Removes a given [member Control] from the current selection.
     #[func] pub fn remove_from_selection(&mut self, control: Gd<Control>) {
         self.selected_objects.retain(|obj| !obj.eq(&control));
-        self.update_selection_panel_bounds();
     }
 
     /// Clears all nodes from the current selection.
@@ -589,81 +765,160 @@ impl Nebula2DEditor {
         mat.set_shader_parameter("dot_major_radius_px", &Variant::from(self.grid_dot_major_radius));
         mat.set_shader_parameter("dot_minor_radius_px", &Variant::from(self.grid_dot_minor_radius));
         mat.set_shader_parameter("dot_major_step", &Variant::from(self.grid_dot_major_step));
-    } 
+    }
 
+
+    fn refresh_layer_children_cache(&mut self) {
+        if !self.layer_children_dirty {
+            return;
+        }
+
+        self.layer_children_cache.clear();
+        
+        self.layer_children_cache.reserve(256);
+        
+        let layer_order_snapshot = self.layer_order.clone();
+        
+        for layer_path in layer_order_snapshot.iter() {
+            if let Some(layer_node) = self.layers.get(layer_path) {
+                Self::collect_children_recursive_to_vec(layer_node.clone().upcast(), &mut self.layer_children_cache);
+            }
+        }
+        
+        self.layer_children_dirty = false;
+    }
+
+    fn collect_children_recursive_to_vec(node: Gd<Node>, result: &mut Vec<Gd<Control>>) {
+        let children = node.get_children();
+        
+        let child_count = children.len();
+        if result.capacity() - result.len() < child_count {
+            result.reserve(child_count);
+        }
+        
+        for child in children.iter_shared() {
+            if child.has_meta("layer_node") {
+                Self::collect_children_recursive_to_vec(child, result);
+            } else if !child.has_meta("ignore_select") {
+                if let Ok(control) = child.try_cast::<Control>() {
+                    result.push(control);
+                }
+            }
+        }
+    }
+
+    fn is_node_visible_in_tree(&self, node: &Gd<Control>) -> bool {
+        if !node.is_visible_in_tree() {
+            return false;
+        }
+        true
+    }
 
     fn update_highlight_panels(&mut self, rect_op: Option<Rect2>) {
-        // Clear old highlight panels
-        self.clear_highlight_panels();
-        
-        if let None = rect_op {
-            return
+        if rect_op.is_none() {
+            self.hide_all_highlights();
+            return;
         }
 
         let rect = rect_op.unwrap();
+        
+        self.refresh_layer_children_cache();
 
-        let children = self.editor_control.get_children();
         let base = self.base().to_godot_owned();
         let highlight_style = base.get_theme_stylebox_ex("object_preselect_box")
             .theme_type("Nebula2DEditor")
             .done();
 
-        for child in children.iter_shared() {
-            if child.has_meta("ignore_select") {
+        let mut highlight_idx = 0;
+
+        let rect_min_x = rect.position.x;
+        let rect_min_y = rect.position.y;
+        let rect_max_x = rect.position.x + rect.size.x;
+        let rect_max_y = rect.position.y + rect.size.y;
+
+        for child in self.layer_children_cache.iter() {
+            if !self.is_node_visible_in_tree(child) {
                 continue;
             }
 
-            if let Ok(c) = child.try_cast::<Control>() {
-                let child_pos = c.get_position();
-                let child_rect = Rect2::new(child_pos, c.get_size());
-
-                if rect.intersects(child_rect) {
-                    // Create highlight panel for this object
-                    let mut panel = Panel::new_alloc();
-                    let local_rect = Rect2 {position: child_pos, size: c.get_size()};
-                    let global_rect = self.rect_to_global(local_rect);
-                    panel.set_mouse_filter(MouseFilter::IGNORE);
-                    panel.set_position(global_rect.position);
-                    panel.set_size(global_rect.size);
-                    panel.add_theme_stylebox_override("panel", highlight_style.as_ref());
-                    panel.set_meta("ignore_select", &true.to_variant());
-
-                    self.editor_highlighted_objects_container.add_child(&panel);
-                    self.highlight_panels.push(panel);
-                }
+            let child_pos = child.get_position();
+            let child_size = child.get_size();
+            
+            let child_max_x = child_pos.x + child_size.x;
+            let child_max_y = child_pos.y + child_size.y;
+            
+            if child_pos.x > rect_max_x || child_max_x < rect_min_x ||
+            child_pos.y > rect_max_y || child_max_y < rect_min_y {
+                continue;
             }
+
+            let local_rect = Rect2 { position: child_pos, size: child_size };
+            let global_rect = self.rect_to_global(local_rect);
+
+            if highlight_idx >= self.highlight_panels.len() {
+                let mut panel = Panel::new_alloc();
+                panel.set_mouse_filter(MouseFilter::IGNORE);
+                panel.set_meta("ignore_select", &true.to_variant());
+                self.editor_highlighted_objects_container.add_child(&panel);
+                self.highlight_panels.push(panel);
+            }
+
+            let mut panel = self.highlight_panels[highlight_idx].clone();
+            panel.set_position(global_rect.position);
+            panel.set_size(global_rect.size);
+            panel.add_theme_stylebox_override("panel", highlight_style.as_ref());
+            panel.show();
+
+            highlight_idx += 1;
         }
+
+        for i in highlight_idx..self.highlight_panels.len() {
+            self.highlight_panels[i].hide();
+        }
+
+        self.active_highlight_count = highlight_idx;
     }
 
-
-    fn clear_highlight_panels(&mut self) {
-        for mut panel in self.highlight_panels.drain(..) {
-            panel.queue_free();
+    fn hide_all_highlights(&mut self) {
+        for panel in self.highlight_panels.iter_mut() {
+            panel.hide();
         }
+        self.active_highlight_count = 0;
     }
 
 
     fn on_drag_end(&mut self, rect: Rect2) {
-        self.clear_highlight_panels();
+        self.hide_all_highlights();
 
-        let children = self.editor_control.get_children();
+        self.refresh_layer_children_cache();
 
-        for child in children.iter_shared() {
-            if child.has_meta("ignore_select") {
+        let rect_min_x = rect.position.x;
+        let rect_min_y = rect.position.y;
+        let rect_max_x = rect.position.x + rect.size.x;
+        let rect_max_y = rect.position.y + rect.size.y;
+
+        let mut new_selection = HashSet::with_capacity(
+            self.layer_children_cache.len().min(256)
+        );
+
+        for child in self.layer_children_cache.iter() {
+            if !self.is_node_visible_in_tree(child) {
                 continue;
             }
 
-            if let Ok(c) = child.try_cast::<Control>() {
-                let child_pos = c.get_position();
-                let child_rect = Rect2::new(child_pos, c.get_size());
-
-                if rect.intersects(child_rect) {
-                    self.add_to_selection(c);
-                } else {
-                    self.remove_from_selection(c);
-                }
+            let child_pos = child.get_position();
+            let child_size = child.get_size();
+            
+            let child_max_x = child_pos.x + child_size.x;
+            let child_max_y = child_pos.y + child_size.y;
+            
+            if !(child_pos.x > rect_max_x || child_max_x < rect_min_x ||
+                child_pos.y > rect_max_y || child_max_y < rect_min_y) {
+                new_selection.insert(child.clone());
             }
         }
+
+        self.selected_objects = new_selection;
         
         self.update_selection_panel_bounds();
     }
@@ -671,35 +926,42 @@ impl Nebula2DEditor {
 
     fn update_selection_panel_bounds(&mut self) {
         let mut sop = self.selected_objects_panel.to_godot_owned();
-        let sp = self.selection_panel.to_godot_owned();
-        let sp_local_rect = self.rect_to_local(sp.get_rect());
-        self.update_highlight_panels(Some(sp_local_rect));
+
+        self.selected_objects.retain(|obj| obj.is_visible_in_tree());
 
         if self.selected_objects.is_empty() {
             sop.hide();
             sop.set_size(Vector2::ZERO);
+            
+            let sp = self.selection_panel.to_godot_owned();
             if !sp.is_visible() {
-                self.update_highlight_panels(None);
+                self.hide_all_highlights();
             }
             return;
         }
 
-        let mut iter = self.selected_objects.iter();
-        let first = iter.next().unwrap();
-        let first_pos = first.get_position();
-        let first_size = first.get_size();
-        let mut min_x = first_pos.x;
-        let mut min_y = first_pos.y;
-        let mut max_x = first_pos.x + first_size.x;
-        let mut max_y = first_pos.y + first_size.y;
+        let mut first = true;
+        let mut min_x = 0.0;
+        let mut min_y = 0.0;
+        let mut max_x = 0.0;
+        let mut max_y = 0.0;
 
-        for obj in iter {
+        for obj in self.selected_objects.iter() {
             let p = obj.get_position();
             let s = obj.get_size();
-            min_x = min_x.min(p.x);
-            min_y = min_y.min(p.y);
-            max_x = max_x.max(p.x + s.x);
-            max_y = max_y.max(p.y + s.y);
+            
+            if first {
+                min_x = p.x;
+                min_y = p.y;
+                max_x = p.x + s.x;
+                max_y = p.y + s.y;
+                first = false;
+            } else {
+                min_x = min_x.min(p.x);
+                min_y = min_y.min(p.y);
+                max_x = max_x.max(p.x + s.x);
+                max_y = max_y.max(p.y + s.y);
+            }
         }
 
         let pos = Vector2::new(min_x, min_y);
@@ -713,10 +975,16 @@ impl Nebula2DEditor {
         let local_rect = Rect2 { position: pos, size };
         let global_rect = self.rect_to_global(local_rect);
 
-        self.selected_objects_panel.set_position(global_rect.position);
-        self.selected_objects_panel.set_size(global_rect.size);
-        self.selected_objects_panel.add_theme_stylebox_override("panel", selected_style.as_ref());
-        self.selected_objects_panel.show();
+        sop.set_position(global_rect.position);
+        sop.set_size(global_rect.size);
+        sop.add_theme_stylebox_override("panel", selected_style.as_ref());
+        sop.show();
+        
+        let sp = self.selection_panel.to_godot_owned();
+        if sp.is_visible() {
+            let sp_local_rect = self.rect_to_local(sp.get_rect());
+            self.update_highlight_panels(Some(sp_local_rect));
+        }
     }
     
     
@@ -776,7 +1044,6 @@ impl Nebula2DEditor {
         let p = pos * zoom - (self.base().get_size() / 2.0);
         self.xset_editor_global_position(p);
         
-        // This updates the bound nodes
         for (c, local_pos) in self.editor_bound_objects.iter_mut() {
             let global_pos = *local_pos * self.zoom_amount - self.editor_global_position;
             c.to_godot_owned().set_position(global_pos);
@@ -793,9 +1060,29 @@ impl Nebula2DEditor {
         self.signals().editor_panned().emit(pos);
     }
 
-
     fn xset_zoom_amount(&mut self, zoom: f32) {
         self.zoom_amount = zoom;
         self.signals().editor_zoomed().emit(zoom);
+    }
+
+    #[func]
+    pub fn set_zoom(&mut self, zoom: f32, #[opt(default=Vector2::ZERO)] anchor: Vector2) {
+        let new_zoom = zoom.clamp(self.zoom_minimum, self.zoom_maximum);
+        let old_zoom = self.zoom_amount;
+
+        if (new_zoom - old_zoom).abs() < 0.001 {
+            return;
+        }
+
+        let world_point = (anchor + self.editor_global_position) / old_zoom;
+
+        self.xset_zoom_amount(new_zoom);
+        self.editor_control
+            .to_godot_owned()
+            .set_scale(Vector2::splat(new_zoom));
+
+        self.editor_global_position = world_point * new_zoom - anchor;
+
+        self.base_mut().call_deferred("_update_shader", &[]);
     }
 }
