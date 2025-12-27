@@ -32,15 +32,27 @@ var root_dir: NebulaDir = null:
 		if rename_dialog_handler:
 			rename_dialog_handler.root_dir = r
 
-
 var read_only: bool = false:
 	set(value):
 		read_only = value
 		_update_read_only_state()
 
+var _search_query: String = ""
 var _pending_delete_path: String = ""
 var _pending_delete_paths: Array[String] = []
 var _undo_redo: FilesystemUndoRedo
+var _file_filters: Array[Callable] = []
+var _icon_filters: Array[Callable] = []
+
+
+func add_filter(filter_callable: Callable) -> void:
+	_file_filters.append(filter_callable)
+	_apply_filter_to_tree()
+
+
+func add_icon_filter(icon_callable: Callable) -> void:
+	_icon_filters.append(icon_callable)
+	_apply_icon_filter_to_tree()
 
 
 func _ready() -> void:
@@ -109,6 +121,8 @@ func _on_tree_focus_entered() -> void:
 func refresh() -> void:
 	if tree_handler:
 		tree_handler.refresh()
+		_apply_filter_to_tree()
+		_apply_icon_filter_to_tree()
 
 
 func _notify_file_renamed(original_path: String, new_path: String) -> void:
@@ -182,7 +196,7 @@ func _on_paste_requested(target_path: String) -> void:
 
 
 func _handle_copy_action() -> void:
-	var selected_items: Array = _get_selected_tree_items()
+	var selected_items: Array[TreeItem] = _get_selected_tree_items()
 	if selected_items.is_empty():
 		return
 	
@@ -200,7 +214,7 @@ func _handle_cut_action() -> void:
 	if read_only:
 		return
 	
-	var selected_items: Array = _get_selected_tree_items()
+	var selected_items: Array[TreeItem] = _get_selected_tree_items()
 	if selected_items.is_empty():
 		return
 	
@@ -218,7 +232,7 @@ func _handle_paste_action() -> void:
 	if read_only or not root_dir:
 		return
 	
-	var selected_items: Array = _get_selected_tree_items()
+	var selected_items: Array[TreeItem] = _get_selected_tree_items()
 	var target_path: String = ""
 	
 	if not selected_items.is_empty():
@@ -228,7 +242,7 @@ func _handle_paste_action() -> void:
 
 
 func _get_selected_tree_items() -> Array:
-	var selected: Array = []
+	var selected: Array[TreeItem] = []
 	if tree_handler:
 		var root_item: TreeItem = filesystem_tree.get_root()
 		if root_item:
@@ -236,7 +250,7 @@ func _get_selected_tree_items() -> Array:
 	return selected
 
 
-func _collect_selected_tree_items(item: TreeItem, selected: Array) -> void:
+func _collect_selected_tree_items(item: TreeItem, selected: Array[TreeItem]) -> void:
 	if item.is_selected(0):
 		selected.append(item)
 	
@@ -254,7 +268,7 @@ func _perform_paste(target_path: String) -> void:
 	if not clipboard.has("paths"):
 		return
 	
-	var source_paths: Array = clipboard.paths
+	var source_paths: Array[String] = clipboard.paths
 	var is_cut: bool = clipboard.is_cut
 	
 	if source_paths.is_empty():
@@ -343,7 +357,7 @@ func _delete_recursive(path: String) -> void:
 		
 		var entries: PackedStringArray = dir.get_entries()
 		for entry: String in entries:
-			var is_dir: bool = entry.ends_with("/")
+			#var is_dir_entry: bool = entry.ends_with("/")
 			var entry_name: String = entry.trim_suffix("/")
 			var full_path: String = path.path_join(entry_name)
 			_delete_recursive(full_path)
@@ -391,12 +405,12 @@ func _copy_directory(source: String, target: String) -> void:
 	var entries: PackedStringArray = source_dir.get_entries()
 	
 	for entry: String in entries:
-		var is_dir: bool = entry.ends_with("/")
+		var is_dir_entry: bool = entry.ends_with("/")
 		var entry_name: String = entry.trim_suffix("/")
 		var source_path: String = source.path_join(entry_name)
 		var target_path: String = target.path_join(entry_name)
 		
-		if is_dir:
+		if is_dir_entry:
 			_copy_directory(source_path, target_path)
 		else:
 			_copy_file(source_path, target_path)
@@ -432,4 +446,110 @@ func _collapse_all_children(item: TreeItem) -> void:
 	while child:
 		child.collapsed = true
 		_collapse_all_children(child)
+		child = child.get_next()
+
+
+func _apply_filter_to_tree() -> void:
+	if not root_dir or not filesystem_tree:
+		return
+	
+	var root_item: TreeItem = filesystem_tree.get_root()
+	if not root_item:
+		return
+	
+	_filter_tree_item(root_item)
+
+
+func _filter_tree_item(item: TreeItem) -> bool:
+	var path: String = str(item.get_metadata(0))
+	var file_name: String = path.get_file()
+	
+	var matches_search: bool = _is_fuzzy_match(_search_query, file_name)
+	var passes_custom_filters: bool = true
+	var is_dir: bool = root_dir.dir_exists(path)
+	
+	if not is_dir:
+		for filter_callable: Callable in _file_filters:
+			if not filter_callable.call(path):
+				passes_custom_filters = false
+				break
+	
+	var has_matching_child: bool = false
+	if is_dir:
+		var child: TreeItem = item.get_first_child()
+		while child:
+			if _filter_tree_item(child):
+				has_matching_child = true
+			child = child.get_next()
+	
+	var keep_item: bool = false
+	if is_dir:
+		keep_item = has_matching_child
+	else:
+		keep_item = matches_search and passes_custom_filters
+	
+	item.visible = keep_item
+	return keep_item
+
+
+func _is_fuzzy_match(query: String, text: String) -> bool:
+	if query.is_empty():
+		return true
+	
+	var q_low: String = query.to_lower()
+	var t_low: String = text.to_lower()
+	var q_idx: int = 0
+	var t_idx: int = 0
+	
+	while q_idx < q_low.length() and t_idx < t_low.length():
+		if q_low[q_idx] == t_low[t_idx]:
+			q_idx += 1
+		t_idx += 1
+	
+	return q_idx == q_low.length()
+
+
+func _apply_icon_filter_to_tree() -> void:
+	if not root_dir or not filesystem_tree:
+		return
+	
+	var root_item: TreeItem = filesystem_tree.get_root()
+	if not root_item:
+		return
+	
+	_set_icons_recursively(root_item)
+
+
+func _set_icons_recursively(item: TreeItem) -> void:
+	var path: String = str(item.get_metadata(0))
+	
+	for icon_callable: Callable in _icon_filters:
+		var icon: Texture2D = icon_callable.call(path)
+		if icon:
+			item.set_icon(0, icon)
+	
+	var child: TreeItem = item.get_first_child()
+	while child:
+		_set_icons_recursively(child)
+		child = child.get_next()
+
+
+func _on_search_text_changed(new_text: String) -> void:
+	_search_query = new_text.strip_edges()
+	_apply_filter_to_tree()
+	
+	if not _search_query.is_empty() and filesystem_tree:
+		var root: TreeItem = filesystem_tree.get_root()
+		if root:
+			_expand_all_visible(root)
+
+
+func _expand_all_visible(item: TreeItem) -> void:
+	if not item.visible:
+		return
+	
+	item.collapsed = false
+	var child: TreeItem = item.get_first_child()
+	while child:
+		_expand_all_visible(child)
 		child = child.get_next()

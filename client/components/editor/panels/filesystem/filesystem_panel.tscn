@@ -13,7 +13,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_u3j7k")
-filesystem_tree = NodePath("MarginContainer/FilesystemTree")
+filesystem_tree = NodePath("MarginContainer/VBoxContainer/FilesystemTree")
 empty_filesystem_label = NodePath("EmptyFilesystemLabel")
 tree_handler = NodePath("Handlers/TreeHandler")
 context_handler = NodePath("Handlers/ContextHandler")
@@ -38,12 +38,12 @@ layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
 script = ExtResource("3_hfuwx")
-tree = NodePath("../../MarginContainer/FilesystemTree")
+tree = NodePath("../../MarginContainer/VBoxContainer/FilesystemTree")
 empty_label = NodePath("../../EmptyFilesystemLabel")
 
 [node name="ContextHandler" type="Node" parent="Handlers" node_paths=PackedStringArray("tree")]
 script = ExtResource("4_eoxsk")
-tree = NodePath("../../MarginContainer/FilesystemTree")
+tree = NodePath("../../MarginContainer/VBoxContainer/FilesystemTree")
 
 [node name="UndoRedo" type="Node" parent="Handlers"]
 script = ExtResource("5_bghy4")
@@ -60,8 +60,25 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="FilesystemTree" type="Tree" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+
+[node name="Search" type="LineEdit" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+placeholder_text = "Search..."
+
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="FilesystemTree" type="Tree" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/icon_max_width = 18
 
 [node name="EmptyFilesystemLabel" type="Label" parent="."]
@@ -210,6 +227,7 @@ mouse_default_cursor_shape = 2
 theme_type_variation = &"nButtonDanger"
 text = "Delete"
 
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/MarginContainer/Search" to="." method="_on_search_text_changed"]
 [connection signal="text_submitted" from="RenameDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/FilenameEdit" to="Handlers/RenameHandler" method="_on_confirmed" unbinds=1]
 [connection signal="text_submitted" from="RenameDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ExtensionEdit" to="Handlers/RenameHandler" method="_on_confirmed" unbinds=1]
 [connection signal="pressed" from="DeleteDialog/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
