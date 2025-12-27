@@ -4,4 +4,5 @@ pub mod buffer;
 pub mod bytesource;
 pub mod fs;
 
+pub mod common;
 pub mod wii;

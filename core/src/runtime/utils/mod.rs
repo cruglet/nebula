@@ -3,7 +3,5 @@ pub(crate) mod singleton;
 pub(crate) mod core_settings;
 pub(crate) mod git;
 pub(crate) mod quick_actions;
-pub(crate) mod db;
-pub(crate) mod doc_parser;
 pub mod project_data;
 

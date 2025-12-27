@@ -176,6 +176,12 @@ impl NebulaBuffer {
     }
 
     #[func]
+    /// Returns the size of the buffer in bytes.
+    pub fn size(&self) -> i64 {
+        (self.range.end - self.range.start) as i64
+    }
+
+    #[func]
     /// Reads a single unsigned byte and advances the cursor.
     pub fn read_u8(&mut self) -> u8 {
         self.read_u8_impl(true)
