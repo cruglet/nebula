@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=103 format=3 uid="uid://dq10ym208vnxw"]
+[gd_resource type="Theme" load_steps=107 format=3 uid="uid://dq10ym208vnxw"]
 
 [ext_resource type="FontFile" uid="uid://c4h3yueirncqh" path="res://meta/fonts/normal/primary.ttf" id="1_5e7fv"]
 [ext_resource type="Texture2D" uid="uid://blv0vi1d3fpju" path="res://icon.svg" id="2_1u036"]
@@ -628,6 +628,44 @@ shadow_color = Color(0, 0.3019608, 0.6117647, 1)
 shadow_size = 1
 shadow_offset = Vector2(0, 2)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4x6d3"]
+bg_color = Color(0.11207495, 0.5127158, 0.8792635, 0.509)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hkco4"]
+bg_color = Color(0, 0.34509805, 0.67058825, 0.59607846)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.34509805, 0.67058825, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_su68g"]
+bg_color = Color(0.21960784, 0.22745098, 0.2509804, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhtal"]
+bg_color = Color(0, 0.34509805, 0.67058825, 0.34901962)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.34509805, 0.67058825, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="FontVariation" id="FontVariation_xs2ua"]
 base_font = ExtResource("2_kfw5u")
 variation_opentype = {
@@ -967,6 +1005,11 @@ nButtonPrimary/styles/focus = SubResource("StyleBoxFlat_nhevn")
 nButtonPrimary/styles/hover = SubResource("StyleBoxFlat_m8n11")
 nButtonPrimary/styles/normal = SubResource("StyleBoxFlat_hmesj")
 nButtonPrimary/styles/pressed = SubResource("StyleBoxFlat_2f2eq")
+nButtonTogglePrimary/base_type = &"Button"
+nButtonTogglePrimary/styles/hover = SubResource("StyleBoxFlat_4x6d3")
+nButtonTogglePrimary/styles/hover_pressed = SubResource("StyleBoxFlat_hkco4")
+nButtonTogglePrimary/styles/normal = SubResource("StyleBoxFlat_su68g")
+nButtonTogglePrimary/styles/pressed = SubResource("StyleBoxFlat_nhtal")
 nIcons/icons/base_icon = ExtResource("2_1u036")
 nIcons/icons/fs_file_text = ExtResource("3_1u036")
 nIcons/icons/fs_folder = ExtResource("2_v2t5x")
