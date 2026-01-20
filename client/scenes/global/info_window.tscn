@@ -3,11 +3,12 @@
 [ext_resource type="Script" uid="uid://cf1wyh30ivg5j" path="res://scenes/global/info_window.gd" id="1_6h7qx"]
 [ext_resource type="Texture2D" uid="uid://q1ttkq5m0nx5" path="res://meta/images/boot_logo.svg" id="1_hagbc"]
 
-[node name="InfoWindow" type="NebulaWindow" node_paths=PackedStringArray("version_label", "project_list_button")]
+[node name="InfoWindow" type="NebulaWindow" node_paths=PackedStringArray("version_label", "project_list_button", "debug_label")]
 title_text = "About Nebula"
 script = ExtResource("1_6h7qx")
 version_label = NodePath("PanelContainer/VBoxContainer/CenterContainer/TextureRect/VersionLabel")
 project_list_button = NodePath("PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer/ProjectListButton")
+debug_label = NodePath("PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer/DebugLabel")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(520, 80)
@@ -53,6 +54,15 @@ theme_override_constants/margin_right = 10
 layout_mode = 2
 theme_override_constants/separation = 8
 
+[node name="DebugLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.23529412)
+layout_mode = 2
+theme_type_variation = &"nRichTextThin"
+text = "-- Debug Metadata --
+----------------------"
+fit_content = true
+
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 layout_mode = 2
 text = "Cruglet, 2025"
@@ -67,4 +77,5 @@ text = "Back to Project List"
 [node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 
+[connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MarginContainer2/VBoxContainer/ProjectListButton" to="." method="_on_project_list_button_pressed"]
