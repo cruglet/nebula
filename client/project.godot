@@ -8,15 +8,19 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Nebula"
 run/main_scene="uid://byov0dkgv84xy"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Nebula"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/bg_color=Color(0.14901961, 0.16078432, 0.18039216, 1)
-boot_splash/fullsize=false
+boot_splash/stretch_mode=0
 boot_splash/use_filter=false
 boot_splash/image="uid://dwiplk54h3dxp"
 config/icon="uid://blv0vi1d3fpju"
